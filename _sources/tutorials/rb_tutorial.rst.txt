@@ -201,7 +201,7 @@ change the ``collate_fn`` since the default expects numerical data):
 
  .. code-block:: none
 
-    ['a', 'b', 'b']
+    [0, 'b', 'b']
 
 
 
@@ -320,15 +320,15 @@ Let us sample from the buffer, and print the data:
 
  .. code-block:: none
 
-    samples tensor([[ 0,  1,  2,  3],
-            [ 8,  9, 10, 11],
-            [ 4,  5,  6,  7],
+    samples tensor([[ 8,  9, 10, 11],
             [ 0,  1,  2,  3],
-            [ 4,  5,  6,  7]]) tensor([[ 0,  1,  2,  3,  4],
-            [10, 11, 12, 13, 14],
-            [ 5,  6,  7,  8,  9],
+            [ 0,  1,  2,  3],
+            [ 0,  1,  2,  3],
+            [ 0,  1,  2,  3]]) tensor([[10, 11, 12, 13, 14],
             [ 0,  1,  2,  3,  4],
-            [ 5,  6,  7,  8,  9]])
+            [ 0,  1,  2,  3,  4],
+            [ 0,  1,  2,  3,  4],
+            [ 0,  1,  2,  3,  4]])
 
 
 
@@ -359,15 +359,15 @@ A :class:`torchrl.data.LazyMemmapStorage` is created in the same manner:
 
     The buffer has 3 elements
     samples: a= tensor([[ 8,  9, 10, 11],
+            [ 0,  1,  2,  3],
+            [ 0,  1,  2,  3],
             [ 4,  5,  6,  7],
-            [ 4,  5,  6,  7],
-            [ 8,  9, 10, 11],
-            [ 4,  5,  6,  7]]) 
+            [ 0,  1,  2,  3]]) 
     ('b', 'c'): tensor([[10, 11, 12, 13, 14],
+            [ 0,  1,  2,  3,  4],
+            [ 0,  1,  2,  3,  4],
             [ 5,  6,  7,  8,  9],
-            [ 5,  6,  7,  8,  9],
-            [10, 11, 12, 13, 14],
-            [ 5,  6,  7,  8,  9]])
+            [ 0,  1,  2,  3,  4]])
 
 
 
@@ -489,7 +489,7 @@ Let us have a look at these indices:
 
  .. code-block:: none
 
-    tensor([1, 2, 2, 0, 1, 0, 1, 2, 1, 1, 1, 0])
+    tensor([2, 0, 1, 1, 2, 2, 1, 0, 2, 0, 1, 2])
 
 
 
@@ -1050,8 +1050,8 @@ higher indices should occur more frequently:
  .. code-block:: none
 
 
-    (array([ 27.,  34.,  72.,  76., 107., 133., 126., 136., 152., 161.]), array([  5. ,  17.2,  29.4,  41.6,  53.8,  66. ,  78.2,  90.4, 102.6,
-           114.8, 127. ]), <BarContainer object of 10 artists>)
+    (array([ 21.,  29.,  61.,  77., 102., 110., 127., 120., 178., 199.]), array([  2. ,  14.5,  27. ,  39.5,  52. ,  64.5,  77. ,  89.5, 102. ,
+           114.5, 127. ]), <BarContainer object of 10 artists>)
 
 
 
@@ -1107,8 +1107,8 @@ Now, higher indices should occur less frequently:
  .. code-block:: none
 
 
-    (array([134., 205., 139., 120., 105.,  99.,  94.,  67.,  37.,  24.]), array([  2. ,  14.3,  26.6,  38.9,  51.2,  63.5,  75.8,  88.1, 100.4,
-           112.7, 125. ]), <BarContainer object of 10 artists>)
+    (array([166., 161., 132., 128., 114.,  98.,  82.,  64.,  56.,  23.]), array([  1. ,  13.3,  25.6,  37.9,  50.2,  62.5,  74.8,  87.1,  99.4,
+           111.7, 124. ]), <BarContainer object of 10 artists>)
 
 
 
@@ -1530,26 +1530,41 @@ the end:
 
 
 
+
+
 .. rst-class:: sphx-glr-script-out
 
-.. code-block:: pytb
+ .. code-block:: none
 
-    Traceback (most recent call last):
-      File "/__w/rl/rl/docs/source/reference/generated/tutorials/rb_tutorial.py", line 668, in <module>
-        s = rb.sample(1)  # the buffer has only one element
-      File "/__w/rl/rl/torchrl/data/replay_buffers/replay_buffers.py", line 809, in sample
-        data, info = super().sample(batch_size, return_info=True)
-      File "/__w/rl/rl/torchrl/data/replay_buffers/replay_buffers.py", line 365, in sample
-        ret = self._sample(batch_size)
-      File "/__w/rl/rl/torchrl/data/replay_buffers/utils.py", line 46, in decorated_fun
-        output = fun(self, *args, **kwargs)
-      File "/__w/rl/rl/torchrl/data/replay_buffers/replay_buffers.py", line 302, in _sample
-        data = self._collate_fn(data)
-      File "/__w/rl/rl/torchrl/data/replay_buffers/storages.py", line 745, in _collate_as_tensor
-        return x.as_tensor()
-      File "/usr/local/lib/python3.8/dist-packages/tensordict/tensordict.py", line 1817, in as_tensor
-        raise AttributeError(
-    AttributeError: TensorDict does not have an 'as_tensor' method because at least one of its tensors does not support this method.
+    TensorDict(
+        fields={
+            action: Tensor(shape=torch.Size([1, 10, 2]), device=cpu, dtype=torch.int64, is_shared=False),
+            collector: TensorDict(
+                fields={
+                    traj_ids: Tensor(shape=torch.Size([1, 10]), device=cpu, dtype=torch.int64, is_shared=False)},
+                batch_size=torch.Size([1, 10]),
+                device=cpu,
+                is_shared=False),
+            done: Tensor(shape=torch.Size([1, 10, 1]), device=cpu, dtype=torch.bool, is_shared=False),
+            index: Tensor(shape=torch.Size([1, 10]), device=cpu, dtype=torch.int64, is_shared=False),
+            next: TensorDict(
+                fields={
+                    done: Tensor(shape=torch.Size([1, 10, 1]), device=cpu, dtype=torch.bool, is_shared=False),
+                    pixels: Tensor(shape=torch.Size([1, 10, 400, 600, 3]), device=cpu, dtype=torch.uint8, is_shared=False),
+                    pixels_trsf: Tensor(shape=torch.Size([1, 10, 4, 1, 64, 64]), device=cpu, dtype=torch.float32, is_shared=False),
+                    reward: Tensor(shape=torch.Size([1, 10, 1]), device=cpu, dtype=torch.float32, is_shared=False),
+                    terminated: Tensor(shape=torch.Size([1, 10, 1]), device=cpu, dtype=torch.bool, is_shared=False),
+                    truncated: Tensor(shape=torch.Size([1, 10, 1]), device=cpu, dtype=torch.bool, is_shared=False)},
+                batch_size=torch.Size([1, 10]),
+                device=cpu,
+                is_shared=False),
+            pixels: Tensor(shape=torch.Size([1, 10, 400, 600, 3]), device=cpu, dtype=torch.uint8, is_shared=False),
+            pixels_trsf: Tensor(shape=torch.Size([1, 10, 4, 1, 64, 64]), device=cpu, dtype=torch.float32, is_shared=False),
+            terminated: Tensor(shape=torch.Size([1, 10, 1]), device=cpu, dtype=torch.bool, is_shared=False),
+            truncated: Tensor(shape=torch.Size([1, 10, 1]), device=cpu, dtype=torch.bool, is_shared=False)},
+        batch_size=torch.Size([1, 10]),
+        device=cpu,
+        is_shared=False)
 
 
 
@@ -1565,6 +1580,12 @@ data generated online and offline match!
 
 
     assert (data.exclude("collector") == s.squeeze(0).exclude("index", "collector")).all()
+
+
+
+
+
+
 
 
 .. GENERATED FROM PYTHON SOURCE LINES 679-691
@@ -1585,9 +1606,9 @@ You should now be able to:
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (2 minutes 41.553 seconds)
+   **Total running time of the script:** (2 minutes 40.680 seconds)
 
-**Estimated memory usage:**  4237 MB
+**Estimated memory usage:**  384 MB
 
 
 .. _sphx_glr_download_tutorials_rb_tutorial.py:
