@@ -1096,6 +1096,7 @@
 <span class="sd">            &gt;&gt;&gt; from torchrl.envs import ParallelEnv</span>
 <span class="sd">            &gt;&gt;&gt; from torchrl.envs.libs.gym import GymEnv</span>
 <span class="sd">            &gt;&gt;&gt; from tensordict.nn import TensorDictModule</span>
+<span class="sd">            &gt;&gt;&gt; from torch import nn</span>
 <span class="sd">            &gt;&gt;&gt; env_fn = lambda: GymEnv(&quot;Pendulum-v1&quot;)</span>
 <span class="sd">            &gt;&gt;&gt; env_fn_parallel = ParallelEnv(6, env_fn)</span>
 <span class="sd">            &gt;&gt;&gt; policy = TensorDictModule(nn.Linear(3, 1), in_keys=[&quot;observation&quot;], out_keys=[&quot;action&quot;])</span>
@@ -1791,6 +1792,7 @@
 <span class="sd">            &gt;&gt;&gt; from torchrl.envs import ParallelEnv</span>
 <span class="sd">            &gt;&gt;&gt; from torchrl.envs.libs.gym import GymEnv</span>
 <span class="sd">            &gt;&gt;&gt; from tensordict.nn import TensorDictModule</span>
+<span class="sd">            &gt;&gt;&gt; from torch import nn</span>
 <span class="sd">            &gt;&gt;&gt; env_fn = lambda: GymEnv(&quot;Pendulum-v1&quot;)</span>
 <span class="sd">            &gt;&gt;&gt; env_fn_parallel = lambda: ParallelEnv(6, env_fn)</span>
 <span class="sd">            &gt;&gt;&gt; policy = TensorDictModule(nn.Linear(3, 1), in_keys=[&quot;observation&quot;], out_keys=[&quot;action&quot;])</span>

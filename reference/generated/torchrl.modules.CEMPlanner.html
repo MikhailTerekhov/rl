@@ -421,13 +421,13 @@ the action. Defaults to “action”</p></li>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">MyMBEnv</span><span class="p">(</span><span class="n">ModelBasedEnvBase</span><span class="p">):</span>
 <span class="gp">... </span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">world_model</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="gp">... </span>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">world_model</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">state_spec</span> <span class="o">=</span> <span class="n">CompositeSpec</span><span class="p">(</span>
+<span class="gp">... </span>            <span class="n">hidden_observation</span><span class="o">=</span><span class="n">UnboundedContinuousTensorSpec</span><span class="p">((</span><span class="mi">4</span><span class="p">,))</span>
+<span class="gp">... </span>        <span class="p">)</span>
 <span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">observation_spec</span> <span class="o">=</span> <span class="n">CompositeSpec</span><span class="p">(</span>
-<span class="gp">... </span>            <span class="n">next_hidden_observation</span><span class="o">=</span><span class="n">UnboundedContinuousTensorSpec</span><span class="p">((</span><span class="mi">4</span><span class="p">,))</span>
+<span class="gp">... </span>            <span class="n">hidden_observation</span><span class="o">=</span><span class="n">UnboundedContinuousTensorSpec</span><span class="p">((</span><span class="mi">4</span><span class="p">,))</span>
 <span class="gp">... </span>        <span class="p">)</span>
-<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">input_spec</span> <span class="o">=</span> <span class="n">CompositeSpec</span><span class="p">(</span>
-<span class="gp">... </span>            <span class="n">hidden_observation</span><span class="o">=</span><span class="n">UnboundedContinuousTensorSpec</span><span class="p">((</span><span class="mi">4</span><span class="p">,)),</span>
-<span class="gp">... </span>            <span class="n">action</span><span class="o">=</span><span class="n">UnboundedContinuousTensorSpec</span><span class="p">((</span><span class="mi">1</span><span class="p">,)),</span>
-<span class="gp">... </span>        <span class="p">)</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">action_spec</span> <span class="o">=</span> <span class="n">UnboundedContinuousTensorSpec</span><span class="p">((</span><span class="mi">1</span><span class="p">,))</span>
 <span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">reward_spec</span> <span class="o">=</span> <span class="n">UnboundedContinuousTensorSpec</span><span class="p">((</span><span class="mi">1</span><span class="p">,))</span>
 <span class="gp">...</span>
 <span class="gp">... </span>    <span class="k">def</span> <span class="nf">_reset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tensordict</span><span class="p">:</span> <span class="n">TensorDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TensorDict</span><span class="p">:</span>
@@ -437,9 +437,11 @@ the action. Defaults to “action”</p></li>
 <span class="gp">... </span>            <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
 <span class="gp">... </span>        <span class="p">)</span>
 <span class="gp">... </span>        <span class="n">tensordict</span> <span class="o">=</span> <span class="n">tensordict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
-<span class="gp">... </span>            <span class="bp">self</span><span class="o">.</span><span class="n">input_spec</span><span class="o">.</span><span class="n">rand</span><span class="p">())</span>
+<span class="gp">... </span>            <span class="bp">self</span><span class="o">.</span><span class="n">full_state_spec</span><span class="o">.</span><span class="n">rand</span><span class="p">())</span>
 <span class="gp">... </span>        <span class="n">tensordict</span> <span class="o">=</span> <span class="n">tensordict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
-<span class="gp">... </span>            <span class="bp">self</span><span class="o">.</span><span class="n">observation_spec</span><span class="o">.</span><span class="n">rand</span><span class="p">())</span>
+<span class="gp">... </span>            <span class="bp">self</span><span class="o">.</span><span class="n">full_action_spec</span><span class="o">.</span><span class="n">rand</span><span class="p">())</span>
+<span class="gp">... </span>        <span class="n">tensordict</span> <span class="o">=</span> <span class="n">tensordict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+<span class="gp">... </span>            <span class="bp">self</span><span class="o">.</span><span class="n">full_observation_spec</span><span class="o">.</span><span class="n">rand</span><span class="p">())</span>
 <span class="gp">... </span>        <span class="k">return</span> <span class="n">tensordict</span>
 <span class="gp">...</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchrl.modules</span> <span class="kn">import</span> <span class="n">MLP</span><span class="p">,</span> <span class="n">WorldModelWrapper</span>
@@ -468,12 +470,13 @@ the action. Defaults to “action”</p></li>
 <span class="go">        next: TensorDict(</span>
 <span class="go">            fields={</span>
 <span class="go">                done: Tensor(shape=torch.Size([5, 1]), device=cpu, dtype=torch.bool, is_shared=False),</span>
-<span class="go">                next_hidden_observation: Tensor(shape=torch.Size([5, 4]), device=cpu, dtype=torch.float32, is_shared=False),</span>
-<span class="go">                reward: Tensor(shape=torch.Size([5, 1]), device=cpu, dtype=torch.float32, is_shared=False)},</span>
+<span class="go">                hidden_observation: Tensor(shape=torch.Size([5, 4]), device=cpu, dtype=torch.float32, is_shared=False),</span>
+<span class="go">                reward: Tensor(shape=torch.Size([5, 1]), device=cpu, dtype=torch.float32, is_shared=False),</span>
+<span class="go">                terminated: Tensor(shape=torch.Size([5, 1]), device=cpu, dtype=torch.bool, is_shared=False)},</span>
 <span class="go">            batch_size=torch.Size([5]),</span>
 <span class="go">            device=cpu,</span>
 <span class="go">            is_shared=False),</span>
-<span class="go">        next_hidden_observation: Tensor(shape=torch.Size([5, 4]), device=cpu, dtype=torch.float32, is_shared=False)},</span>
+<span class="go">        terminated: Tensor(shape=torch.Size([5, 1]), device=cpu, dtype=torch.bool, is_shared=False)},</span>
 <span class="go">    batch_size=torch.Size([5]),</span>
 <span class="go">    device=cpu,</span>
 <span class="go">    is_shared=False)</span>
