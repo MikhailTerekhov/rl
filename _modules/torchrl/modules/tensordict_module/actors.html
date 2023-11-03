@@ -580,6 +580,62 @@
 <span class="sd">            device=None,</span>
 <span class="sd">            is_shared=False)</span>
 
+<span class="sd">    Probabilistic actors also support compound actions through the</span>
+<span class="sd">    :class:`tensordict.nn.CompositeDistribution` class. This distribution takes</span>
+<span class="sd">    a tensordict as input (typically `&quot;params&quot;`) and reads it as a whole: the</span>
+<span class="sd">    content of this tensordict is the input to the distributions contained in the</span>
+<span class="sd">    compound one.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; from tensordict import TensorDict</span>
+<span class="sd">        &gt;&gt;&gt; from tensordict.nn import CompositeDistribution, TensorDictModule</span>
+<span class="sd">        &gt;&gt;&gt; from torchrl.modules import ProbabilisticActor</span>
+<span class="sd">        &gt;&gt;&gt; from torch import nn, distributions as d</span>
+<span class="sd">        &gt;&gt;&gt; import torch</span>
+<span class="sd">        &gt;&gt;&gt;</span>
+<span class="sd">        &gt;&gt;&gt; class Module(nn.Module):</span>
+<span class="sd">        ...     def forward(self, x):</span>
+<span class="sd">        ...         return x[..., :3], x[..., 3:6], x[..., 6:]</span>
+<span class="sd">        &gt;&gt;&gt; module = TensorDictModule(Module(),</span>
+<span class="sd">        ...                           in_keys=[&quot;x&quot;],</span>
+<span class="sd">        ...                           out_keys=[(&quot;params&quot;, &quot;normal&quot;, &quot;loc&quot;),</span>
+<span class="sd">        ...                              (&quot;params&quot;, &quot;normal&quot;, &quot;scale&quot;),</span>
+<span class="sd">        ...                              (&quot;params&quot;, &quot;categ&quot;, &quot;logits&quot;)])</span>
+<span class="sd">        &gt;&gt;&gt; actor = ProbabilisticActor(module,</span>
+<span class="sd">        ...                            in_keys=[&quot;params&quot;],</span>
+<span class="sd">        ...                            distribution_class=CompositeDistribution,</span>
+<span class="sd">        ...                            distribution_kwargs={&quot;distribution_map&quot;: {</span>
+<span class="sd">        ...                                 &quot;normal&quot;: d.Normal, &quot;categ&quot;: d.Categorical}}</span>
+<span class="sd">        ...                           )</span>
+<span class="sd">        &gt;&gt;&gt; data = TensorDict({&quot;x&quot;: torch.rand(10)}, [])</span>
+<span class="sd">        &gt;&gt;&gt; actor(data)</span>
+<span class="sd">        TensorDict(</span>
+<span class="sd">            fields={</span>
+<span class="sd">                categ: Tensor(shape=torch.Size([]), device=cpu, dtype=torch.int64, is_shared=False),</span>
+<span class="sd">                normal: Tensor(shape=torch.Size([3]), device=cpu, dtype=torch.float32, is_shared=False),</span>
+<span class="sd">                params: TensorDict(</span>
+<span class="sd">                    fields={</span>
+<span class="sd">                        categ: TensorDict(</span>
+<span class="sd">                            fields={</span>
+<span class="sd">                                logits: Tensor(shape=torch.Size([4]), device=cpu, dtype=torch.float32, is_shared=False)},</span>
+<span class="sd">                            batch_size=torch.Size([]),</span>
+<span class="sd">                            device=None,</span>
+<span class="sd">                            is_shared=False),</span>
+<span class="sd">                        normal: TensorDict(</span>
+<span class="sd">                            fields={</span>
+<span class="sd">                                loc: Tensor(shape=torch.Size([3]), device=cpu, dtype=torch.float32, is_shared=False),</span>
+<span class="sd">                                scale: Tensor(shape=torch.Size([3]), device=cpu, dtype=torch.float32, is_shared=False)},</span>
+<span class="sd">                            batch_size=torch.Size([]),</span>
+<span class="sd">                            device=None,</span>
+<span class="sd">                            is_shared=False)},</span>
+<span class="sd">                    batch_size=torch.Size([]),</span>
+<span class="sd">                    device=None,</span>
+<span class="sd">                    is_shared=False),</span>
+<span class="sd">                x: Tensor(shape=torch.Size([10]), device=cpu, dtype=torch.float32, is_shared=False)},</span>
+<span class="sd">            batch_size=torch.Size([]),</span>
+<span class="sd">            device=None,</span>
+<span class="sd">            is_shared=False)</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>

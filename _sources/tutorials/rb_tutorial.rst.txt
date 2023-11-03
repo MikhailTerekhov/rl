@@ -201,7 +201,7 @@ change the ``collate_fn`` since the default expects numerical data):
 
  .. code-block:: none
 
-    ['b', 'a', 'a']
+    ['b', 'a', 0]
 
 
 
@@ -321,13 +321,13 @@ Let us sample from the buffer, and print the data:
  .. code-block:: none
 
     samples tensor([[ 4,  5,  6,  7],
+            [ 8,  9, 10, 11],
             [ 4,  5,  6,  7],
             [ 8,  9, 10, 11],
-            [ 0,  1,  2,  3],
             [ 4,  5,  6,  7]]) tensor([[ 5,  6,  7,  8,  9],
+            [10, 11, 12, 13, 14],
             [ 5,  6,  7,  8,  9],
             [10, 11, 12, 13, 14],
-            [ 0,  1,  2,  3,  4],
             [ 5,  6,  7,  8,  9]])
 
 
@@ -360,14 +360,14 @@ A :class:`torchrl.data.LazyMemmapStorage` is created in the same manner:
     The buffer has 3 elements
     samples: a= tensor([[ 4,  5,  6,  7],
             [ 8,  9, 10, 11],
-            [ 8,  9, 10, 11],
             [ 0,  1,  2,  3],
-            [ 8,  9, 10, 11]]) 
+            [ 0,  1,  2,  3],
+            [ 0,  1,  2,  3]]) 
     ('b', 'c'): tensor([[ 5,  6,  7,  8,  9],
             [10, 11, 12, 13, 14],
-            [10, 11, 12, 13, 14],
             [ 0,  1,  2,  3,  4],
-            [10, 11, 12, 13, 14]])
+            [ 0,  1,  2,  3,  4],
+            [ 0,  1,  2,  3,  4]])
 
 
 
@@ -489,7 +489,7 @@ Let us have a look at these indices:
 
  .. code-block:: none
 
-    tensor([2, 0, 1, 1, 2, 0, 2, 0, 0, 0, 2, 1])
+    tensor([1, 2, 1, 0, 1, 0, 1, 1, 1, 2, 0, 2])
 
 
 
@@ -1050,8 +1050,8 @@ higher indices should occur more frequently:
  .. code-block:: none
 
 
-    (array([ 20.,  43.,  62.,  89.,  82., 127., 141., 162., 159., 139.]), array([  1. ,  13.6,  26.2,  38.8,  51.4,  64. ,  76.6,  89.2, 101.8,
-           114.4, 127. ]), <BarContainer object of 10 artists>)
+    (array([ 26.,  48.,  61.,  67., 104., 107., 139., 126., 162., 184.]), array([  2. ,  14.5,  27. ,  39.5,  52. ,  64.5,  77. ,  89.5, 102. ,
+           114.5, 127. ]), <BarContainer object of 10 artists>)
 
 
 
@@ -1107,8 +1107,8 @@ Now, higher indices should occur less frequently:
  .. code-block:: none
 
 
-    (array([ 95., 167., 156., 149., 124., 116.,  91.,  56.,  49.,  21.]), array([  1. ,  13.4,  25.8,  38.2,  50.6,  63. ,  75.4,  87.8, 100.2,
-           112.6, 125. ]), <BarContainer object of 10 artists>)
+    (array([156., 139., 166., 124., 119., 119.,  77.,  57.,  46.,  21.]), array([  1. ,  13.5,  26. ,  38.5,  51. ,  63.5,  76. ,  88.5, 101. ,
+           113.5, 126. ]), <BarContainer object of 10 artists>)
 
 
 
@@ -1613,9 +1613,9 @@ You should now be able to:
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (2 minutes 40.722 seconds)
+   **Total running time of the script:** (2 minutes 50.619 seconds)
 
-**Estimated memory usage:**  3406 MB
+**Estimated memory usage:**  4589 MB
 
 
 .. _sphx_glr_download_tutorials_rb_tutorial.py:
