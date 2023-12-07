@@ -33,6 +33,7 @@
   <link rel="stylesheet" href="../../../_static/sg_gallery-binder.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/sg_gallery-dataframe.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/sg_gallery-rendered-html.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -492,11 +493,16 @@
 <span class="sd">        memmap (bool): whether or not the returned tensordict will be placed in memory map.</span>
 <span class="sd">        policy_proof (callable, optional): if provided, it&#39;ll be used to get the list of</span>
 <span class="sd">            tensors to return through the :obj:`step()` and :obj:`reset()` methods, such as :obj:`&quot;hidden&quot;` etc.</span>
-<span class="sd">        device (str, int, torch.device): for consistency, this argument is kept. However this</span>
-<span class="sd">            argument should not be passed, as the device will be inferred from the environments.</span>
-<span class="sd">            It is assumed that all environments will run on the same device as a common shared</span>
-<span class="sd">            tensordict will be used to pass data from process to process. The device can be</span>
-<span class="sd">            changed after instantiation using :obj:`env.to(device)`.</span>
+<span class="sd">        device (str, int, torch.device): The device of the batched environment can be passed.</span>
+<span class="sd">            If not, it is inferred from the env. In this case, it is assumed that</span>
+<span class="sd">            the device of all environments match. If it is provided, it can differ</span>
+<span class="sd">            from the sub-environment device(s). In that case, the data will be</span>
+<span class="sd">            automatically cast to the appropriate device during collection.</span>
+<span class="sd">            This can be used to speed up collection in case casting to device</span>
+<span class="sd">            introduces an overhead (eg, numpy-based environents etc.): by using</span>
+<span class="sd">            a ``&quot;cuda&quot;`` device for the batched environment but a ``&quot;cpu&quot;``</span>
+<span class="sd">            device for the nested environments, one can keep the overhead to a</span>
+<span class="sd">            minimum.</span>
 <span class="sd">        num_threads (int, optional): number of threads for this process.</span>
 <span class="sd">            Defaults to the number of workers.</span>
 <span class="sd">            This parameter has no effect for the :class:`~SerialEnv` class.</span>
@@ -532,14 +538,7 @@
         <span class="n">num_threads</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">num_sub_threads</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="k">if</span> <span class="n">device</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;Device setting for batched environment can&#39;t be done at initialization. &quot;</span>
-                <span class="s2">&quot;The device will be inferred from the constructed environment. &quot;</span>
-                <span class="s2">&quot;It can be set through the `to(device)` method.&quot;</span>
-            <span class="p">)</span>
-
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_closed</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">if</span> <span class="n">num_threads</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">num_threads</span> <span class="o">=</span> <span class="n">num_workers</span> <span class="o">+</span> <span class="mi">1</span>  <span class="c1"># 1 more thread for this proc</span>
@@ -588,7 +587,7 @@
                 <span class="s2">&quot;memmap and shared memory are mutually exclusive features.&quot;</span>
             <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_batch_size</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_device</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span> <span class="k">if</span> <span class="n">device</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">device</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_dummy_env_str</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_seeds</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="s2">&quot;_input_spec&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
@@ -643,7 +642,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_properties_set</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_single_task</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_batch_size</span> <span class="o">=</span> <span class="n">meta_data</span><span class="o">.</span><span class="n">batch_size</span>
-            <span class="n">device</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device</span> <span class="o">=</span> <span class="n">meta_data</span><span class="o">.</span><span class="n">device</span>
+            <span class="n">device</span> <span class="o">=</span> <span class="n">meta_data</span><span class="o">.</span><span class="n">device</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_device</span> <span class="o">=</span> <span class="n">device</span>
 
             <span class="n">input_spec</span> <span class="o">=</span> <span class="n">meta_data</span><span class="o">.</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;input_spec&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
             <span class="n">output_spec</span> <span class="o">=</span> <span class="n">meta_data</span><span class="o">.</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;output_spec&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
@@ -659,8 +660,18 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_batch_locked</span> <span class="o">=</span> <span class="n">meta_data</span><span class="o">.</span><span class="n">batch_locked</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_batch_size</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">num_workers</span><span class="p">,</span> <span class="o">*</span><span class="n">meta_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">batch_size</span><span class="p">])</span>
-            <span class="n">device</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device</span> <span class="o">=</span> <span class="n">meta_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">device</span>
-            <span class="c1"># TODO: check that all action_spec and reward spec match (issue #351)</span>
+            <span class="n">devices</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">_meta_data</span> <span class="ow">in</span> <span class="n">meta_data</span><span class="p">:</span>
+                <span class="n">device</span> <span class="o">=</span> <span class="n">_meta_data</span><span class="o">.</span><span class="n">device</span>
+                <span class="n">devices</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">devices</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;The device wasn&#39;t passed to </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s2">, but more than one device was found in the sub-environments. &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;Please indicate a device to be used for collection.&quot;</span>
+                    <span class="p">)</span>
+                <span class="n">device</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">devices</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_device</span> <span class="o">=</span> <span class="n">device</span>
 
             <span class="n">input_spec</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">md</span> <span class="ow">in</span> <span class="n">meta_data</span><span class="p">:</span>
@@ -783,7 +794,7 @@
                 <span class="o">*</span><span class="p">(</span><span class="n">unravel_key</span><span class="p">((</span><span class="s2">&quot;next&quot;</span><span class="p">,</span> <span class="n">key</span><span class="p">))</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_env_output_keys</span><span class="p">),</span>
                 <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">shared_tensordict_parent</span> <span class="o">=</span> <span class="n">shared_tensordict_parent</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">shared_tensordict_parent</span> <span class="o">=</span> <span class="n">shared_tensordict_parent</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># Multi-task: we share tensordict that *may* have different keys</span>
             <span class="n">shared_tensordict_parent</span> <span class="o">=</span> <span class="p">[</span>
@@ -791,7 +802,7 @@
                     <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_selected_keys</span><span class="p">,</span>
                     <span class="o">*</span><span class="p">(</span><span class="n">unravel_key</span><span class="p">((</span><span class="s2">&quot;next&quot;</span><span class="p">,</span> <span class="n">key</span><span class="p">))</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_env_output_keys</span><span class="p">),</span>
                     <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                <span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+                <span class="p">)</span>
                 <span class="k">for</span> <span class="n">tensordict</span> <span class="ow">in</span> <span class="n">shared_tensordict_parent</span>
             <span class="p">]</span>
             <span class="n">shared_tensordict_parent</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span>
@@ -810,13 +821,11 @@
                 <span class="c1"># Multi-task: we share tensordict that *may* have different keys</span>
                 <span class="c1"># LazyStacked already stores this so we don&#39;t need to do anything</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">shared_tensordicts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shared_tensordict_parent</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;cpu&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">shared_tensordict_parent</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;cpu&quot;</span><span class="p">:</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_share_memory</span><span class="p">:</span>
-                    <span class="k">for</span> <span class="n">td</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">shared_tensordicts</span><span class="p">:</span>
-                        <span class="n">td</span><span class="o">.</span><span class="n">share_memory_</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">shared_tensordict_parent</span><span class="o">.</span><span class="n">share_memory_</span><span class="p">()</span>
                 <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_memmap</span><span class="p">:</span>
-                    <span class="k">for</span> <span class="n">td</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">shared_tensordicts</span><span class="p">:</span>
-                        <span class="n">td</span><span class="o">.</span><span class="n">memmap_</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">shared_tensordict_parent</span><span class="o">.</span><span class="n">memmap_</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_share_memory</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">shared_tensordict_parent</span><span class="o">.</span><span class="n">share_memory_</span><span class="p">()</span>
@@ -853,7 +862,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="s2">&quot;_input_spec&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="s2">&quot;_output_spec&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_properties_set</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">event</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_shutdown_workers</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_closed</span> <span class="o">=</span> <span class="kc">True</span>
@@ -877,11 +885,6 @@
         <span class="k">if</span> <span class="n">device</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_device</span> <span class="o">=</span> <span class="n">device</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">meta_data</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">meta_data</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_single_task</span>
-            <span class="k">else</span> <span class="p">[</span><span class="n">meta_data</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span> <span class="k">for</span> <span class="n">meta_data</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">meta_data</span><span class="p">]</span>
-        <span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_closed</span><span class="p">:</span>
             <span class="n">warn</span><span class="p">(</span>
                 <span class="s2">&quot;Casting an open environment to another device requires closing and re-opening it. &quot;</span>
@@ -913,7 +916,7 @@
 
         <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">_num_workers</span><span class="p">):</span>
             <span class="n">env</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_env_fn</span><span class="p">[</span><span class="n">idx</span><span class="p">](</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">create_env_kwargs</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_envs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_envs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_closed</span> <span class="o">=</span> <span class="kc">False</span>
 
 <div class="viewcode-block" id="SerialEnv.state_dict"><a class="viewcode-back" href="../../../reference/generated/torchrl.envs.SerialEnv.html#torchrl.envs.SerialEnv.state_dict">[docs]</a>    <span class="nd">@_check_start</span>
@@ -973,29 +976,39 @@
                 <span class="k">if</span> <span class="n">tensordict_</span><span class="o">.</span><span class="n">is_empty</span><span class="p">():</span>
                     <span class="n">tensordict_</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="c1"># reset will do modifications in-place. We want the original</span>
-                    <span class="c1"># tensorict to be unchaned, so we clone it</span>
-                    <span class="n">tensordict_</span> <span class="o">=</span> <span class="n">tensordict_</span><span class="o">.</span><span class="n">clone</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+                    <span class="n">env_device</span> <span class="o">=</span> <span class="n">_env</span><span class="o">.</span><span class="n">device</span>
+                    <span class="k">if</span> <span class="n">env_device</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">:</span>
+                        <span class="n">tensordict_</span> <span class="o">=</span> <span class="n">tensordict_</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">env_device</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">tensordict_</span> <span class="o">=</span> <span class="n">tensordict_</span><span class="o">.</span><span class="n">clone</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">tensordict_</span> <span class="o">=</span> <span class="kc">None</span>
+
             <span class="n">_td</span> <span class="o">=</span> <span class="n">_env</span><span class="o">.</span><span class="n">reset</span><span class="p">(</span><span class="n">tensordict</span><span class="o">=</span><span class="n">tensordict_</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">shared_tensordicts</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">update_</span><span class="p">(</span>
                 <span class="n">_td</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_selected_reset_keys_filt</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
             <span class="p">)</span>
         <span class="n">selected_output_keys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_selected_reset_keys_filt</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_single_task</span><span class="p">:</span>
             <span class="c1"># select + clone creates 2 tds, but we can create one only</span>
             <span class="n">out</span> <span class="o">=</span> <span class="n">TensorDict</span><span class="p">(</span>
-                <span class="p">{},</span> <span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">shared_tensordict_parent</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span>
+                <span class="p">{},</span> <span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">shared_tensordict_parent</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span>
             <span class="p">)</span>
             <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">selected_output_keys</span><span class="p">:</span>
-                <span class="n">_set_single_key</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shared_tensordict_parent</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">clone</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">out</span>
+                <span class="n">_set_single_key</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">shared_tensordict_parent</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">clone</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span>
+                <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">shared_tensordict_parent</span><span class="o">.</span><span class="n">select</span><span class="p">(</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shared_tensordict_parent</span><span class="o">.</span><span class="n">select</span><span class="p">(</span>
                 <span class="o">*</span><span class="n">selected_output_keys</span><span class="p">,</span>
                 <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-            <span class="p">)</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">out</span><span class="o">.</span><span class="n">device</span> <span class="o">==</span> <span class="n">device</span><span class="p">:</span>
+                <span class="n">out</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">out</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">non_blocking</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">out</span>
 
     <span class="k">def</span> <span class="nf">_reset_proc_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tensordict</span><span class="p">,</span> <span class="n">tensordict_reset</span><span class="p">):</span>
         <span class="c1"># since we call `reset` directly, all the postproc has been completed</span>
@@ -1013,19 +1026,29 @@
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_workers</span><span class="p">):</span>
             <span class="c1"># shared_tensordicts are locked, and we need to select the keys since we update in-place.</span>
             <span class="c1"># There may be unexpected keys, such as &quot;_reset&quot;, that we should comfortably ignore here.</span>
-            <span class="n">out_td</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_envs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">_step</span><span class="p">(</span><span class="n">tensordict_in</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">env_device</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_envs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">device</span>
+            <span class="k">if</span> <span class="n">env_device</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">:</span>
+                <span class="n">data_in</span> <span class="o">=</span> <span class="n">tensordict_in</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">env_device</span><span class="p">,</span> <span class="n">non_blocking</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">data_in</span> <span class="o">=</span> <span class="n">tensordict_in</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">out_td</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_envs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">_step</span><span class="p">(</span><span class="n">data_in</span><span class="p">)</span>
             <span class="n">next_td</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">update_</span><span class="p">(</span><span class="n">out_td</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_env_output_keys</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
         <span class="c1"># We must pass a clone of the tensordict, as the values of this tensordict</span>
         <span class="c1"># will be modified in-place at further steps</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_single_task</span><span class="p">:</span>
             <span class="n">out</span> <span class="o">=</span> <span class="n">TensorDict</span><span class="p">(</span>
-                <span class="p">{},</span> <span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">shared_tensordict_parent</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span>
+                <span class="p">{},</span> <span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">shared_tensordict_parent</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span>
             <span class="p">)</span>
             <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_selected_step_keys</span><span class="p">:</span>
-                <span class="n">_set_single_key</span><span class="p">(</span><span class="n">next_td</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">clone</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">_set_single_key</span><span class="p">(</span><span class="n">next_td</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">clone</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># strict=False ensures that non-homogeneous keys are still there</span>
-            <span class="n">out</span> <span class="o">=</span> <span class="n">next_td</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_selected_step_keys</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="n">next_td</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_selected_step_keys</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">out</span><span class="o">.</span><span class="n">device</span> <span class="o">==</span> <span class="n">device</span><span class="p">:</span>
+                <span class="n">out</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">out</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">non_blocking</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">out</span>
 
     <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
@@ -1080,6 +1103,32 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="vm">__doc__</span> <span class="o">+=</span> <span class="n">_BatchedEnv</span><span class="o">.</span><span class="vm">__doc__</span>
+    <span class="vm">__doc__</span> <span class="o">+=</span> <span class="s2">&quot;&quot;&quot;</span>
+
+<span class="s2">    .. note::</span>
+<span class="s2">      The choice of the devices where ParallelEnv needs to be executed can</span>
+<span class="s2">      drastically influence its performance. The rule of thumbs is:</span>
+
+<span class="s2">        - If the base environment (backend, e.g., Gym) is executed on CPU, the</span>
+<span class="s2">          sub-environments should be executed on CPU and the data should be</span>
+<span class="s2">          passed via shared physical memory.</span>
+<span class="s2">        - If the base environment is (or can be) executed on CUDA, the sub-environments</span>
+<span class="s2">          should be placed on CUDA too.</span>
+<span class="s2">        - If a CUDA device is available and the policy is to be executed on CUDA,</span>
+<span class="s2">          the ParallelEnv device should be set to CUDA.</span>
+
+<span class="s2">      Therefore, supposing a CUDA device is available, we have the following scenarios:</span>
+
+<span class="s2">        &gt;&gt;&gt; # The sub-envs are executed on CPU, but the policy is on GPU</span>
+<span class="s2">        &gt;&gt;&gt; env = ParallelEnv(N, MyEnv(..., device=&quot;cpu&quot;), device=&quot;cuda&quot;)</span>
+<span class="s2">        &gt;&gt;&gt; # The sub-envs are executed on CUDA</span>
+<span class="s2">        &gt;&gt;&gt; env = ParallelEnv(N, MyEnv(..., device=&quot;cuda&quot;), device=&quot;cuda&quot;)</span>
+<span class="s2">        &gt;&gt;&gt; # this will create the exact same environment</span>
+<span class="s2">        &gt;&gt;&gt; env = ParallelEnv(N, MyEnv(..., device=&quot;cuda&quot;))</span>
+<span class="s2">        &gt;&gt;&gt; # If no cuda device is available</span>
+<span class="s2">        &gt;&gt;&gt; env = ParallelEnv(N, MyEnv(..., device=&quot;cpu&quot;))</span>
+
+<span class="s2">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">_start_workers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="kn">from</span> <span class="nn">torchrl.envs.env_creator</span> <span class="kn">import</span> <span class="n">EnvCreator</span>
@@ -1092,39 +1141,39 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">parent_channels</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_workers</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_events</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;cuda&quot;</span><span class="p">:</span>
+        <span class="n">func</span> <span class="o">=</span> <span class="n">_run_worker_pipe_shared_mem</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">shared_tensordict_parent</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;cuda&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">event</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">event</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_events</span> <span class="o">=</span> <span class="p">[</span><span class="n">ctx</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">_num_workers</span><span class="p">)]</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;mp_event&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_events</span><span class="p">[</span><span class="n">i</span><span class="p">]}</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">_num_workers</span><span class="p">)]</span>
         <span class="k">with</span> <span class="n">clear_mpi_env_vars</span><span class="p">():</span>
             <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">_num_workers</span><span class="p">):</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_verbose</span><span class="p">:</span>
                     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;initiating worker </span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="c1"># No certainty which module multiprocessing_context is</span>
                 <span class="n">parent_pipe</span><span class="p">,</span> <span class="n">child_pipe</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">Pipe</span><span class="p">()</span>
-                <span class="n">event</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_events</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
                 <span class="n">env_fun</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_env_fn</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">env_fun</span><span class="p">,</span> <span class="n">EnvCreator</span><span class="p">):</span>
                     <span class="n">env_fun</span> <span class="o">=</span> <span class="n">CloudpickleWrapper</span><span class="p">(</span><span class="n">env_fun</span><span class="p">)</span>
-
+                <span class="n">kwargs</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;parent_pipe&quot;</span><span class="p">:</span> <span class="n">parent_pipe</span><span class="p">,</span>
+                        <span class="s2">&quot;child_pipe&quot;</span><span class="p">:</span> <span class="n">child_pipe</span><span class="p">,</span>
+                        <span class="s2">&quot;env_fun&quot;</span><span class="p">:</span> <span class="n">env_fun</span><span class="p">,</span>
+                        <span class="s2">&quot;env_fun_kwargs&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_env_kwargs</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span>
+                        <span class="s2">&quot;shared_tensordict&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">shared_tensordicts</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span>
+                        <span class="s2">&quot;_selected_input_keys&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_selected_input_keys</span><span class="p">,</span>
+                        <span class="s2">&quot;_selected_reset_keys&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_selected_reset_keys</span><span class="p">,</span>
+                        <span class="s2">&quot;_selected_step_keys&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_selected_step_keys</span><span class="p">,</span>
+                        <span class="s2">&quot;has_lazy_inputs&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_lazy_inputs</span><span class="p">,</span>
+                    <span class="p">}</span>
+                <span class="p">)</span>
                 <span class="n">process</span> <span class="o">=</span> <span class="n">_ProcessNoWarn</span><span class="p">(</span>
-                    <span class="n">target</span><span class="o">=</span><span class="n">_run_worker_pipe_shared_mem</span><span class="p">,</span>
+                    <span class="n">target</span><span class="o">=</span><span class="n">func</span><span class="p">,</span>
                     <span class="n">num_threads</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">num_sub_threads</span><span class="p">,</span>
-                    <span class="n">args</span><span class="o">=</span><span class="p">(</span>
-                        <span class="n">parent_pipe</span><span class="p">,</span>
-                        <span class="n">child_pipe</span><span class="p">,</span>
-                        <span class="n">env_fun</span><span class="p">,</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">create_env_kwargs</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
-                        <span class="n">event</span><span class="p">,</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">shared_tensordicts</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">_selected_input_keys</span><span class="p">,</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">_selected_reset_keys</span><span class="p">,</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">_selected_step_keys</span><span class="p">,</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">has_lazy_inputs</span><span class="p">,</span>
-                    <span class="p">),</span>
+                    <span class="n">kwargs</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span>
                 <span class="p">)</span>
                 <span class="n">process</span><span class="o">.</span><span class="n">daemon</span> <span class="o">=</span> <span class="kc">True</span>
                 <span class="n">process</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
@@ -1204,10 +1253,16 @@
 
         <span class="c1"># We must pass a clone of the tensordict, as the values of this tensordict</span>
         <span class="c1"># will be modified in-place at further steps</span>
-        <span class="n">tensordict</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;next&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">shared_tensordict_parent</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;next&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">clone</span><span class="p">())</span>
-        <span class="n">tensordict_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shared_tensordict_parent</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span>
-            <span class="s2">&quot;next&quot;</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">reset_keys</span>
-        <span class="p">)</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+        <span class="n">next_td</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shared_tensordict_parent</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;next&quot;</span><span class="p">)</span>
+        <span class="n">tensordict_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shared_tensordict_parent</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="s2">&quot;next&quot;</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">reset_keys</span><span class="p">)</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">shared_tensordict_parent</span><span class="o">.</span><span class="n">device</span> <span class="o">==</span> <span class="n">device</span><span class="p">:</span>
+            <span class="n">next_td</span> <span class="o">=</span> <span class="n">next_td</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+            <span class="n">tensordict_</span> <span class="o">=</span> <span class="n">tensordict_</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">next_td</span> <span class="o">=</span> <span class="n">next_td</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">non_blocking</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">tensordict_</span> <span class="o">=</span> <span class="n">tensordict_</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">non_blocking</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">tensordict</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;next&quot;</span><span class="p">,</span> <span class="n">next_td</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">tensordict</span><span class="p">,</span> <span class="n">tensordict_</span></div>
 
     <span class="nd">@_check_start</span>
@@ -1250,15 +1305,20 @@
         <span class="c1"># We must pass a clone of the tensordict, as the values of this tensordict</span>
         <span class="c1"># will be modified in-place at further steps</span>
         <span class="n">next_td</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shared_tensordict_parent</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;next&quot;</span><span class="p">)</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_single_task</span><span class="p">:</span>
             <span class="n">out</span> <span class="o">=</span> <span class="n">TensorDict</span><span class="p">(</span>
-                <span class="p">{},</span> <span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">shared_tensordict_parent</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span>
+                <span class="p">{},</span> <span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">shared_tensordict_parent</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span>
             <span class="p">)</span>
             <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_selected_step_keys</span><span class="p">:</span>
-                <span class="n">_set_single_key</span><span class="p">(</span><span class="n">next_td</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">clone</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">_set_single_key</span><span class="p">(</span><span class="n">next_td</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">clone</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># strict=False ensures that non-homogeneous keys are still there</span>
-            <span class="n">out</span> <span class="o">=</span> <span class="n">next_td</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_selected_step_keys</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="n">next_td</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_selected_step_keys</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">out</span><span class="o">.</span><span class="n">device</span> <span class="o">==</span> <span class="n">device</span><span class="p">:</span>
+                <span class="n">out</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">out</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">non_blocking</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">out</span>
 
     <span class="nd">@_check_start</span>
@@ -1314,19 +1374,26 @@
             <span class="n">event</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
 
         <span class="n">selected_output_keys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_selected_reset_keys_filt</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_single_task</span><span class="p">:</span>
             <span class="c1"># select + clone creates 2 tds, but we can create one only</span>
             <span class="n">out</span> <span class="o">=</span> <span class="n">TensorDict</span><span class="p">(</span>
-                <span class="p">{},</span> <span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">shared_tensordict_parent</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span>
+                <span class="p">{},</span> <span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">shared_tensordict_parent</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span>
             <span class="p">)</span>
             <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">selected_output_keys</span><span class="p">:</span>
-                <span class="n">_set_single_key</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shared_tensordict_parent</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">clone</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">out</span>
+                <span class="n">_set_single_key</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">shared_tensordict_parent</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">clone</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span>
+                <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">shared_tensordict_parent</span><span class="o">.</span><span class="n">select</span><span class="p">(</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shared_tensordict_parent</span><span class="o">.</span><span class="n">select</span><span class="p">(</span>
                 <span class="o">*</span><span class="n">selected_output_keys</span><span class="p">,</span>
                 <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-            <span class="p">)</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">out</span><span class="o">.</span><span class="n">device</span> <span class="o">==</span> <span class="n">device</span><span class="p">:</span>
+                <span class="n">out</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">out</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">non_blocking</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">out</span>
 
     <span class="nd">@_check_start</span>
     <span class="k">def</span> <span class="nf">_shutdown_workers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -1351,6 +1418,7 @@
         <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent_channels</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cuda_events</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_events</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">event</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="ParallelEnv.set_seed"><a class="viewcode-back" href="../../../reference/generated/torchrl.envs.ParallelEnv.html#torchrl.envs.ParallelEnv.set_seed">[docs]</a>    <span class="nd">@_check_start</span>
     <span class="k">def</span> <span class="nf">set_seed</span><span class="p">(</span>
@@ -1433,7 +1501,6 @@
     <span class="n">child_pipe</span><span class="p">:</span> <span class="n">connection</span><span class="o">.</span><span class="n">Connection</span><span class="p">,</span>
     <span class="n">env_fun</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">EnvBase</span><span class="p">,</span> <span class="n">Callable</span><span class="p">],</span>
     <span class="n">env_fun_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
-    <span class="n">device</span><span class="p">:</span> <span class="n">DEVICE_TYPING</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">mp_event</span><span class="p">:</span> <span class="n">mp</span><span class="o">.</span><span class="n">Event</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">shared_tensordict</span><span class="p">:</span> <span class="n">TensorDictBase</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">_selected_input_keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -1442,13 +1509,11 @@
     <span class="n">has_lazy_inputs</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="k">if</span> <span class="n">device</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+    <span class="n">device</span> <span class="o">=</span> <span class="n">shared_tensordict</span><span class="o">.</span><span class="n">device</span>
     <span class="k">if</span> <span class="n">device</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;cuda&quot;</span><span class="p">:</span>
         <span class="n">event</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">event</span> <span class="o">=</span> <span class="kc">None</span>
-
     <span class="n">parent_pipe</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
     <span class="n">pid</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">()</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">env_fun</span><span class="p">,</span> <span class="n">EnvBase</span><span class="p">):</span>
@@ -1459,7 +1524,6 @@
                 <span class="s2">&quot;env_fun_kwargs must be empty if an environment is passed to a process.&quot;</span>
             <span class="p">)</span>
         <span class="n">env</span> <span class="o">=</span> <span class="n">env_fun</span>
-    <span class="n">env</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
     <span class="k">del</span> <span class="n">env_fun</span>
 
     <span class="n">i</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
@@ -1514,7 +1578,8 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="n">initialized</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;called &#39;init&#39; before step&quot;</span><span class="p">)</span>
             <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
-            <span class="n">next_td</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">_step</span><span class="p">(</span><span class="n">shared_tensordict</span><span class="p">)</span>
+            <span class="n">env_input</span> <span class="o">=</span> <span class="n">shared_tensordict</span>
+            <span class="n">next_td</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">_step</span><span class="p">(</span><span class="n">env_input</span><span class="p">)</span>
             <span class="n">next_shared_tensordict</span><span class="o">.</span><span class="n">update_</span><span class="p">(</span><span class="n">next_td</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">event</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">event</span><span class="o">.</span><span class="n">record</span><span class="p">()</span>
@@ -1525,7 +1590,8 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="n">initialized</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;called &#39;init&#39; before step&quot;</span><span class="p">)</span>
             <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
-            <span class="n">td</span><span class="p">,</span> <span class="n">root_next_td</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">step_and_maybe_reset</span><span class="p">(</span><span class="n">shared_tensordict</span><span class="o">.</span><span class="n">clone</span><span class="p">(</span><span class="kc">False</span><span class="p">))</span>
+            <span class="n">env_input</span> <span class="o">=</span> <span class="n">shared_tensordict</span>
+            <span class="n">td</span><span class="p">,</span> <span class="n">root_next_td</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">step_and_maybe_reset</span><span class="p">(</span><span class="n">env_input</span><span class="p">)</span>
             <span class="n">next_shared_tensordict</span><span class="o">.</span><span class="n">update_</span><span class="p">(</span><span class="n">td</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;next&quot;</span><span class="p">))</span>
             <span class="n">root_shared_tensordict</span><span class="o">.</span><span class="n">update_</span><span class="p">(</span><span class="n">root_next_td</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">event</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -1578,6 +1644,13 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># don&#39;t send env through pipe</span>
                 <span class="n">child_pipe</span><span class="o">.</span><span class="n">send</span><span class="p">((</span><span class="s2">&quot;_&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">cmd</span><span class="p">,</span> <span class="s2">&quot;done&quot;</span><span class="p">]),</span> <span class="kc">None</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">_update_cuda</span><span class="p">(</span><span class="n">t_dest</span><span class="p">,</span> <span class="n">t_source</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">t_source</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="n">t_dest</span><span class="o">.</span><span class="n">copy_</span><span class="p">(</span><span class="n">t_source</span><span class="o">.</span><span class="n">pin_memory</span><span class="p">(),</span> <span class="n">non_blocking</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span>
 </pre></div>
 
              </article>
@@ -1631,6 +1704,7 @@
          <script src="../../../_static/underscore.js"></script>
          <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
          <script src="../../../_static/doctools.js"></script>
+         <script src="../../../_static/design-tabs.js"></script>
      
 
   

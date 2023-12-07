@@ -33,6 +33,7 @@
   <link rel="stylesheet" href="../../../../_static/sg_gallery-binder.css" type="text/css" />
   <link rel="stylesheet" href="../../../../_static/sg_gallery-dataframe.css" type="text/css" />
   <link rel="stylesheet" href="../../../../_static/sg_gallery-rendered-html.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" type="text/css" />
   <link rel="stylesheet" href="../../../../_static/css/custom.css" type="text/css" />
     <link rel="index" title="Index" href="../../../../genindex.html" />
@@ -382,7 +383,7 @@
 
 <span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">from</span> <span class="nn">tensordict</span> <span class="kn">import</span> <span class="n">TensorDict</span><span class="p">,</span> <span class="n">TensorDictBase</span>
-<span class="kn">from</span> <span class="nn">tensordict.nn</span> <span class="kn">import</span> <span class="n">dispatch</span><span class="p">,</span> <span class="n">make_functional</span><span class="p">,</span> <span class="n">repopulate_module</span><span class="p">,</span> <span class="n">TensorDictModule</span>
+<span class="kn">from</span> <span class="nn">tensordict.nn</span> <span class="kn">import</span> <span class="n">dispatch</span><span class="p">,</span> <span class="n">TensorDictModule</span>
 <span class="kn">from</span> <span class="nn">tensordict.utils</span> <span class="kn">import</span> <span class="n">NestedKey</span>
 <span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">nn</span>
 
@@ -559,11 +560,21 @@
         <span class="n">mixer_network</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">TensorDictModule</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">],</span>
         <span class="o">*</span><span class="p">,</span>
         <span class="n">loss_function</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;l2&quot;</span><span class="p">,</span>
-        <span class="n">delay_value</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">delay_value</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">gamma</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">action_space</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TensorSpec</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">priority_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">delay_value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;You did not provide a delay_value argument for </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s2">. &quot;</span>
+                <span class="s2">&quot;Currently (v0.3) the default for delay_value is `False` but as of &quot;</span>
+                <span class="s2">&quot;v0.4 it will be `True`. Make sure to adapt your code depending &quot;</span>
+                <span class="s2">&quot;on your preferred configuration. &quot;</span>
+                <span class="s2">&quot;To remove this warning, indicate the value of delay_value in your &quot;</span>
+                <span class="s2">&quot;script.&quot;</span>
+            <span class="p">)</span>
+            <span class="n">delay_value</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_in_keys</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_deprecated_ctor_keys</span><span class="p">(</span><span class="n">priority</span><span class="o">=</span><span class="n">priority_key</span><span class="p">)</span>
@@ -582,10 +593,11 @@
             <span class="p">)</span>
 
         <span class="n">global_value_network</span> <span class="o">=</span> <span class="n">SafeSequential</span><span class="p">(</span><span class="n">local_value_network</span><span class="p">,</span> <span class="n">mixer_network</span><span class="p">)</span>
-        <span class="n">params</span> <span class="o">=</span> <span class="n">make_functional</span><span class="p">(</span><span class="n">global_value_network</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">global_value_network</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">global_value_network</span><span class="p">)</span>
-        <span class="n">repopulate_module</span><span class="p">(</span><span class="n">local_value_network</span><span class="p">,</span> <span class="n">params</span><span class="p">[</span><span class="s2">&quot;module&quot;</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">])</span>
-        <span class="n">repopulate_module</span><span class="p">(</span><span class="n">mixer_network</span><span class="p">,</span> <span class="n">params</span><span class="p">[</span><span class="s2">&quot;module&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">])</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">TensorDict</span><span class="o">.</span><span class="n">from_module</span><span class="p">(</span><span class="n">global_value_network</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">params</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_make_meta_params</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;meta&quot;</span><span class="p">)</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">to_module</span><span class="p">(</span><span class="n">global_value_network</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="s2">&quot;global_value_network&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">global_value_network</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">convert_to_functional</span><span class="p">(</span>
             <span class="n">local_value_network</span><span class="p">,</span>
@@ -696,10 +708,10 @@
 <div class="viewcode-block" id="QMixerLoss.forward"><a class="viewcode-back" href="../../../../reference/generated/torchrl.objectives.multiagent.QMixerLoss.html#torchrl.objectives.multiagent.QMixerLoss.forward">[docs]</a>    <span class="nd">@dispatch</span>
     <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tensordict</span><span class="p">:</span> <span class="n">TensorDictBase</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TensorDict</span><span class="p">:</span>
         <span class="n">td_copy</span> <span class="o">=</span> <span class="n">tensordict</span><span class="o">.</span><span class="n">clone</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">local_value_network</span><span class="p">(</span>
-            <span class="n">td_copy</span><span class="p">,</span>
-            <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">local_value_network_params</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">local_value_network_params</span><span class="o">.</span><span class="n">to_module</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">local_value_network</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">local_value_network</span><span class="p">(</span>
+                <span class="n">td_copy</span><span class="p">,</span>
+            <span class="p">)</span>
 
         <span class="n">action</span> <span class="o">=</span> <span class="n">tensordict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tensor_keys</span><span class="o">.</span><span class="n">action</span><span class="p">)</span>
         <span class="n">pred_val</span> <span class="o">=</span> <span class="n">td_copy</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
@@ -716,7 +728,8 @@
             <span class="n">pred_val_index</span> <span class="o">=</span> <span class="p">(</span><span class="n">pred_val</span> <span class="o">*</span> <span class="n">action</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="n">td_copy</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tensor_keys</span><span class="o">.</span><span class="n">local_value</span><span class="p">,</span> <span class="n">pred_val_index</span><span class="p">)</span>  <span class="c1"># [*B, n_agents, 1]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">mixer_network</span><span class="p">(</span><span class="n">td_copy</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mixer_network_params</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">mixer_network_params</span><span class="o">.</span><span class="n">to_module</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mixer_network</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mixer_network</span><span class="p">(</span><span class="n">td_copy</span><span class="p">)</span>
         <span class="n">pred_val_index</span> <span class="o">=</span> <span class="n">td_copy</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tensor_keys</span><span class="o">.</span><span class="n">global_value</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
         <span class="c1"># [*B] this is global and shared among the agents as will be the target</span>
 
@@ -806,6 +819,7 @@
          <script src="../../../../_static/underscore.js"></script>
          <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
          <script src="../../../../_static/doctools.js"></script>
+         <script src="../../../../_static/design-tabs.js"></script>
      
 
   

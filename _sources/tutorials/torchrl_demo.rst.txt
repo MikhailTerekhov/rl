@@ -145,7 +145,7 @@ TensorDict
 
 .. GENERATED FROM PYTHON SOURCE LINES 126-131
 
-.. code-block:: default
+.. code-block:: Python
 
 
 
@@ -165,7 +165,7 @@ Let's create a TensorDict.
 
 .. GENERATED FROM PYTHON SOURCE LINES 138-149
 
-.. code-block:: default
+.. code-block:: Python
 
 
     batch_size = 5
@@ -203,7 +203,7 @@ You can index a TensorDict as well as query keys.
 
 .. GENERATED FROM PYTHON SOURCE LINES 151-155
 
-.. code-block:: default
+.. code-block:: Python
 
 
     print(tensordict[2])
@@ -235,7 +235,7 @@ The following shows how to stack multiple TensorDicts.
 
 .. GENERATED FROM PYTHON SOURCE LINES 157-177
 
-.. code-block:: default
+.. code-block:: Python
 
 
     tensordict1 = TensorDict(
@@ -286,7 +286,7 @@ Here are some other functionalities of TensorDict.
 
 .. GENERATED FROM PYTHON SOURCE LINES 179-204
 
-.. code-block:: default
+.. code-block:: Python
 
 
     print(
@@ -354,7 +354,7 @@ You can create a **nested TensorDict** as well.
 
 .. GENERATED FROM PYTHON SOURCE LINES 206-219
 
-.. code-block:: default
+.. code-block:: Python
 
 
     tensordict = TensorDict(
@@ -400,7 +400,7 @@ Replay buffers
 
 .. GENERATED FROM PYTHON SOURCE LINES 222-225
 
-.. code-block:: default
+.. code-block:: Python
 
 
     from torchrl.data import PrioritizedReplayBuffer, ReplayBuffer
@@ -414,7 +414,7 @@ Replay buffers
 
 .. GENERATED FROM PYTHON SOURCE LINES 226-231
 
-.. code-block:: default
+.. code-block:: Python
 
 
     rb = ReplayBuffer(collate_fn=lambda x: x)
@@ -436,7 +436,7 @@ Replay buffers
 
 .. GENERATED FROM PYTHON SOURCE LINES 232-236
 
-.. code-block:: default
+.. code-block:: Python
 
 
     rb.extend([2, 3])
@@ -457,7 +457,7 @@ Replay buffers
 
 .. GENERATED FROM PYTHON SOURCE LINES 237-243
 
-.. code-block:: default
+.. code-block:: Python
 
 
     rb = PrioritizedReplayBuffer(alpha=0.7, beta=1.1, collate_fn=lambda x: x)
@@ -478,7 +478,7 @@ Here are examples of using a replaybuffer with tensordicts.
 
 .. GENERATED FROM PYTHON SOURCE LINES 245-251
 
-.. code-block:: default
+.. code-block:: Python
 
 
     collate_fn = torch.stack
@@ -501,7 +501,7 @@ Here are examples of using a replaybuffer with tensordicts.
 
 .. GENERATED FROM PYTHON SOURCE LINES 252-258
 
-.. code-block:: default
+.. code-block:: Python
 
 
     rb.extend(TensorDict({"a": torch.randn(2, 3)}, batch_size=[2]))
@@ -539,7 +539,7 @@ Here are examples of using a replaybuffer with tensordicts.
 
 .. GENERATED FROM PYTHON SOURCE LINES 259-268
 
-.. code-block:: default
+.. code-block:: Python
 
 
     torch.manual_seed(0)
@@ -572,7 +572,7 @@ Here are examples of using a replaybuffer with tensordicts.
 
 .. GENERATED FROM PYTHON SOURCE LINES 269-272
 
-.. code-block:: default
+.. code-block:: Python
 
 
     tensordict_sample["index"]
@@ -592,7 +592,7 @@ Here are examples of using a replaybuffer with tensordicts.
 
 .. GENERATED FROM PYTHON SOURCE LINES 273-287
 
-.. code-block:: default
+.. code-block:: Python
 
 
     tensordict_sample["td_error"] = torch.rand(2)
@@ -630,7 +630,7 @@ Envs
 
 .. GENERATED FROM PYTHON SOURCE LINES 290-297
 
-.. code-block:: default
+.. code-block:: Python
 
 
     from torchrl.envs.libs.gym import GymEnv, GymWrapper
@@ -648,7 +648,7 @@ Envs
 
 .. GENERATED FROM PYTHON SOURCE LINES 298-302
 
-.. code-block:: default
+.. code-block:: Python
 
 
     tensordict = env.reset()
@@ -693,7 +693,7 @@ Changing environments config
 
 .. GENERATED FROM PYTHON SOURCE LINES 305-309
 
-.. code-block:: default
+.. code-block:: Python
 
 
     env = GymEnv("Pendulum-v1", frame_skip=3, from_pixels=True, pixels_only=False)
@@ -723,7 +723,7 @@ Changing environments config
 
 .. GENERATED FROM PYTHON SOURCE LINES 310-314
 
-.. code-block:: default
+.. code-block:: Python
 
 
     env.close()
@@ -738,7 +738,7 @@ Changing environments config
 
 .. GENERATED FROM PYTHON SOURCE LINES 315-328
 
-.. code-block:: default
+.. code-block:: Python
 
 
     from torchrl.envs import (
@@ -767,7 +767,7 @@ Transforms
 
 .. GENERATED FROM PYTHON SOURCE LINES 331-345
 
-.. code-block:: default
+.. code-block:: Python
 
 
     from torchrl.envs import (
@@ -792,7 +792,7 @@ Transforms
 
 .. GENERATED FROM PYTHON SOURCE LINES 346-349
 
-.. code-block:: default
+.. code-block:: Python
 
 
     env.reset()
@@ -821,7 +821,7 @@ Transforms
 
 .. GENERATED FROM PYTHON SOURCE LINES 350-354
 
-.. code-block:: default
+.. code-block:: Python
 
 
     print("env: ", env)
@@ -857,7 +857,7 @@ Vectorized Environments
 
 .. GENERATED FROM PYTHON SOURCE LINES 357-370
 
-.. code-block:: default
+.. code-block:: Python
 
 
     from torchrl.envs import ParallelEnv
@@ -897,7 +897,7 @@ Vectorized Environments
 
 .. GENERATED FROM PYTHON SOURCE LINES 371-377
 
-.. code-block:: default
+.. code-block:: Python
 
 
     print(env.action_spec)
@@ -937,7 +937,7 @@ Example of a MLP model:
 
 .. GENERATED FROM PYTHON SOURCE LINES 385-388
 
-.. code-block:: default
+.. code-block:: Python
 
 
     from torch import nn
@@ -951,7 +951,7 @@ Example of a MLP model:
 
 .. GENERATED FROM PYTHON SOURCE LINES 389-397
 
-.. code-block:: default
+.. code-block:: Python
 
 
     from torchrl.modules import ConvNet, MLP
@@ -987,7 +987,7 @@ Example of a CNN model:
 
 .. GENERATED FROM PYTHON SOURCE LINES 399-409
 
-.. code-block:: default
+.. code-block:: Python
 
 
     cnn = ConvNet(
@@ -1026,7 +1026,7 @@ TensorDictModules
 
 .. GENERATED FROM PYTHON SOURCE LINES 412-421
 
-.. code-block:: default
+.. code-block:: Python
 
 
     from tensordict.nn import TensorDictModule
@@ -1063,7 +1063,7 @@ Sequences of Modules
 
 .. GENERATED FROM PYTHON SOURCE LINES 424-439
 
-.. code-block:: default
+.. code-block:: Python
 
 
     from tensordict.nn import TensorDictSequential
@@ -1121,7 +1121,7 @@ Sequences of Modules
 
 .. GENERATED FROM PYTHON SOURCE LINES 440-443
 
-.. code-block:: default
+.. code-block:: Python
 
 
     print(sequence.in_keys, sequence.out_keys)
@@ -1141,7 +1141,7 @@ Sequences of Modules
 
 .. GENERATED FROM PYTHON SOURCE LINES 444-453
 
-.. code-block:: default
+.. code-block:: Python
 
 
     tensordict = TensorDict(
@@ -1175,7 +1175,7 @@ Sequences of Modules
 
 .. GENERATED FROM PYTHON SOURCE LINES 454-462
 
-.. code-block:: default
+.. code-block:: Python
 
 
     tensordict = TensorDict(
@@ -1213,7 +1213,7 @@ Functional Programming (Ensembling / Meta-RL)
 
 .. GENERATED FROM PYTHON SOURCE LINES 465-471
 
-.. code-block:: default
+.. code-block:: Python
 
 
     from tensordict.nn import make_functional
@@ -1236,7 +1236,7 @@ Functional Programming (Ensembling / Meta-RL)
 
 .. GENERATED FROM PYTHON SOURCE LINES 472-475
 
-.. code-block:: default
+.. code-block:: Python
 
 
     sequence(tensordict, params)
@@ -1264,7 +1264,7 @@ Functional Programming (Ensembling / Meta-RL)
 
 .. GENERATED FROM PYTHON SOURCE LINES 476-483
 
-.. code-block:: default
+.. code-block:: Python
 
 
     from torch import vmap
@@ -1301,7 +1301,7 @@ Specialized Classes
 
 .. GENERATED FROM PYTHON SOURCE LINES 486-499
 
-.. code-block:: default
+.. code-block:: Python
 
 
     torch.manual_seed(0)
@@ -1331,7 +1331,7 @@ Specialized Classes
 
 .. GENERATED FROM PYTHON SOURCE LINES 500-504
 
-.. code-block:: default
+.. code-block:: Python
 
 
     tensordict = TensorDict({"obs": torch.randn(5) * 100}, batch_size=[])
@@ -1352,7 +1352,7 @@ Specialized Classes
 
 .. GENERATED FROM PYTHON SOURCE LINES 505-518
 
-.. code-block:: default
+.. code-block:: Python
 
 
     from torchrl.modules import Actor
@@ -1376,7 +1376,7 @@ Specialized Classes
 
 .. GENERATED FROM PYTHON SOURCE LINES 519-538
 
-.. code-block:: default
+.. code-block:: Python
 
 
     # Probabilistic modules
@@ -1420,7 +1420,7 @@ Specialized Classes
 
 .. GENERATED FROM PYTHON SOURCE LINES 539-554
 
-.. code-block:: default
+.. code-block:: Python
 
 
     # returning the log-probability
@@ -1461,7 +1461,7 @@ Specialized Classes
 
 .. GENERATED FROM PYTHON SOURCE LINES 555-574
 
-.. code-block:: default
+.. code-block:: Python
 
 
     # Sampling vs mode / mean
@@ -1510,7 +1510,7 @@ Using Environments and Modules
 
 .. GENERATED FROM PYTHON SOURCE LINES 577-605
 
-.. code-block:: default
+.. code-block:: Python
 
 
     from torchrl.envs.utils import step_mdp
@@ -1575,7 +1575,7 @@ Using Environments and Modules
 
 .. GENERATED FROM PYTHON SOURCE LINES 606-624
 
-.. code-block:: default
+.. code-block:: Python
 
 
     # equivalent
@@ -1636,7 +1636,7 @@ Using Environments and Modules
 
 .. GENERATED FROM PYTHON SOURCE LINES 625-628
 
-.. code-block:: default
+.. code-block:: Python
 
 
     (tensordicts_stack == tensordicts_prealloc).all()
@@ -1656,7 +1656,7 @@ Using Environments and Modules
 
 .. GENERATED FROM PYTHON SOURCE LINES 629-640
 
-.. code-block:: default
+.. code-block:: Python
 
 
     torch.manual_seed(0)
@@ -1683,7 +1683,7 @@ Collectors
 
 .. GENERATED FROM PYTHON SOURCE LINES 643-649
 
-.. code-block:: default
+.. code-block:: Python
 
 
     from torchrl.collectors import MultiaSyncDataCollector, MultiSyncDataCollector
@@ -1704,7 +1704,7 @@ EnvCreator makes sure that we can send a lambda function from process to process
 
 .. GENERATED FROM PYTHON SOURCE LINES 651-658
 
-.. code-block:: default
+.. code-block:: Python
 
 
     parallel_env = ParallelEnv(3, EnvCreator(lambda: GymEnv("Pendulum-v1")))
@@ -1726,7 +1726,7 @@ Sync data collector
 
 .. GENERATED FROM PYTHON SOURCE LINES 660-673
 
-.. code-block:: default
+.. code-block:: Python
 
 
     devices = ["cpu", "cpu"]
@@ -1750,7 +1750,7 @@ Sync data collector
 
 .. GENERATED FROM PYTHON SOURCE LINES 674-683
 
-.. code-block:: default
+.. code-block:: Python
 
 
     for i, d in enumerate(collector):
@@ -1802,7 +1802,7 @@ Sync data collector
 
 .. GENERATED FROM PYTHON SOURCE LINES 684-706
 
-.. code-block:: default
+.. code-block:: Python
 
 
     # async data collector: keeps working while you update your model
@@ -1872,7 +1872,7 @@ Objectives
 
 .. GENERATED FROM PYTHON SOURCE LINES 709-730
 
-.. code-block:: default
+.. code-block:: Python
 
 
     # TorchRL delivers meta-RL compatible loss functions
@@ -1904,7 +1904,7 @@ Objectives
 
 .. GENERATED FROM PYTHON SOURCE LINES 731-747
 
-.. code-block:: default
+.. code-block:: Python
 
 
     tensordict = TensorDict(
@@ -1931,7 +1931,7 @@ Objectives
 
 .. GENERATED FROM PYTHON SOURCE LINES 748-751
 
-.. code-block:: default
+.. code-block:: Python
 
 
     print(loss_td)
@@ -1962,7 +1962,7 @@ Objectives
 
 .. GENERATED FROM PYTHON SOURCE LINES 752-755
 
-.. code-block:: default
+.. code-block:: Python
 
 
     print(tensordict)
@@ -2027,9 +2027,9 @@ The library is on PyPI: *pip install torchrl*
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (4 minutes 21.532 seconds)
+   **Total running time of the script:** (3 minutes 55.956 seconds)
 
-**Estimated memory usage:**  15 MB
+**Estimated memory usage:**  16 MB
 
 
 .. _sphx_glr_download_tutorials_torchrl_demo.py:
@@ -2038,16 +2038,13 @@ The library is on PyPI: *pip install torchrl*
 
   .. container:: sphx-glr-footer sphx-glr-footer-example
 
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
-
+      :download:`Download Jupyter notebook: torchrl_demo.ipynb <torchrl_demo.ipynb>`
 
     .. container:: sphx-glr-download sphx-glr-download-python
 
       :download:`Download Python source code: torchrl_demo.py <torchrl_demo.py>`
-
-    .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-      :download:`Download Jupyter notebook: torchrl_demo.ipynb <torchrl_demo.ipynb>`
 
 
 .. only:: html

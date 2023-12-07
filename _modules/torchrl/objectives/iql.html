@@ -33,6 +33,7 @@
   <link rel="stylesheet" href="../../../_static/sg_gallery-binder.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/sg_gallery-dataframe.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/sg_gallery-rendered-html.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -384,25 +385,15 @@
 
 <span class="kn">from</span> <span class="nn">torchrl.modules</span> <span class="kn">import</span> <span class="n">ProbabilisticActor</span>
 <span class="kn">from</span> <span class="nn">torchrl.objectives.common</span> <span class="kn">import</span> <span class="n">LossModule</span>
+
 <span class="kn">from</span> <span class="nn">torchrl.objectives.utils</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">_GAMMA_LMBDA_DEPREC_WARNING</span><span class="p">,</span>
+    <span class="n">_vmap_func</span><span class="p">,</span>
     <span class="n">default_value_kwargs</span><span class="p">,</span>
     <span class="n">distance_loss</span><span class="p">,</span>
     <span class="n">ValueEstimators</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">torchrl.objectives.value</span> <span class="kn">import</span> <span class="n">TD0Estimator</span><span class="p">,</span> <span class="n">TD1Estimator</span><span class="p">,</span> <span class="n">TDLambdaEstimator</span>
-
-<span class="k">try</span><span class="p">:</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">vmap</span>
-    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">functorch</span> <span class="kn">import</span> <span class="n">vmap</span>
-
-    <span class="n">_has_functorch</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">err</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-<span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-    <span class="n">_has_functorch</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="n">FUNCTORCH_ERROR</span> <span class="o">=</span> <span class="n">err</span>
 
 
 <div class="viewcode-block" id="IQLLoss"><a class="viewcode-back" href="../../../reference/generated/torchrl.objectives.IQLLoss.html#torchrl.objectives.IQLLoss">[docs]</a><span class="k">class</span> <span class="nc">IQLLoss</span><span class="p">(</span><span class="n">LossModule</span><span class="p">):</span>
@@ -618,8 +609,6 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_in_keys</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_out_keys</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">_has_functorch</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s2">&quot;Failed to import functorch.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">FUNCTORCH_ERROR</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_deprecated_ctor_keys</span><span class="p">(</span><span class="n">priority</span><span class="o">=</span><span class="n">priority_key</span><span class="p">)</span>
 
@@ -632,7 +621,6 @@
             <span class="n">actor_network</span><span class="p">,</span>
             <span class="s2">&quot;actor_network&quot;</span><span class="p">,</span>
             <span class="n">create_target_params</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-            <span class="n">funs_to_decorate</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;forward&quot;</span><span class="p">,</span> <span class="s2">&quot;get_dist&quot;</span><span class="p">],</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">separate_losses</span><span class="p">:</span>
             <span class="c1"># we want to make sure there are no duplicates in the params: the</span>
@@ -669,7 +657,7 @@
         <span class="k">if</span> <span class="n">gamma</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">_GAMMA_LMBDA_DEPREC_WARNING</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span> <span class="o">=</span> <span class="n">gamma</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_vmap_qvalue_networkN0</span> <span class="o">=</span> <span class="n">vmap</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">qvalue_network</span><span class="p">,</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vmap_qvalue_networkN0</span> <span class="o">=</span> <span class="n">_vmap_func</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">qvalue_network</span><span class="p">,</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">device</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">:</span>
@@ -757,10 +745,8 @@
 
     <span class="k">def</span> <span class="nf">_loss_actor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tensordict</span><span class="p">:</span> <span class="n">TensorDictBase</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
         <span class="c1"># KL loss</span>
-        <span class="n">dist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">actor_network</span><span class="o">.</span><span class="n">get_dist</span><span class="p">(</span>
-            <span class="n">tensordict</span><span class="p">,</span>
-            <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">actor_network_params</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">actor_network_params</span><span class="o">.</span><span class="n">to_module</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">actor_network</span><span class="p">):</span>
+            <span class="n">dist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">actor_network</span><span class="o">.</span><span class="n">get_dist</span><span class="p">(</span><span class="n">tensordict</span><span class="p">)</span>
 
         <span class="n">log_prob</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">log_prob</span><span class="p">(</span><span class="n">tensordict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">tensor_keys</span><span class="o">.</span><span class="n">action</span><span class="p">])</span>
 
@@ -776,10 +762,8 @@
         <span class="c1"># state value</span>
         <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
             <span class="n">td_copy</span> <span class="o">=</span> <span class="n">tensordict</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">value_network</span><span class="o">.</span><span class="n">in_keys</span><span class="p">)</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">value_network</span><span class="p">(</span>
-                <span class="n">td_copy</span><span class="p">,</span>
-                <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">value_network_params</span><span class="p">,</span>
-            <span class="p">)</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">value_network_params</span><span class="o">.</span><span class="n">to_module</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value_network</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">value_network</span><span class="p">(</span><span class="n">td_copy</span><span class="p">)</span>
             <span class="n">value</span> <span class="o">=</span> <span class="n">td_copy</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tensor_keys</span><span class="o">.</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span>
                 <span class="o">-</span><span class="mi">1</span>
             <span class="p">)</span>  <span class="c1"># assert has no gradient</span>
@@ -798,10 +782,8 @@
         <span class="n">min_q</span> <span class="o">=</span> <span class="n">td_q</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tensor_keys</span><span class="o">.</span><span class="n">state_action_value</span><span class="p">)</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
         <span class="c1"># state value</span>
         <span class="n">td_copy</span> <span class="o">=</span> <span class="n">tensordict</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">value_network</span><span class="o">.</span><span class="n">in_keys</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">value_network</span><span class="p">(</span>
-            <span class="n">td_copy</span><span class="p">,</span>
-            <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">value_network_params</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">value_network_params</span><span class="o">.</span><span class="n">to_module</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value_network</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">value_network</span><span class="p">(</span><span class="n">td_copy</span><span class="p">)</span>
         <span class="n">value</span> <span class="o">=</span> <span class="n">td_copy</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tensor_keys</span><span class="o">.</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">value_loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss_value_diff</span><span class="p">(</span><span class="n">min_q</span> <span class="o">-</span> <span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">expectile</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">value_loss</span>
@@ -925,6 +907,7 @@
          <script src="../../../_static/underscore.js"></script>
          <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
          <script src="../../../_static/doctools.js"></script>
+         <script src="../../../_static/design-tabs.js"></script>
      
 
   

@@ -34,12 +34,13 @@
   <link rel="stylesheet" href="../../_static/sg_gallery-binder.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/sg_gallery-dataframe.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/sg_gallery-rendered-html.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="LSTMModule" href="torchrl.modules.LSTMModule.html" />
-    <link rel="prev" title="DuelingCnnDQNet" href="torchrl.modules.DuelingCnnDQNet.html" />
+    <link rel="next" title="LSTMCell" href="torchrl.modules.LSTMCell.html" />
+    <link rel="prev" title="GRU" href="torchrl.modules.GRU.html" />
   <!-- Google Analytics -->
   
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-117752657-2"></script>
@@ -411,6 +412,7 @@ Default: <code class="docutils literal notranslate"><span class="pre">True</span
 GRU layer except the last layer, with dropout probability equal to
 <code class="xref py py-attr docutils literal notranslate"><span class="pre">dropout</span></code>. Default: 0</p></li>
 <li><p><strong>proj_size</strong> – If <code class="docutils literal notranslate"><span class="pre">&gt;</span> <span class="pre">0</span></code>, will use GRU with projections of corresponding size. Default: 0</p></li>
+<li><p><strong>python_based</strong> – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, will use a full Python implementation of the GRU cell. Default: <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
 </ul>
 </dd>
 <dt class="field-even">Keyword Arguments<span class="colon">:</span></dt>
@@ -573,10 +575,10 @@ in various parts of the code (inference vs training):</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="torchrl.modules.LSTMModule.html" class="btn btn-neutral float-right" title="LSTMModule" accesskey="n" rel="next">Next <img src="../../_static/images/chevron-right-orange.svg" class="next-page"></a>
+        <a href="torchrl.modules.LSTMCell.html" class="btn btn-neutral float-right" title="LSTMCell" accesskey="n" rel="next">Next <img src="../../_static/images/chevron-right-orange.svg" class="next-page"></a>
       
       
-        <a href="torchrl.modules.DuelingCnnDQNet.html" class="btn btn-neutral" title="DuelingCnnDQNet" accesskey="p" rel="prev"><img src="../../_static/images/chevron-right-orange.svg" class="previous-page"> Previous</a>
+        <a href="torchrl.modules.GRU.html" class="btn btn-neutral" title="GRU" accesskey="p" rel="prev"><img src="../../_static/images/chevron-right-orange.svg" class="previous-page"> Previous</a>
       
     </div>
   
@@ -629,6 +631,7 @@ in various parts of the code (inference vs training):</p>
          <script src="../../_static/underscore.js"></script>
          <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
          <script src="../../_static/doctools.js"></script>
+         <script src="../../_static/design-tabs.js"></script>
      
 
   

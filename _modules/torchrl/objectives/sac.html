@@ -33,6 +33,7 @@
   <link rel="stylesheet" href="../../../_static/sg_gallery-binder.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/sg_gallery-dataframe.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/sg_gallery-rendered-html.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -382,7 +383,7 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">torch</span>
 
-<span class="kn">from</span> <span class="nn">tensordict.nn</span> <span class="kn">import</span> <span class="n">dispatch</span><span class="p">,</span> <span class="n">make_functional</span><span class="p">,</span> <span class="n">TensorDictModule</span>
+<span class="kn">from</span> <span class="nn">tensordict.nn</span> <span class="kn">import</span> <span class="n">dispatch</span><span class="p">,</span> <span class="n">TensorDictModule</span>
 <span class="kn">from</span> <span class="nn">tensordict.tensordict</span> <span class="kn">import</span> <span class="n">TensorDict</span><span class="p">,</span> <span class="n">TensorDictBase</span>
 <span class="kn">from</span> <span class="nn">tensordict.utils</span> <span class="kn">import</span> <span class="n">NestedKey</span>
 <span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">Tensor</span>
@@ -392,26 +393,16 @@
 <span class="kn">from</span> <span class="nn">torchrl.modules</span> <span class="kn">import</span> <span class="n">ProbabilisticActor</span>
 <span class="kn">from</span> <span class="nn">torchrl.modules.tensordict_module.actors</span> <span class="kn">import</span> <span class="n">ActorCriticWrapper</span>
 <span class="kn">from</span> <span class="nn">torchrl.objectives.common</span> <span class="kn">import</span> <span class="n">LossModule</span>
+
 <span class="kn">from</span> <span class="nn">torchrl.objectives.utils</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">_cache_values</span><span class="p">,</span>
     <span class="n">_GAMMA_LMBDA_DEPREC_WARNING</span><span class="p">,</span>
+    <span class="n">_vmap_func</span><span class="p">,</span>
     <span class="n">default_value_kwargs</span><span class="p">,</span>
     <span class="n">distance_loss</span><span class="p">,</span>
     <span class="n">ValueEstimators</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">torchrl.objectives.value</span> <span class="kn">import</span> <span class="n">TD0Estimator</span><span class="p">,</span> <span class="n">TD1Estimator</span><span class="p">,</span> <span class="n">TDLambdaEstimator</span>
-
-<span class="k">try</span><span class="p">:</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">vmap</span>
-    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">functorch</span> <span class="kn">import</span> <span class="n">vmap</span>
-
-    <span class="n">_has_functorch</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">err</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-<span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-    <span class="n">_has_functorch</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="n">FUNCTORCH_ERROR</span> <span class="o">=</span> <span class="n">err</span>
 
 
 <span class="k">def</span> <span class="nf">_delezify</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
@@ -663,8 +654,6 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_in_keys</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_out_keys</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">_has_functorch</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s2">&quot;Failed to import functorch.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">FUNCTORCH_ERROR</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_deprecated_ctor_keys</span><span class="p">(</span><span class="n">priority_key</span><span class="o">=</span><span class="n">priority_key</span><span class="p">)</span>
 
@@ -752,16 +741,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_target_entropy</span> <span class="o">=</span> <span class="n">target_entropy</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_action_spec</span> <span class="o">=</span> <span class="n">action_spec</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_version</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">actor_critic</span> <span class="o">=</span> <span class="n">ActorCriticWrapper</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="s2">&quot;actor_critic&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ActorCriticWrapper</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">actor_network</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">value_network</span>
             <span class="p">)</span>
-            <span class="n">make_functional</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">actor_critic</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">gamma</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">_GAMMA_LMBDA_DEPREC_WARNING</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span> <span class="o">=</span> <span class="n">gamma</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_vmap_qnetworkN0</span> <span class="o">=</span> <span class="n">vmap</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">qvalue_network</span><span class="p">,</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vmap_qnetworkN0</span> <span class="o">=</span> <span class="n">_vmap_func</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">qvalue_network</span><span class="p">,</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_version</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_vmap_qnetwork00</span> <span class="o">=</span> <span class="n">vmap</span><span class="p">(</span><span class="n">qvalue_network</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_vmap_qnetwork00</span> <span class="o">=</span> <span class="n">_vmap_func</span><span class="p">(</span><span class="n">qvalue_network</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">target_entropy_buffer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -959,11 +947,10 @@
     <span class="k">def</span> <span class="nf">_actor_loss</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">tensordict</span><span class="p">:</span> <span class="n">TensorDictBase</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">]]:</span>
-        <span class="k">with</span> <span class="n">set_exploration_type</span><span class="p">(</span><span class="n">ExplorationType</span><span class="o">.</span><span class="n">RANDOM</span><span class="p">):</span>
-            <span class="n">dist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">actor_network</span><span class="o">.</span><span class="n">get_dist</span><span class="p">(</span>
-                <span class="n">tensordict</span><span class="p">,</span>
-                <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">actor_network_params</span><span class="p">,</span>
-            <span class="p">)</span>
+        <span class="k">with</span> <span class="n">set_exploration_type</span><span class="p">(</span>
+            <span class="n">ExplorationType</span><span class="o">.</span><span class="n">RANDOM</span>
+        <span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">actor_network_params</span><span class="o">.</span><span class="n">to_module</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">actor_network</span><span class="p">):</span>
+            <span class="n">dist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">actor_network</span><span class="o">.</span><span class="n">get_dist</span><span class="p">(</span><span class="n">tensordict</span><span class="p">)</span>
             <span class="n">a_reparm</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">rsample</span><span class="p">()</span>
         <span class="n">log_prob</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">log_prob</span><span class="p">(</span><span class="n">a_reparm</span><span class="p">)</span>
 
@@ -1050,11 +1037,11 @@
         <span class="n">tensordict</span> <span class="o">=</span> <span class="n">tensordict</span><span class="o">.</span><span class="n">clone</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
         <span class="c1"># get actions and log-probs</span>
         <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
-            <span class="k">with</span> <span class="n">set_exploration_type</span><span class="p">(</span><span class="n">ExplorationType</span><span class="o">.</span><span class="n">RANDOM</span><span class="p">):</span>
+            <span class="k">with</span> <span class="n">set_exploration_type</span><span class="p">(</span>
+                <span class="n">ExplorationType</span><span class="o">.</span><span class="n">RANDOM</span>
+            <span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">actor_network_params</span><span class="o">.</span><span class="n">to_module</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">actor_network</span><span class="p">):</span>
                 <span class="n">next_tensordict</span> <span class="o">=</span> <span class="n">tensordict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;next&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">clone</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
-                <span class="n">next_dist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">actor_network</span><span class="o">.</span><span class="n">get_dist</span><span class="p">(</span>
-                    <span class="n">next_tensordict</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">actor_network_params</span>
-                <span class="p">)</span>
+                <span class="n">next_dist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">actor_network</span><span class="o">.</span><span class="n">get_dist</span><span class="p">(</span><span class="n">next_tensordict</span><span class="p">)</span>
                 <span class="n">next_action</span> <span class="o">=</span> <span class="n">next_dist</span><span class="o">.</span><span class="n">rsample</span><span class="p">()</span>
                 <span class="n">next_tensordict</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tensor_keys</span><span class="o">.</span><span class="n">action</span><span class="p">,</span> <span class="n">next_action</span><span class="p">)</span>
                 <span class="n">next_sample_log_prob</span> <span class="o">=</span> <span class="n">next_dist</span><span class="o">.</span><span class="n">log_prob</span><span class="p">(</span><span class="n">next_action</span><span class="p">)</span>
@@ -1106,16 +1093,11 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">]]:</span>
         <span class="c1"># value loss</span>
         <span class="n">td_copy</span> <span class="o">=</span> <span class="n">tensordict</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">value_network</span><span class="o">.</span><span class="n">in_keys</span><span class="p">)</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">value_network</span><span class="p">(</span>
-            <span class="n">td_copy</span><span class="p">,</span>
-            <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">value_network_params</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">value_network_params</span><span class="o">.</span><span class="n">to_module</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value_network</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">value_network</span><span class="p">(</span><span class="n">td_copy</span><span class="p">)</span>
         <span class="n">pred_val</span> <span class="o">=</span> <span class="n">td_copy</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tensor_keys</span><span class="o">.</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-
-        <span class="n">action_dist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">actor_network</span><span class="o">.</span><span class="n">get_dist</span><span class="p">(</span>
-            <span class="n">td_copy</span><span class="p">,</span>
-            <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">target_actor_network_params</span><span class="p">,</span>
-        <span class="p">)</span>  <span class="c1"># resample an action</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_actor_network_params</span><span class="o">.</span><span class="n">to_module</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">actor_network</span><span class="p">):</span>
+            <span class="n">action_dist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">actor_network</span><span class="o">.</span><span class="n">get_dist</span><span class="p">(</span><span class="n">td_copy</span><span class="p">)</span>  <span class="c1"># resample an action</span>
         <span class="n">action</span> <span class="o">=</span> <span class="n">action_dist</span><span class="o">.</span><span class="n">rsample</span><span class="p">()</span>
 
         <span class="n">td_copy</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tensor_keys</span><span class="o">.</span><span class="n">action</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -1361,8 +1343,6 @@
         <span class="n">separate_losses</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_in_keys</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">_has_functorch</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s2">&quot;Failed to import functorch.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">FUNCTORCH_ERROR</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_deprecated_ctor_keys</span><span class="p">(</span><span class="n">priority_key</span><span class="o">=</span><span class="n">priority_key</span><span class="p">)</span>
 
@@ -1440,7 +1420,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span>
             <span class="s2">&quot;target_entropy&quot;</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">target_entropy</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_vmap_qnetworkN0</span> <span class="o">=</span> <span class="n">vmap</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">qvalue_network</span><span class="p">,</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vmap_qnetworkN0</span> <span class="o">=</span> <span class="n">_vmap_func</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">qvalue_network</span><span class="p">,</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">_forward_value_estimator_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value_estimator</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -1524,9 +1504,8 @@
             <span class="n">next_tensordict</span> <span class="o">=</span> <span class="n">tensordict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;next&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">clone</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
 
             <span class="c1"># get probs and log probs for actions computed from &quot;next&quot;</span>
-            <span class="n">next_dist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">actor_network</span><span class="o">.</span><span class="n">get_dist</span><span class="p">(</span>
-                <span class="n">next_tensordict</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">actor_network_params</span>
-            <span class="p">)</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">actor_network_params</span><span class="o">.</span><span class="n">to_module</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">actor_network</span><span class="p">):</span>
+                <span class="n">next_dist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">actor_network</span><span class="o">.</span><span class="n">get_dist</span><span class="p">(</span><span class="n">next_tensordict</span><span class="p">)</span>
             <span class="n">next_prob</span> <span class="o">=</span> <span class="n">next_dist</span><span class="o">.</span><span class="n">probs</span>
             <span class="n">next_log_prob</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">next_prob</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">1e-8</span><span class="p">,</span> <span class="n">next_prob</span><span class="p">))</span>
 
@@ -1591,10 +1570,8 @@
         <span class="bp">self</span><span class="p">,</span> <span class="n">tensordict</span><span class="p">:</span> <span class="n">TensorDictBase</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">]]:</span>
         <span class="c1"># get probs and log probs for actions</span>
-        <span class="n">dist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">actor_network</span><span class="o">.</span><span class="n">get_dist</span><span class="p">(</span>
-            <span class="n">tensordict</span><span class="p">,</span>
-            <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">actor_network_params</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">actor_network_params</span><span class="o">.</span><span class="n">to_module</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">actor_network</span><span class="p">):</span>
+            <span class="n">dist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">actor_network</span><span class="o">.</span><span class="n">get_dist</span><span class="p">(</span><span class="n">tensordict</span><span class="p">)</span>
         <span class="n">prob</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">probs</span>
         <span class="n">log_prob</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">prob</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">1e-8</span><span class="p">,</span> <span class="n">prob</span><span class="p">))</span>
 
@@ -1729,6 +1706,7 @@
          <script src="../../../_static/underscore.js"></script>
          <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
          <script src="../../../_static/doctools.js"></script>
+         <script src="../../../_static/design-tabs.js"></script>
      
 
   

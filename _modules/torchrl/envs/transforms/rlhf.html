@@ -33,6 +33,7 @@
   <link rel="stylesheet" href="../../../../_static/sg_gallery-binder.css" type="text/css" />
   <link rel="stylesheet" href="../../../../_static/sg_gallery-dataframe.css" type="text/css" />
   <link rel="stylesheet" href="../../../../_static/sg_gallery-rendered-html.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" type="text/css" />
   <link rel="stylesheet" href="../../../../_static/css/custom.css" type="text/css" />
     <link rel="index" title="Index" href="../../../../genindex.html" />
@@ -375,18 +376,13 @@
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span><span class="p">,</span> <span class="n">deepcopy</span>
 
 <span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">from</span> <span class="nn">tensordict</span> <span class="kn">import</span> <span class="n">TensorDictBase</span><span class="p">,</span> <span class="n">unravel_key</span>
-<span class="kn">from</span> <span class="nn">tensordict.nn</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">make_functional</span><span class="p">,</span>
-    <span class="n">ProbabilisticTensorDictModule</span><span class="p">,</span>
-    <span class="n">repopulate_module</span><span class="p">,</span>
-    <span class="n">TensorDictParams</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">tensordict</span> <span class="kn">import</span> <span class="n">TensorDict</span><span class="p">,</span> <span class="n">TensorDictBase</span><span class="p">,</span> <span class="n">unravel_key</span>
+<span class="kn">from</span> <span class="nn">tensordict.nn</span> <span class="kn">import</span> <span class="n">ProbabilisticTensorDictModule</span><span class="p">,</span> <span class="n">TensorDictParams</span>
 <span class="kn">from</span> <span class="nn">tensordict.utils</span> <span class="kn">import</span> <span class="n">is_seq_of_nested_key</span>
 <span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">nn</span>
 <span class="kn">from</span> <span class="nn">torchrl.data.tensor_specs</span> <span class="kn">import</span> <span class="n">CompositeSpec</span><span class="p">,</span> <span class="n">UnboundedContinuousTensorSpec</span>
 <span class="kn">from</span> <span class="nn">torchrl.envs.transforms.transforms</span> <span class="kn">import</span> <span class="n">Transform</span>
-<span class="kn">from</span> <span class="nn">torchrl.envs.transforms.utils</span> <span class="kn">import</span> <span class="n">_set_missing_tolerance</span>
+<span class="kn">from</span> <span class="nn">torchrl.envs.transforms.utils</span> <span class="kn">import</span> <span class="n">_set_missing_tolerance</span><span class="p">,</span> <span class="n">_stateless_param</span>
 
 
 <div class="viewcode-block" id="KLRewardTransform"><a class="viewcode-back" href="../../../../reference/generated/torchrl.envs.transforms.KLRewardTransform.html#torchrl.envs.transforms.KLRewardTransform">[docs]</a><span class="k">class</span> <span class="nc">KLRewardTransform</span><span class="p">(</span><span class="n">Transform</span><span class="p">):</span>
@@ -486,11 +482,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">in_keys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_keys</span> <span class="o">+</span> <span class="n">actor</span><span class="o">.</span><span class="n">in_keys</span>
 
         <span class="c1"># check that the model has parameters</span>
-        <span class="n">params</span> <span class="o">=</span> <span class="n">make_functional</span><span class="p">(</span>
-            <span class="n">actor</span><span class="p">,</span> <span class="n">keep_params</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">funs_to_decorate</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;forward&quot;</span><span class="p">,</span> <span class="s2">&quot;get_dist&quot;</span><span class="p">]</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">functional_actor</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">actor</span><span class="p">)</span>
-        <span class="n">repopulate_module</span><span class="p">(</span><span class="n">actor</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">TensorDict</span><span class="o">.</span><span class="n">from_module</span><span class="p">(</span><span class="n">actor</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">params</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">_stateless_param</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;meta&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_module</span><span class="p">(</span><span class="n">actor</span><span class="p">):</span>
+            <span class="c1"># copy a stateless actor</span>
+            <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="s2">&quot;functional_actor&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">actor</span><span class="p">)</span>
         <span class="c1"># we need to register these params as buffer to have `to` and similar</span>
         <span class="c1"># methods work properly</span>
 
@@ -540,9 +535,8 @@
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="p">(</span><span class="s2">&quot;reward&quot;</span><span class="p">,)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">tensordict</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">out_keys</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">reward_spec</span><span class="o">.</span><span class="n">zero</span><span class="p">())</span>
             <span class="k">return</span> <span class="n">tensordict</span>
-        <span class="n">dist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">functional_actor</span><span class="o">.</span><span class="n">get_dist</span><span class="p">(</span>
-            <span class="n">tensordict</span><span class="o">.</span><span class="n">clone</span><span class="p">(</span><span class="kc">False</span><span class="p">),</span> <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">frozen_params</span>
-        <span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">frozen_params</span><span class="o">.</span><span class="n">to_module</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">functional_actor</span><span class="p">):</span>
+            <span class="n">dist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">functional_actor</span><span class="o">.</span><span class="n">get_dist</span><span class="p">(</span><span class="n">tensordict</span><span class="o">.</span><span class="n">clone</span><span class="p">(</span><span class="kc">False</span><span class="p">))</span>
         <span class="c1"># get the log_prob given the original model</span>
         <span class="n">log_prob</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">log_prob</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
         <span class="n">reward_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -648,6 +642,7 @@
          <script src="../../../../_static/underscore.js"></script>
          <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
          <script src="../../../../_static/doctools.js"></script>
+         <script src="../../../../_static/design-tabs.js"></script>
      
 
   

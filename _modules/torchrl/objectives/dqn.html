@@ -33,6 +33,7 @@
   <link rel="stylesheet" href="../../../_static/sg_gallery-binder.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/sg_gallery-dataframe.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/sg_gallery-rendered-html.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -414,7 +415,9 @@
 <span class="sd">            Defaults to &quot;l2&quot;.</span>
 <span class="sd">        delay_value (bool, optional): whether to duplicate the value network</span>
 <span class="sd">            into a new target value network to</span>
-<span class="sd">            create a double DQN. Default is ``False``.</span>
+<span class="sd">            create a DQN with a target network. Default is ``False``.</span>
+<span class="sd">        double_dqn (bool, optional): whether or not to use Double DQN, as described in</span>
+<span class="sd">            https://arxiv.org/abs/1509.06461. Defaults to ``False``.</span>
 <span class="sd">        action_space (str or TensorSpec, optional): Action space. Must be one of</span>
 <span class="sd">            ``&quot;one-hot&quot;``, ``&quot;mult_one_hot&quot;``, ``&quot;binary&quot;`` or ``&quot;categorical&quot;``,</span>
 <span class="sd">            or an instance of the corresponding specs (:class:`torchrl.data.OneHotDiscreteTensorSpec`,</span>
@@ -534,13 +537,27 @@
         <span class="n">value_network</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">QValueActor</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">],</span>
         <span class="o">*</span><span class="p">,</span>
         <span class="n">loss_function</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;l2&quot;</span><span class="p">,</span>
-        <span class="n">delay_value</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">delay_value</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">double_dqn</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">gamma</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">action_space</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TensorSpec</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">priority_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">delay_value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;You did not provide a delay_value argument for </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s2">. &quot;</span>
+                <span class="s2">&quot;Currently (v0.3) the default for delay_value is `False` but as of &quot;</span>
+                <span class="s2">&quot;v0.4 it will be `True`. Make sure to adapt your code depending &quot;</span>
+                <span class="s2">&quot;on your preferred configuration. &quot;</span>
+                <span class="s2">&quot;To remove this warning, indicate the value of delay_value in your &quot;</span>
+                <span class="s2">&quot;script.&quot;</span>
+            <span class="p">)</span>
+            <span class="n">delay_value</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_in_keys</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">double_dqn</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">delay_value</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;double_dqn=True requires delay_value=True.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">double_dqn</span> <span class="o">=</span> <span class="n">double_dqn</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_deprecated_ctor_keys</span><span class="p">(</span><span class="n">priority</span><span class="o">=</span><span class="n">priority_key</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">delay_value</span> <span class="o">=</span> <span class="n">delay_value</span>
         <span class="n">value_network</span> <span class="o">=</span> <span class="n">ensure_tensordict_compatible</span><span class="p">(</span>
@@ -659,16 +676,14 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">td_copy</span> <span class="o">=</span> <span class="n">tensordict</span><span class="o">.</span><span class="n">clone</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">value_network</span><span class="p">(</span>
-            <span class="n">td_copy</span><span class="p">,</span>
-            <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">value_network_params</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">value_network_params</span><span class="o">.</span><span class="n">to_module</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value_network</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">value_network</span><span class="p">(</span><span class="n">td_copy</span><span class="p">)</span>
 
         <span class="n">action</span> <span class="o">=</span> <span class="n">tensordict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tensor_keys</span><span class="o">.</span><span class="n">action</span><span class="p">)</span>
         <span class="n">pred_val</span> <span class="o">=</span> <span class="n">td_copy</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tensor_keys</span><span class="o">.</span><span class="n">action_value</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">action_space</span> <span class="o">==</span> <span class="s2">&quot;categorical&quot;</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">action</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">pred_val</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">action</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="n">pred_val</span><span class="o">.</span><span class="n">ndim</span><span class="p">:</span>
                 <span class="c1"># unsqueeze the action if it lacks on trailing singleton dim</span>
                 <span class="n">action</span> <span class="o">=</span> <span class="n">action</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
             <span class="n">pred_val_index</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">pred_val</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">action</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
@@ -676,8 +691,32 @@
             <span class="n">action</span> <span class="o">=</span> <span class="n">action</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
             <span class="n">pred_val_index</span> <span class="o">=</span> <span class="p">(</span><span class="n">pred_val</span> <span class="o">*</span> <span class="n">action</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
 
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">double_dqn</span><span class="p">:</span>
+            <span class="n">step_td</span> <span class="o">=</span> <span class="n">step_mdp</span><span class="p">(</span><span class="n">td_copy</span><span class="p">,</span> <span class="n">keep_other</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">step_td_copy</span> <span class="o">=</span> <span class="n">step_td</span><span class="o">.</span><span class="n">clone</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+            <span class="c1"># Use online network to compute the action</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">value_network_params</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">to_module</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value_network</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">value_network</span><span class="p">(</span><span class="n">step_td</span><span class="p">)</span>
+                <span class="n">next_action</span> <span class="o">=</span> <span class="n">step_td</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tensor_keys</span><span class="o">.</span><span class="n">action</span><span class="p">)</span>
+
+            <span class="c1"># Use target network to compute the values</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_value_network_params</span><span class="o">.</span><span class="n">to_module</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value_network</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">value_network</span><span class="p">(</span><span class="n">step_td_copy</span><span class="p">)</span>
+                <span class="n">next_pred_val</span> <span class="o">=</span> <span class="n">step_td_copy</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tensor_keys</span><span class="o">.</span><span class="n">action_value</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">action_space</span> <span class="o">==</span> <span class="s2">&quot;categorical&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">next_action</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="n">next_pred_val</span><span class="o">.</span><span class="n">ndim</span><span class="p">:</span>
+                    <span class="c1"># unsqueeze the action if it lacks on trailing singleton dim</span>
+                    <span class="n">next_action</span> <span class="o">=</span> <span class="n">next_action</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">next_value</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">next_pred_val</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">next_action</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">next_value</span> <span class="o">=</span> <span class="p">(</span><span class="n">next_pred_val</span> <span class="o">*</span> <span class="n">next_action</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">next_value</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">target_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value_estimator</span><span class="o">.</span><span class="n">value_estimate</span><span class="p">(</span>
-            <span class="n">td_copy</span><span class="p">,</span> <span class="n">target_params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">target_value_network_params</span>
+            <span class="n">td_copy</span><span class="p">,</span>
+            <span class="n">target_params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">target_value_network_params</span><span class="p">,</span>
+            <span class="n">next_value</span><span class="o">=</span><span class="n">next_value</span><span class="p">,</span>
         <span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
 
         <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
@@ -741,9 +780,9 @@
 <span class="sd">                Defaults to ``&quot;td_error&quot;``.</span>
 <span class="sd">            reward (NestedKey): The input tensordict key where the reward is expected.</span>
 <span class="sd">                Defaults to ``&quot;reward&quot;``.</span>
-<span class="sd">            done (NestedKey): The input tensordict key where the the flag if a trajectory is done is expected.</span>
+<span class="sd">            done (NestedKey): The input tensordict key where the flag if a trajectory is done is expected.</span>
 <span class="sd">                Defaults to ``&quot;done&quot;``.</span>
-<span class="sd">            terminated (NestedKey): The input tensordict key where the the flag if a trajectory is done is expected.</span>
+<span class="sd">            terminated (NestedKey): The input tensordict key where the flag if a trajectory is done is expected.</span>
 <span class="sd">                Defaults to ``&quot;terminated&quot;``.</span>
 <span class="sd">            steps_to_next_obs (NestedKey): The input tensordict key where the steps_to_next_obs is exptected.</span>
 <span class="sd">                Defaults to ``&quot;steps_to_next_obs&quot;``.</span>
@@ -764,9 +803,19 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">value_network</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">DistributionalQValueActor</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">],</span>
         <span class="n">gamma</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-        <span class="n">delay_value</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">delay_value</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">priority_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
+        <span class="k">if</span> <span class="n">delay_value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;You did not provide a delay_value argument for </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s2">. &quot;</span>
+                <span class="s2">&quot;Currently (v0.3) the default for delay_value is `False` but as of &quot;</span>
+                <span class="s2">&quot;v0.4 it will be `True`. Make sure to adapt your code depending &quot;</span>
+                <span class="s2">&quot;on your preferred configuration. &quot;</span>
+                <span class="s2">&quot;To remove this warning, indicate the value of delay_value in your &quot;</span>
+                <span class="s2">&quot;script.&quot;</span>
+            <span class="p">)</span>
+            <span class="n">delay_value</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_deprecated_ctor_keys</span><span class="p">(</span><span class="n">priority</span><span class="o">=</span><span class="n">priority_key</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">&quot;gamma&quot;</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">gamma</span><span class="p">))</span>
@@ -833,10 +882,10 @@
         <span class="c1"># Calculate current state probabilities (online network noise already</span>
         <span class="c1"># sampled)</span>
         <span class="n">td_clone</span> <span class="o">=</span> <span class="n">tensordict</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">value_network</span><span class="p">(</span>
-            <span class="n">td_clone</span><span class="p">,</span>
-            <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">value_network_params</span><span class="p">,</span>
-        <span class="p">)</span>  <span class="c1"># Log probabilities log p(s_t, ·; θonline)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">value_network_params</span><span class="o">.</span><span class="n">to_module</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value_network</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">value_network</span><span class="p">(</span>
+                <span class="n">td_clone</span><span class="p">,</span>
+            <span class="p">)</span>  <span class="c1"># Log probabilities log p(s_t, ·; θonline)</span>
         <span class="n">action_log_softmax</span> <span class="o">=</span> <span class="n">td_clone</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tensor_keys</span><span class="o">.</span><span class="n">action_value</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">action_space</span> <span class="o">==</span> <span class="s2">&quot;categorical&quot;</span><span class="p">:</span>
@@ -846,24 +895,18 @@
                 <span class="n">action</span><span class="p">,</span> <span class="n">action_log_softmax</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">atoms</span>
             <span class="p">)</span>
 
-        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">value_network_params</span><span class="o">.</span><span class="n">to_module</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value_network</span><span class="p">):</span>
             <span class="c1"># Calculate nth next state probabilities</span>
             <span class="n">next_td</span> <span class="o">=</span> <span class="n">step_mdp</span><span class="p">(</span><span class="n">tensordict</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">value_network</span><span class="p">(</span>
-                <span class="n">next_td</span><span class="p">,</span>
-                <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">value_network_params</span><span class="p">,</span>
-            <span class="p">)</span>  <span class="c1"># Probabilities p(s_t+n, ·; θonline)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">value_network</span><span class="p">(</span><span class="n">next_td</span><span class="p">)</span>  <span class="c1"># Probabilities p(s_t+n, ·; θonline)</span>
 
             <span class="n">next_td_action</span> <span class="o">=</span> <span class="n">next_td</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tensor_keys</span><span class="o">.</span><span class="n">action</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">action_space</span> <span class="o">==</span> <span class="s2">&quot;categorical&quot;</span><span class="p">:</span>
                 <span class="n">argmax_indices_ns</span> <span class="o">=</span> <span class="n">next_td_action</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">argmax_indices_ns</span> <span class="o">=</span> <span class="n">next_td_action</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># one-hot encoding</span>
-
-            <span class="bp">self</span><span class="o">.</span><span class="n">value_network</span><span class="p">(</span>
-                <span class="n">next_td</span><span class="p">,</span>
-                <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">target_value_network_params</span><span class="p">,</span>
-            <span class="p">)</span>  <span class="c1"># Probabilities p(s_t+n, ·; θtarget)</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_value_network_params</span><span class="o">.</span><span class="n">to_module</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value_network</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">value_network</span><span class="p">(</span><span class="n">next_td</span><span class="p">)</span>  <span class="c1"># Probabilities p(s_t+n, ·; θtarget)</span>
             <span class="n">pns</span> <span class="o">=</span> <span class="n">next_td</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tensor_keys</span><span class="o">.</span><span class="n">action_value</span><span class="p">)</span><span class="o">.</span><span class="n">exp</span><span class="p">()</span>
             <span class="c1"># Double-Q probabilities</span>
             <span class="c1"># p(s_t+n, argmax_a[(z, p(s_t+n, a; θonline))]; θtarget)</span>
@@ -1003,6 +1046,7 @@
          <script src="../../../_static/underscore.js"></script>
          <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
          <script src="../../../_static/doctools.js"></script>
+         <script src="../../../_static/design-tabs.js"></script>
      
 
   

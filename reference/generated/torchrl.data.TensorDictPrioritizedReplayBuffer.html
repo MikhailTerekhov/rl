@@ -34,6 +34,7 @@
   <link rel="stylesheet" href="../../_static/sg_gallery-binder.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/sg_gallery-dataframe.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/sg_gallery-rendered-html.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -520,6 +521,48 @@ tensordicts (ie stored trajectories). Can be one of “max”, “min”,
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="torchrl.data.TensorDictPrioritizedReplayBuffer.dumps">
+<span class="sig-name descname"><span class="pre">dumps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchrl.data.TensorDictPrioritizedReplayBuffer.dumps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saves the replay buffer on disk at the specified path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>Path</em><em> or </em><em>str</em>) – path where to save the replay buffer.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">tempfile</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">tqdm</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchrl.data</span> <span class="kn">import</span> <span class="n">LazyMemmapStorage</span><span class="p">,</span> <span class="n">TensorDictReplayBuffer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchrl.data.replay_buffers.samplers</span> <span class="kn">import</span> <span class="n">PrioritizedSampler</span><span class="p">,</span> <span class="n">RandomSampler</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">tensordict</span> <span class="kn">import</span> <span class="n">TensorDict</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Build and populate the replay buffer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">S</span> <span class="o">=</span> <span class="mi">1_000_000</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sampler</span> <span class="o">=</span> <span class="n">PrioritizedSampler</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># sampler = RandomSampler()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">storage</span> <span class="o">=</span> <span class="n">LazyMemmapStorage</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rb</span> <span class="o">=</span> <span class="n">TensorDictReplayBuffer</span><span class="p">(</span><span class="n">storage</span><span class="o">=</span><span class="n">storage</span><span class="p">,</span> <span class="n">sampler</span><span class="o">=</span><span class="n">sampler</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="o">.</span><span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">)):</span>
+<span class="gp">... </span>    <span class="n">td</span> <span class="o">=</span> <span class="n">TensorDict</span><span class="p">({</span><span class="s2">&quot;obs&quot;</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="s2">&quot;next&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;obs&quot;</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">)},</span> <span class="s2">&quot;td_error&quot;</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="p">)},</span> <span class="p">[</span><span class="mi">100</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="n">rb</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">td</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">sample</span> <span class="o">=</span> <span class="n">rb</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="mi">32</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">rb</span><span class="o">.</span><span class="n">update_tensordict_priority</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># save and load the buffer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tmpdir</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">rb</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="gp">... </span>    <span class="n">sampler</span> <span class="o">=</span> <span class="n">PrioritizedSampler</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="c1"># sampler = RandomSampler()</span>
+<span class="gp">... </span>    <span class="n">storage</span> <span class="o">=</span> <span class="n">LazyMemmapStorage</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">rb_load</span> <span class="o">=</span> <span class="n">TensorDictReplayBuffer</span><span class="p">(</span><span class="n">storage</span><span class="o">=</span><span class="n">storage</span><span class="p">,</span> <span class="n">sampler</span><span class="o">=</span><span class="n">sampler</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">rb_load</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">rb</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">rb_load</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="torchrl.data.TensorDictPrioritizedReplayBuffer.empty">
 <span class="sig-name descname"><span class="pre">empty</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#torchrl.data.TensorDictPrioritizedReplayBuffer.empty" title="Permalink to this definition">¶</a></dt>
 <dd><p>Empties the replay buffer and reset cursor to 0.</p>
@@ -554,6 +597,19 @@ buffer.</p>
 </ul>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torchrl.data.TensorDictPrioritizedReplayBuffer.loads">
+<span class="sig-name descname"><span class="pre">loads</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchrl.data.TensorDictPrioritizedReplayBuffer.loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads a replay buffer state at the given path.</p>
+<p>The buffer should have matching components and be saved using <a class="reference internal" href="#torchrl.data.TensorDictPrioritizedReplayBuffer.dumps" title="torchrl.data.TensorDictPrioritizedReplayBuffer.dumps"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dumps()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>Path</em><em> or </em><em>str</em>) – path where the replay buffer was saved.</p>
+</dd>
+</dl>
+<p>See <a class="reference internal" href="#torchrl.data.TensorDictPrioritizedReplayBuffer.dumps" title="torchrl.data.TensorDictPrioritizedReplayBuffer.dumps"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dumps()</span></code></a> for more info.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -646,6 +702,7 @@ A tuple containing this tensordict and info if return_info flag is set to True.<
          <script src="../../_static/underscore.js"></script>
          <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
          <script src="../../_static/doctools.js"></script>
+         <script src="../../_static/design-tabs.js"></script>
      
 
   

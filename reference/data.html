@@ -34,6 +34,7 @@
   <link rel="stylesheet" href="../_static/sg_gallery-binder.css" type="text/css" />
   <link rel="stylesheet" href="../_static/sg_gallery-dataframe.css" type="text/css" />
   <link rel="stylesheet" href="../_static/sg_gallery-rendered-html.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" type="text/css" />
   <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
@@ -464,6 +465,45 @@ The following mean sampling latency improvements over using ListStorage were fou
 </tr>
 </tbody>
 </table>
+<section id="sharing-replay-buffers-across-processes">
+<h3>Sharing replay buffers across processes<a class="headerlink" href="#sharing-replay-buffers-across-processes" title="Permalink to this heading">¶</a></h3>
+<p>Replay buffers can be shared between processes as long as their components are
+sharable. This feature allows for multiple processes to collect data and populate a shared
+replay buffer collaboratively, rather than centralizing the data on the main process
+which can incur some data transmission overhead.</p>
+<p>Sharable storages include <a class="reference internal" href="generated/torchrl.data.replay_buffers.LazyMemmapStorage.html#torchrl.data.replay_buffers.LazyMemmapStorage" title="torchrl.data.replay_buffers.storages.LazyMemmapStorage"><code class="xref py py-class docutils literal notranslate"><span class="pre">LazyMemmapStorage</span></code></a>
+or any subclass of <a class="reference internal" href="generated/torchrl.data.replay_buffers.TensorStorage.html#torchrl.data.replay_buffers.TensorStorage" title="torchrl.data.replay_buffers.storages.TensorStorage"><code class="xref py py-class docutils literal notranslate"><span class="pre">TensorStorage</span></code></a>
+as long as they are instantiated and their content is stored as memory-mapped
+tensors. Stateful writers such as <a class="reference internal" href="generated/torchrl.data.replay_buffers.TensorDictRoundRobinWriter.html#torchrl.data.replay_buffers.TensorDictRoundRobinWriter" title="torchrl.data.replay_buffers.writers.TensorDictRoundRobinWriter"><code class="xref py py-class docutils literal notranslate"><span class="pre">TensorDictRoundRobinWriter</span></code></a>
+are currently not sharable, and the same goes for stateful samplers such as
+<a class="reference internal" href="generated/torchrl.data.replay_buffers.PrioritizedSampler.html#torchrl.data.replay_buffers.PrioritizedSampler" title="torchrl.data.replay_buffers.samplers.PrioritizedSampler"><code class="xref py py-class docutils literal notranslate"><span class="pre">PrioritizedSampler</span></code></a>.</p>
+<p>A shared replay buffer can be read and extended on any process that has access
+to it, as the following example shows:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchrl.data</span> <span class="kn">import</span> <span class="n">TensorDictReplayBuffer</span><span class="p">,</span> <span class="n">LazyMemmapStorage</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">multiprocessing</span> <span class="k">as</span> <span class="n">mp</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">tensordict</span> <span class="kn">import</span> <span class="n">TensorDict</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">worker</span><span class="p">(</span><span class="n">rb</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="c1"># Updates the replay buffer with new data</span>
+<span class="gp">... </span>    <span class="n">td</span> <span class="o">=</span> <span class="n">TensorDict</span><span class="p">({</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">10</span><span class="p">)},</span> <span class="p">[</span><span class="mi">10</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="n">rb</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">td</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">rb</span> <span class="o">=</span> <span class="n">TensorDictReplayBuffer</span><span class="p">(</span><span class="n">storage</span><span class="o">=</span><span class="n">LazyMemmapStorage</span><span class="p">(</span><span class="mi">21</span><span class="p">))</span>
+<span class="gp">... </span>    <span class="n">td</span> <span class="o">=</span> <span class="n">TensorDict</span><span class="p">({</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">10</span><span class="p">)},</span> <span class="p">[</span><span class="mi">10</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="n">rb</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">td</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="gp">... </span>    <span class="n">proc</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">Process</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">worker</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">rb</span><span class="p">,))</span>
+<span class="gp">... </span>    <span class="n">proc</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="n">proc</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="c1"># the replay buffer now has a length of 20, since the worker updated it</span>
+<span class="gp">... </span>    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">rb</span><span class="p">)</span> <span class="o">==</span> <span class="mi">20</span>
+<span class="gp">... </span>    <span class="k">assert</span> <span class="p">(</span><span class="n">rb</span><span class="p">[</span><span class="s2">&quot;_data&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">][:</span><span class="mi">10</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>  <span class="c1"># data from main process</span>
+<span class="gp">... </span>    <span class="k">assert</span> <span class="p">(</span><span class="n">rb</span><span class="p">[</span><span class="s2">&quot;_data&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">][</span><span class="mi">10</span><span class="p">:</span><span class="mi">20</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>  <span class="c1"># data from remote process</span>
+</pre></div>
+</div>
+</section>
 <section id="storing-trajectories">
 <h3>Storing trajectories<a class="headerlink" href="#storing-trajectories" title="Permalink to this heading">¶</a></h3>
 <p>It is not too difficult to store trajectories in the replay buffer.
@@ -476,6 +516,30 @@ to diversify learning or make the sampling more efficient.
 To do this, we provide a custom <code class="xref py py-class docutils literal notranslate"><span class="pre">Transform</span></code> class named
 <code class="xref py py-class docutils literal notranslate"><span class="pre">RandomCropTensorDict</span></code>. Here is an example of how this class
 can be used:</p>
+</section>
+<section id="checkpointing-replay-buffers">
+<h3>Checkpointing Replay Buffers<a class="headerlink" href="#checkpointing-replay-buffers" title="Permalink to this heading">¶</a></h3>
+<p>Each component of the replay buffer can potentially be stateful and, as such,
+require a dedicated way of being serialized.
+Our replay buffer enjoys two separate APIs for saving their state on disk:
+<a class="reference internal" href="generated/torchrl.data.ReplayBuffer.html#torchrl.data.ReplayBuffer.dumps" title="torchrl.data.ReplayBuffer.dumps"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dumps()</span></code></a> and <a class="reference internal" href="generated/torchrl.data.ReplayBuffer.html#torchrl.data.ReplayBuffer.loads" title="torchrl.data.ReplayBuffer.loads"><code class="xref py py-meth docutils literal notranslate"><span class="pre">loads()</span></code></a> will save the
+data of each component except transforms (storage, writer, sampler) using memory-mapped
+tensors and json files for the metadata. This will work across all classes except
+<a class="reference internal" href="generated/torchrl.data.replay_buffers.ListStorage.html#torchrl.data.replay_buffers.ListStorage" title="torchrl.data.replay_buffers.storages.ListStorage"><code class="xref py py-class docutils literal notranslate"><span class="pre">ListStorage</span></code></a>, which content
+cannot be anticipated (and as such does not comply with memory-mapped data
+structures such as those that can be found in the tensordict library).
+This API guarantees that a buffer that is saved and then loaded back will be in
+the exact same state, whether we look at the status of its sampler (eg, priority trees)
+its writer (eg, max writer heaps) or its storage.
+Under the hood, <a class="reference internal" href="generated/torchrl.data.ReplayBuffer.html#torchrl.data.ReplayBuffer.dumps" title="torchrl.data.ReplayBuffer.dumps"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dumps()</span></code></a> will just call the public
+<cite>dumps</cite> method in a specific folder for each of its components (except transforms
+which we don’t assume to be serializable using memory-mapped tensors in general).</p>
+<p>Whenever saving data using <a class="reference internal" href="generated/torchrl.data.ReplayBuffer.html#torchrl.data.ReplayBuffer.dumps" title="torchrl.data.ReplayBuffer.dumps"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dumps()</span></code></a> is not possible, an
+alternative way is to use <code class="xref py py-meth docutils literal notranslate"><span class="pre">state_dict()</span></code>, which returns a data
+structure that can be saved using <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.save.html#torch.save" title="(in PyTorch v2.1)"><code class="xref py py-func docutils literal notranslate"><span class="pre">torch.save()</span></code></a> and loaded using <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.load.html#torch.load" title="(in PyTorch v2.1)"><code class="xref py py-func docutils literal notranslate"><span class="pre">torch.load()</span></code></a>
+before calling <code class="xref py py-meth docutils literal notranslate"><span class="pre">load_state_dict()</span></code>. The drawback
+of this method is that it will struggle to save big data structures, which is a
+common setting when using replay buffers.</p>
 </section>
 </section>
 <section id="datasets">
@@ -498,7 +562,10 @@ the latest wheels are not published on PyPI. For OpenML, <a class="reference ext
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/torchrl.data.datasets.D4RLExperienceReplay.html#torchrl.data.datasets.D4RLExperienceReplay" title="torchrl.data.datasets.D4RLExperienceReplay"><code class="xref py py-obj docutils literal notranslate"><span class="pre">D4RLExperienceReplay</span></code></a>(name, batch_size[, ...])</p></td>
 <td><p>An Experience replay class for D4RL.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/torchrl.data.datasets.OpenMLExperienceReplay.html#torchrl.data.datasets.OpenMLExperienceReplay" title="torchrl.data.datasets.OpenMLExperienceReplay"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OpenMLExperienceReplay</span></code></a>(name, batch_size[, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/torchrl.data.datasets.MinariExperienceReplay.html#torchrl.data.datasets.MinariExperienceReplay" title="torchrl.data.datasets.MinariExperienceReplay"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MinariExperienceReplay</span></code></a>(dataset_id, batch_size, *)</p></td>
+<td><p>Minari Experience replay dataset.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/torchrl.data.datasets.OpenMLExperienceReplay.html#torchrl.data.datasets.OpenMLExperienceReplay" title="torchrl.data.datasets.OpenMLExperienceReplay"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OpenMLExperienceReplay</span></code></a>(name, batch_size[, ...])</p></td>
 <td><p>An experience replay for OpenML data.</p></td>
 </tr>
 </tbody>
@@ -660,7 +727,9 @@ efficient sampling.</p>
 <li><a class="reference internal" href="#">torchrl.data package</a><ul>
 <li><a class="reference internal" href="#replay-buffers">Replay Buffers</a></li>
 <li><a class="reference internal" href="#composable-replay-buffers">Composable Replay Buffers</a><ul>
+<li><a class="reference internal" href="#sharing-replay-buffers-across-processes">Sharing replay buffers across processes</a></li>
 <li><a class="reference internal" href="#storing-trajectories">Storing trajectories</a></li>
+<li><a class="reference internal" href="#checkpointing-replay-buffers">Checkpointing Replay Buffers</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#datasets">Datasets</a></li>
@@ -689,6 +758,7 @@ efficient sampling.</p>
          <script src="../_static/underscore.js"></script>
          <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
          <script src="../_static/doctools.js"></script>
+         <script src="../_static/design-tabs.js"></script>
      
 
   

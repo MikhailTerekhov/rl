@@ -33,6 +33,7 @@
   <link rel="stylesheet" href="../../../../_static/sg_gallery-binder.css" type="text/css" />
   <link rel="stylesheet" href="../../../../_static/sg_gallery-dataframe.css" type="text/css" />
   <link rel="stylesheet" href="../../../../_static/sg_gallery-rendered-html.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" type="text/css" />
   <link rel="stylesheet" href="../../../../_static/css/custom.css" type="text/css" />
     <link rel="index" title="Index" href="../../../../genindex.html" />
@@ -415,22 +416,8 @@
     <span class="kn">import</span> <span class="nn">vmas</span>
 
     <span class="n">all_scenarios</span> <span class="o">=</span> <span class="n">vmas</span><span class="o">.</span><span class="n">scenarios</span> <span class="o">+</span> <span class="n">vmas</span><span class="o">.</span><span class="n">mpe_scenarios</span> <span class="o">+</span> <span class="n">vmas</span><span class="o">.</span><span class="n">debug_scenarios</span>
-    <span class="c1"># TODO heterogenous spaces</span>
-    <span class="c1"># For now torchrl does not support heterogenous spaces (Tple(Box)) so many OpenAI MPE scenarios do not work</span>
-    <span class="n">heterogenous_spaces_scenarios</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="s2">&quot;simple_adversary&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;simple_crypto&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;simple_push&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;simple_speaker_listener&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;simple_tag&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;simple_world_comm&quot;</span><span class="p">,</span>
-    <span class="p">]</span>
 
-    <span class="k">return</span> <span class="p">[</span>
-        <span class="n">scenario</span>
-        <span class="k">for</span> <span class="n">scenario</span> <span class="ow">in</span> <span class="n">all_scenarios</span>
-        <span class="k">if</span> <span class="n">scenario</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">heterogenous_spaces_scenarios</span>
-    <span class="p">]</span>
+    <span class="k">return</span> <span class="n">all_scenarios</span>
 
 
 <span class="nd">@set_gym_backend</span><span class="p">(</span><span class="s2">&quot;gym&quot;</span><span class="p">)</span>
@@ -1160,6 +1147,7 @@
          <script src="../../../../_static/underscore.js"></script>
          <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
          <script src="../../../../_static/doctools.js"></script>
+         <script src="../../../../_static/design-tabs.js"></script>
      
 
   

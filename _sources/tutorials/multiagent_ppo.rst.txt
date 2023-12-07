@@ -131,7 +131,7 @@ Let's import our dependencies
 
 .. GENERATED FROM PYTHON SOURCE LINES 114-145
 
-.. code-block:: default
+.. code-block:: Python
 
 
     # Torch
@@ -185,7 +185,7 @@ You can tune some of these values to adjust the computational requirements.
 
 .. GENERATED FROM PYTHON SOURCE LINES 155-177
 
-.. code-block:: default
+.. code-block:: Python
 
 
     # Devices
@@ -262,7 +262,7 @@ We will also use ``num_vmas_envs`` vectorized environments, to leverage batch si
 
 .. GENERATED FROM PYTHON SOURCE LINES 219-237
 
-.. code-block:: default
+.. code-block:: Python
 
 
     max_steps = 100  # Episode steps before done
@@ -311,7 +311,7 @@ There are four specs to look at:
 
 .. GENERATED FROM PYTHON SOURCE LINES 255-261
 
-.. code-block:: default
+.. code-block:: Python
 
 
     print("action_spec:", env.full_action_spec)
@@ -413,7 +413,7 @@ This info will be useful in order to tell all other TorchRL components where to 
 
 .. GENERATED FROM PYTHON SOURCE LINES 281-287
 
-.. code-block:: default
+.. code-block:: Python
 
 
     print("action_keys:", env.action_keys)
@@ -454,7 +454,7 @@ of transforms it contains.
 
 .. GENERATED FROM PYTHON SOURCE LINES 301-309
 
-.. code-block:: default
+.. code-block:: Python
 
 
 
@@ -479,7 +479,7 @@ specs. If no error is raised, we can be confident that the specs are properly de
 
 .. GENERATED FROM PYTHON SOURCE LINES 313-315
 
-.. code-block:: default
+.. code-block:: Python
 
     check_env_specs(env)
 
@@ -509,7 +509,7 @@ domain.
 
 .. GENERATED FROM PYTHON SOURCE LINES 324-328
 
-.. code-block:: default
+.. code-block:: Python
 
     n_rollout_steps = 5
     rollout = env.rollout(n_rollout_steps)
@@ -641,7 +641,7 @@ multiple agents, with much customisation available.
 
 .. GENERATED FROM PYTHON SOURCE LINES 391-411
 
-.. code-block:: default
+.. code-block:: Python
 
 
     share_parameters_policy = True
@@ -684,7 +684,7 @@ additional ``n_agents`` dimension.
 
 .. GENERATED FROM PYTHON SOURCE LINES 421-427
 
-.. code-block:: default
+.. code-block:: Python
 
     policy_module = TensorDictModule(
         policy_net,
@@ -716,7 +716,7 @@ the :class:`TensorDictModule` above) has to end with the
 
 .. GENERATED FROM PYTHON SOURCE LINES 440-455
 
-.. code-block:: default
+.. code-block:: Python
 
 
     policy = ProbabilisticActor(
@@ -778,7 +778,7 @@ all the values along the ``n_agents`` dimension will be identical.
 
 .. GENERATED FROM PYTHON SOURCE LINES 489-511
 
-.. code-block:: default
+.. code-block:: Python
 
 
     share_parameters_critic = True
@@ -822,7 +822,7 @@ components as in single-agent learning. Isn't this fantastic?**
 
 .. GENERATED FROM PYTHON SOURCE LINES 520-523
 
-.. code-block:: default
+.. code-block:: Python
 
     print("Running policy:", policy(env.reset()))
     print("Running value:", critic(env.reset()))
@@ -905,7 +905,7 @@ with the only difference that it will auto reset done states until the desired f
 
 .. GENERATED FROM PYTHON SOURCE LINES 536-545
 
-.. code-block:: default
+.. code-block:: Python
 
     collector = SyncDataCollector(
         env,
@@ -940,7 +940,7 @@ makes it easy for us to build the inner training loop in a reproducible way.
 
 .. GENERATED FROM PYTHON SOURCE LINES 558-567
 
-.. code-block:: default
+.. code-block:: Python
 
 
     replay_buffer = ReplayBuffer(
@@ -984,7 +984,7 @@ return the policy and value losses.
 
 .. GENERATED FROM PYTHON SOURCE LINES 589-615
 
-.. code-block:: default
+.. code-block:: Python
 
 
     loss_module = ClipPPOLoss(
@@ -1041,7 +1041,7 @@ The steps include:
 
 .. GENERATED FROM PYTHON SOURCE LINES 633-693
 
-.. code-block:: default
+.. code-block:: Python
 
 
     pbar = tqdm(total=n_iters, desc="episode_reward_mean = 0")
@@ -1111,7 +1111,7 @@ The steps include:
 
  .. code-block:: none
 
-    episode_reward_mean = 0:   0%|          | 0/10 [00:00<?, ?it/s]    episode_reward_mean = -0.3641679584980011:  10%|█         | 1/10 [00:08<01:13,  8.15s/it]    episode_reward_mean = 0.4940122067928314:  20%|██        | 2/10 [00:16<01:05,  8.15s/it]     episode_reward_mean = 1.0600677728652954:  30%|███       | 3/10 [00:24<00:56,  8.13s/it]    episode_reward_mean = 1.4344534873962402:  40%|████      | 4/10 [00:32<00:48,  8.13s/it]    episode_reward_mean = 2.1100871562957764:  50%|█████     | 5/10 [00:40<00:40,  8.13s/it]    episode_reward_mean = 2.304917335510254:  60%|██████    | 6/10 [00:48<00:32,  8.13s/it]     episode_reward_mean = 2.6943857669830322:  70%|███████   | 7/10 [00:56<00:24,  8.15s/it]    episode_reward_mean = 2.871443748474121:  80%|████████  | 8/10 [01:05<00:16,  8.25s/it]     episode_reward_mean = 2.8500826358795166:  90%|█████████ | 9/10 [01:14<00:08,  8.38s/it]    episode_reward_mean = 2.759843587875366: 100%|██████████| 10/10 [01:23<00:00,  8.61s/it]
+    episode_reward_mean = 0:   0%|          | 0/10 [00:00<?, ?it/s]    episode_reward_mean = -0.3641679584980011:  10%|█         | 1/10 [00:07<01:08,  7.57s/it]    episode_reward_mean = 0.4940122067928314:  20%|██        | 2/10 [00:15<01:00,  7.55s/it]     episode_reward_mean = 1.0600677728652954:  30%|███       | 3/10 [00:22<00:52,  7.56s/it]    episode_reward_mean = 1.4344534873962402:  40%|████      | 4/10 [00:30<00:45,  7.57s/it]    episode_reward_mean = 2.1100871562957764:  50%|█████     | 5/10 [00:37<00:37,  7.56s/it]    episode_reward_mean = 2.304917335510254:  60%|██████    | 6/10 [00:45<00:30,  7.57s/it]     episode_reward_mean = 2.6943857669830322:  70%|███████   | 7/10 [00:52<00:22,  7.58s/it]    episode_reward_mean = 2.871443748474121:  80%|████████  | 8/10 [01:00<00:15,  7.66s/it]     episode_reward_mean = 2.8500826358795166:  90%|█████████ | 9/10 [01:08<00:07,  7.79s/it]    episode_reward_mean = 2.759843587875366: 100%|██████████| 10/10 [01:17<00:00,  7.99s/it]
 
 
 
@@ -1127,7 +1127,7 @@ To make training last longer, increase the ``n_iters`` hyperparameter.
 
 .. GENERATED FROM PYTHON SOURCE LINES 701-707
 
-.. code-block:: default
+.. code-block:: Python
 
     plt.plot(episode_reward_mean_list)
     plt.xlabel("Training iterations")
@@ -1239,9 +1239,9 @@ Here are a few videos of some possible scenarios you can try in VMAS.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (2 minutes 26.760 seconds)
+   **Total running time of the script:** (2 minutes 14.657 seconds)
 
-**Estimated memory usage:**  12 MB
+**Estimated memory usage:**  37 MB
 
 
 .. _sphx_glr_download_tutorials_multiagent_ppo.py:
@@ -1250,16 +1250,13 @@ Here are a few videos of some possible scenarios you can try in VMAS.
 
   .. container:: sphx-glr-footer sphx-glr-footer-example
 
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
-
+      :download:`Download Jupyter notebook: multiagent_ppo.ipynb <multiagent_ppo.ipynb>`
 
     .. container:: sphx-glr-download sphx-glr-download-python
 
       :download:`Download Python source code: multiagent_ppo.py <multiagent_ppo.py>`
-
-    .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-      :download:`Download Jupyter notebook: multiagent_ppo.ipynb <multiagent_ppo.ipynb>`
 
 
 .. only:: html

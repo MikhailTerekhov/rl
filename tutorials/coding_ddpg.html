@@ -34,6 +34,7 @@
   <link rel="stylesheet" href="../_static/sg_gallery-binder.css" type="text/css" />
   <link rel="stylesheet" href="../_static/sg_gallery-dataframe.css" type="text/css" />
   <link rel="stylesheet" href="../_static/sg_gallery-rendered-html.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" type="text/css" />
   <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
@@ -420,12 +421,12 @@ this algorithm.</p>
 </div>
 <section id="imports-and-setup">
 <h2>Imports and setup<a class="headerlink" href="#imports-and-setup" title="Permalink to this heading">¶</a></h2>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch.cuda</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch.cuda</span>
 <span class="kn">import</span> <span class="nn">tqdm</span>
 </pre></div>
 </div>
 <p>We will execute the policy on cuda if available</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://pytorch.org/docs/stable/tensor_attributes.html#torch.device" title="torch.device" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">device</span></a> <span class="o">=</span> <span class="p">(</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://pytorch.org/docs/stable/tensor_attributes.html#torch.device" title="torch.device" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">device</span></a> <span class="o">=</span> <span class="p">(</span>
     <a href="https://pytorch.org/docs/stable/tensor_attributes.html#torch.device" title="torch.device" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class"><span class="n">torch</span><span class="o">.</span><span class="n">device</span></a><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span> <span class="k">if</span> <a href="https://pytorch.org/docs/stable/generated/torch.cuda.device_count.html#torch.cuda.device_count" title="torch.cuda.device_count" class="sphx-glr-backref-module-torch-cuda sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">device_count</span></a><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <a href="https://pytorch.org/docs/stable/tensor_attributes.html#torch.device" title="torch.device" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class"><span class="n">torch</span><span class="o">.</span><span class="n">device</span></a><span class="p">(</span><span class="s2">&quot;cuda:0&quot;</span><span class="p">)</span>
 <span class="p">)</span>
 </pre></div>
@@ -511,7 +512,7 @@ for instance) the <code class="docutils literal notranslate"><span class="pre">t
 accessible but this will just return a <strong>detached</strong> version of the
 actor parameters.</p>
 <p>Later, we will see how the target parameters should be updated in torchrl.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tensordict.nn</span> <span class="kn">import</span> <a href="https://pytorch.org/tensordict/reference/generated/tensordict.nn.TensorDictModule.html#tensordict.nn.TensorDictModule" title="tensordict.nn.TensorDictModule" class="sphx-glr-backref-module-tensordict-nn sphx-glr-backref-type-py-class"><span class="n">TensorDictModule</span></a>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tensordict.nn</span> <span class="kn">import</span> <a href="https://pytorch.org/tensordict/reference/generated/tensordict.nn.TensorDictModule.html#tensordict.nn.TensorDictModule" title="tensordict.nn.TensorDictModule" class="sphx-glr-backref-module-tensordict-nn sphx-glr-backref-type-py-class"><span class="n">TensorDictModule</span></a>
 
 
 <span class="k">def</span> <span class="nf">_init</span><span class="p">(</span>
@@ -558,7 +559,7 @@ TorchRL makes it easy to use one or the other estimator via the
 pointers to all the value estimators implemented. Let us define the default
 value function here. We will take the simplest version (TD(0)), and show later
 on how this can be changed.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">torchrl.objectives.utils</span> <span class="kn">import</span> <span class="n">ValueEstimators</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">torchrl.objectives.utils</span> <span class="kn">import</span> <span class="n">ValueEstimators</span>
 
 <span class="n">default_value_estimator</span> <span class="o">=</span> <span class="n">ValueEstimators</span><span class="o">.</span><span class="n">TD0</span>
 </pre></div>
@@ -566,7 +567,7 @@ on how this can be changed.</p>
 <p>We also need to give some instructions to DDPG on how to build the value
 estimator, depending on the user query. Depending on the estimator provided,
 we will build the corresponding module to be used at train time:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">torchrl.objectives.utils</span> <span class="kn">import</span> <span class="n">default_value_kwargs</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">torchrl.objectives.utils</span> <span class="kn">import</span> <span class="n">default_value_kwargs</span>
 <span class="kn">from</span> <span class="nn">torchrl.objectives.value</span> <span class="kn">import</span> <a href="https://pytorch.org/tensordict/reference/generated/tensordict.nn.TensorDictModuleBase.html#tensordict.nn.TensorDictModuleBase" title="tensordict.nn.TensorDictModuleBase" class="sphx-glr-backref-module-tensordict-nn sphx-glr-backref-type-py-class"><span class="n">TD0Estimator</span></a><span class="p">,</span> <a href="https://pytorch.org/tensordict/reference/generated/tensordict.nn.TensorDictModuleBase.html#tensordict.nn.TensorDictModuleBase" title="tensordict.nn.TensorDictModuleBase" class="sphx-glr-backref-module-tensordict-nn sphx-glr-backref-type-py-class"><span class="n">TD1Estimator</span></a><span class="p">,</span> <a href="https://pytorch.org/tensordict/reference/generated/tensordict.nn.TensorDictModuleBase.html#tensordict.nn.TensorDictModuleBase" title="tensordict.nn.TensorDictModuleBase" class="sphx-glr-backref-module-tensordict-nn sphx-glr-backref-type-py-class"><span class="n">TDLambdaEstimator</span></a>
 
 
@@ -610,7 +611,7 @@ the actor weights to maximise this value.</p>
 of the graph, otherwise the actor and value loss will be mixed up.
 For this, the <a class="reference internal" href="../reference/generated/torchrl.objectives.hold_out_params.html#torchrl.objectives.hold_out_params" title="torchrl.objectives.utils.hold_out_params"><code class="xref py py-func docutils literal notranslate"><span class="pre">hold_out_params()</span></code></a> function
 can be used.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">_loss_actor</span><span class="p">(</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">_loss_actor</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <a href="https://pytorch.org/tensordict/reference/generated/tensordict.TensorDict.html#tensordict.TensorDict" title="tensordict.TensorDict" class="sphx-glr-backref-module-tensordict sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tensordict</span></a><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <a href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="torch.Tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class"><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span></a><span class="p">:</span>
@@ -630,7 +631,7 @@ can be used.</p>
 <h3>The value loss method<a class="headerlink" href="#the-value-loss-method" title="Permalink to this heading">¶</a></h3>
 <p>We now need to optimize our value network parameters.
 To do this, we will rely on the value estimator of our class:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">torchrl.objectives.utils</span> <span class="kn">import</span> <span class="n">distance_loss</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">torchrl.objectives.utils</span> <span class="kn">import</span> <span class="n">distance_loss</span>
 
 
 <span class="k">def</span> <span class="nf">_loss_value</span><span class="p">(</span>
@@ -672,7 +673,7 @@ To do this, we will rely on the value estimator of our class:</p>
 <p>The only missing piece is the forward method, which will glue together the
 value and actor loss, collect the cost values and write them in a tensordict
 delivered to the user.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tensordict.tensordict</span> <span class="kn">import</span> <a href="https://pytorch.org/tensordict/reference/generated/tensordict.TensorDict.html#tensordict.TensorDict" title="tensordict.TensorDict" class="sphx-glr-backref-module-tensordict sphx-glr-backref-type-py-class"><span class="n">TensorDict</span></a><span class="p">,</span> <span class="n">TensorDictBase</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tensordict.tensordict</span> <span class="kn">import</span> <a href="https://pytorch.org/tensordict/reference/generated/tensordict.TensorDict.html#tensordict.TensorDict" title="tensordict.TensorDict" class="sphx-glr-backref-module-tensordict sphx-glr-backref-type-py-class"><span class="n">TensorDict</span></a><span class="p">,</span> <span class="n">TensorDictBase</span>
 
 
 <span class="k">def</span> <span class="nf">_forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_tensordict</span><span class="p">:</span> <span class="n">TensorDictBase</span><span class="p">)</span> <span class="o">-&gt;</span> <a href="https://pytorch.org/tensordict/reference/generated/tensordict.TensorDict.html#tensordict.TensorDict" title="tensordict.TensorDict" class="sphx-glr-backref-module-tensordict sphx-glr-backref-type-py-class"><span class="n">TensorDict</span></a><span class="p">:</span>
@@ -744,7 +745,7 @@ argument to the constructor:</p>
 </div>
 <p>We write a <code class="xref py py-func docutils literal notranslate"><span class="pre">make_env()</span></code> helper function that will create an environment
 with either one of the two backends considered above (dm-control or gym).</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">torchrl.envs.libs.dm_control</span> <span class="kn">import</span> <a href="https://pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="torch.nn.Module" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-class"><span class="n">DMControlEnv</span></a>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">torchrl.envs.libs.dm_control</span> <span class="kn">import</span> <a href="https://pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="torch.nn.Module" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-class"><span class="n">DMControlEnv</span></a>
 <span class="kn">from</span> <span class="nn">torchrl.envs.libs.gym</span> <span class="kn">import</span> <a href="https://pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="torch.nn.Module" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-class"><span class="n">GymEnv</span></a>
 
 <a href="https://pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="torch.nn.Module" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-class"><span class="n">env_library</span></a> <span class="o">=</span> <span class="kc">None</span>
@@ -801,7 +802,7 @@ transform.</p></li>
 <li><p>Finally, we also leave the possibility of normalizing the states: we will
 take care of computing the normalizing constants later on.</p></li>
 </ul>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">torchrl.envs</span> <span class="kn">import</span> <span class="p">(</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">torchrl.envs</span> <span class="kn">import</span> <span class="p">(</span>
     <a href="https://pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="torch.nn.Module" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-class"><span class="n">CatTensors</span></a><span class="p">,</span>
     <a href="https://pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="torch.nn.Module" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-class"><span class="n">DoubleToFloat</span></a><span class="p">,</span>
     <span class="n">EnvCreator</span><span class="p">,</span>
@@ -887,7 +888,7 @@ code:</p>
 </div>
 <p>To leverage the vectorization capabilities of PyTorch, we adopt
 the first method:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">parallel_env_constructor</span><span class="p">(</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">parallel_env_constructor</span><span class="p">(</span>
     <span class="n">env_per_collector</span><span class="p">,</span>
     <span class="n">transform_state_dict</span><span class="p">,</span>
 <span class="p">):</span>
@@ -936,12 +937,12 @@ biased comparisons between training strategies.</p>
 </div>
 <p>Scaling the reward helps us control the signal magnitude for a more
 efficient learning.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">reward_scaling</span> <span class="o">=</span> <span class="mf">5.0</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">reward_scaling</span> <span class="o">=</span> <span class="mf">5.0</span>
 </pre></div>
 </div>
 <p>We also define when a trajectory will be truncated. A thousand steps (500 if
 frame-skip = 2) is a good number to use for cheetah:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_frames_per_traj</span> <span class="o">=</span> <span class="mi">500</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">max_frames_per_traj</span> <span class="o">=</span> <span class="mi">500</span>
 </pre></div>
 </div>
 </section>
@@ -953,7 +954,7 @@ collected observations. The <code class="xref py py-func docutils literal notran
 be used for this purpose. To get the summary statistics, we create a dummy
 environment and run it for a given number of steps, collect data over a given
 number of steps and compute its summary statistics.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">get_env_stats</span><span class="p">():</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">get_env_stats</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Gets the stats of an environment.&quot;&quot;&quot;</span>
     <span class="n">proof_env</span> <span class="o">=</span> <span class="n">make_transformed_env</span><span class="p">(</span><span class="n">make_env</span><span class="p">())</span>
     <span class="n">t</span> <span class="o">=</span> <span class="n">proof_env</span><span class="o">.</span><span class="n">transform</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
@@ -967,18 +968,18 @@ number of steps and compute its summary statistics.</p>
 <section id="normalization-stats">
 <h3>Normalization stats<a class="headerlink" href="#normalization-stats" title="Permalink to this heading">¶</a></h3>
 <p>Number of random steps used as for stats computation using ObservationNorm</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">init_env_steps</span> <span class="o">=</span> <span class="mi">5000</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">init_env_steps</span> <span class="o">=</span> <span class="mi">5000</span>
 
 <span class="n">transform_state_dict</span> <span class="o">=</span> <span class="n">get_env_stats</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>Number of environments in each data collector</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">env_per_collector</span> <span class="o">=</span> <span class="mi">4</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">env_per_collector</span> <span class="o">=</span> <span class="mi">4</span>
 </pre></div>
 </div>
 <p>We pass the stats computed earlier to normalize the output of our
 environment:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">parallel_env</span> <span class="o">=</span> <span class="n">parallel_env_constructor</span><span class="p">(</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">parallel_env</span> <span class="o">=</span> <span class="n">parallel_env_constructor</span><span class="p">(</span>
     <span class="n">env_per_collector</span><span class="o">=</span><span class="n">env_per_collector</span><span class="p">,</span>
     <span class="n">transform_state_dict</span><span class="o">=</span><span class="n">transform_state_dict</span><span class="p">,</span>
 <span class="p">)</span>
@@ -1013,7 +1014,7 @@ before being able to move the policy from device to device and achieve other
 operations. Hence, it is good practice to run the modules with a small
 sample of data. For this purpose, we generate fake data from the
 environment specs.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">torchrl.modules</span> <span class="kn">import</span> <span class="p">(</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">torchrl.modules</span> <span class="kn">import</span> <span class="p">(</span>
     <a href="https://pytorch.org/tensordict/reference/generated/tensordict.nn.TensorDictSequential.html#tensordict.nn.TensorDictSequential" title="tensordict.nn.TensorDictSequential" class="sphx-glr-backref-module-tensordict-nn sphx-glr-backref-type-py-class"><span class="n">ActorCriticWrapper</span></a><span class="p">,</span>
     <a href="https://pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="torch.nn.Module" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-class"><span class="n">DdpgMlpActor</span></a><span class="p">,</span>
     <a href="https://pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="torch.nn.Module" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-class"><span class="n">DdpgMlpQNet</span></a><span class="p">,</span>
@@ -1078,7 +1079,7 @@ environment specs.</p>
 <p>The policy is wrapped in a <code class="xref py py-class docutils literal notranslate"><span class="pre">OrnsteinUhlenbeckProcessWrapper</span></code>
 exploration module, as suggesed in the original paper.
 Let’s define the number of frames before OU noise reaches its minimum value</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">annealing_frames</span> <span class="o">=</span> <span class="mi">1_000_000</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">annealing_frames</span> <span class="o">=</span> <span class="mi">1_000_000</span>
 
 <span class="n">actor_model_explore</span> <span class="o">=</span> <a href="https://pytorch.org/tensordict/reference/generated/tensordict.nn.TensorDictModuleWrapper.html#tensordict.nn.TensorDictModuleWrapper" title="tensordict.nn.TensorDictModuleWrapper" class="sphx-glr-backref-module-tensordict-nn sphx-glr-backref-type-py-class"><span class="n">OrnsteinUhlenbeckProcessWrapper</span></a><span class="p">(</span>
     <span class="n">actor</span><span class="p">,</span>
@@ -1131,7 +1132,7 @@ manually, as we do in this script.
 process.</p></li>
 </ul>
 <p>The total frames we will use during training should be around 1M.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">total_frames</span> <span class="o">=</span> <span class="mi">10_000</span>  <span class="c1"># 1_000_000</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">total_frames</span> <span class="o">=</span> <span class="mi">10_000</span>  <span class="c1"># 1_000_000</span>
 </pre></div>
 </div>
 <p>The number of frames returned by the collector at each iteration of the outer
@@ -1140,7 +1141,7 @@ run in parallel in each collector.</p>
 <p>In other words, we expect batches from the collector to have a shape
 <code class="docutils literal notranslate"><span class="pre">[env_per_collector,</span> <span class="pre">traj_len]</span></code> where
 <code class="docutils literal notranslate"><span class="pre">traj_len=frames_per_batch/env_per_collector</span></code>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">traj_len</span> <span class="o">=</span> <span class="mi">200</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">traj_len</span> <span class="o">=</span> <span class="mi">200</span>
 <span class="n">frames_per_batch</span> <span class="o">=</span> <span class="n">env_per_collector</span> <span class="o">*</span> <span class="n">traj_len</span>
 <span class="n">init_random_frames</span> <span class="o">=</span> <span class="mi">5000</span>
 <span class="n">num_collectors</span> <span class="o">=</span> <span class="mi">2</span>
@@ -1178,7 +1179,7 @@ do this using a dedicated class, <code class="docutils literal notranslate"><spa
 the environment at a given frequency and returns some statistics obtained
 from these simulations.</p>
 <p>The following helper function builds this object:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">torchrl.trainers</span> <span class="kn">import</span> <span class="n">Recorder</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">torchrl.trainers</span> <span class="kn">import</span> <span class="n">Recorder</span>
 
 
 <span class="k">def</span> <span class="nf">make_recorder</span><span class="p">(</span><span class="n">actor_model_explore</span><span class="p">,</span> <span class="n">transform_state_dict</span><span class="p">,</span> <span class="n">record_interval</span><span class="p">):</span>
@@ -1200,7 +1201,7 @@ from these simulations.</p>
 </pre></div>
 </div>
 <p>We will be recording the performance every 10 batch collected</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">record_interval</span> <span class="o">=</span> <span class="mi">10</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">record_interval</span> <span class="o">=</span> <span class="mi">10</span>
 
 <span class="n">recorder</span> <span class="o">=</span> <span class="n">make_recorder</span><span class="p">(</span>
     <span class="n">actor_model_explore</span><span class="p">,</span> <span class="n">transform_state_dict</span><span class="p">,</span> <span class="n">record_interval</span><span class="o">=</span><span class="n">record_interval</span>
@@ -1225,7 +1226,7 @@ and writing strategies. It is also possible to
 store tensors on physical memory using a memory-mapped array. The following
 function takes care of creating the replay buffer with the desired
 hyperparameters:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">torchrl.envs</span> <span class="kn">import</span> <a href="https://pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="torch.nn.Module" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-class"><span class="n">RandomCropTensorDict</span></a>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">torchrl.envs</span> <span class="kn">import</span> <a href="https://pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="torch.nn.Module" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-class"><span class="n">RandomCropTensorDict</span></a>
 
 
 <span class="k">def</span> <span class="nf">make_replay_buffer</span><span class="p">(</span><span class="n">buffer_size</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">random_crop_len</span><span class="p">,</span> <span class="n">prefetch</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">prb</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -1252,7 +1253,7 @@ hyperparameters:</p>
 </pre></div>
 </div>
 <p>We’ll store the replay buffer in a temporary dirrectory on disk</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">tempfile</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">tempfile</span>
 
 <span class="n">tmpdir</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span>
 <span class="n">buffer_scratch_dir</span> <span class="o">=</span> <span class="n">tmpdir</span><span class="o">.</span><span class="n">name</span>
@@ -1277,7 +1278,7 @@ samples sub-trajectories of 2 time steps each.</p>
 <img alt="Storign trajectories in the replay buffer" src="../_images/replaybuffer_traj.png" />
 </figure>
 <p>Let’s start with the number of frames stored in the buffer</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">ceil_div</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">ceil_div</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
     <span class="k">return</span> <span class="o">-</span><span class="n">x</span> <span class="o">//</span> <span class="p">(</span><span class="o">-</span><span class="n">y</span><span class="p">)</span>
 
 
@@ -1286,23 +1287,23 @@ samples sub-trajectories of 2 time steps each.</p>
 </pre></div>
 </div>
 <p>Prioritized replay buffer is disabled by default</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">prb</span> <span class="o">=</span> <span class="kc">False</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">prb</span> <span class="o">=</span> <span class="kc">False</span>
 </pre></div>
 </div>
 <p>We also need to define how many updates we’ll be doing per batch of data
 collected. This is known as the update-to-data or UTD ratio:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">update_to_data</span> <span class="o">=</span> <span class="mi">64</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">update_to_data</span> <span class="o">=</span> <span class="mi">64</span>
 </pre></div>
 </div>
 <p>We’ll be feeding the loss with trajectories of length 25:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">random_crop_len</span> <span class="o">=</span> <span class="mi">25</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">random_crop_len</span> <span class="o">=</span> <span class="mi">25</span>
 </pre></div>
 </div>
 <p>In the original paper, the authors perform one update with a batch of 64
 elements for each frame collected. Here, we reproduce the same ratio
 but while realizing several updates at each batch collection. We
 adapt our batch-size to achieve the same number of update-per-frame ratio:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">ceil_div</span><span class="p">(</span><span class="mi">64</span> <span class="o">*</span> <span class="n">frames_per_batch</span><span class="p">,</span> <span class="n">update_to_data</span> <span class="o">*</span> <span class="n">random_crop_len</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">ceil_div</span><span class="p">(</span><span class="mi">64</span> <span class="o">*</span> <span class="n">frames_per_batch</span><span class="p">,</span> <span class="n">update_to_data</span> <span class="o">*</span> <span class="n">random_crop_len</span><span class="p">)</span>
 
 <span class="n">replay_buffer</span> <span class="o">=</span> <span class="n">make_replay_buffer</span><span class="p">(</span>
     <span class="n">buffer_size</span><span class="o">=</span><span class="n">buffer_size</span><span class="p">,</span>
@@ -1320,7 +1321,7 @@ adapt our batch-size to achieve the same number of update-per-frame ratio:</p>
 <p>We build our loss module with the actor and qnet we’ve just created.
 Because we have target parameters to update, we _must_ create a target network
 updater.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gamma</span> <span class="o">=</span> <span class="mf">0.99</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gamma</span> <span class="o">=</span> <span class="mf">0.99</span>
 <span class="n">lmbda</span> <span class="o">=</span> <span class="mf">0.9</span>
 <span class="n">tau</span> <span class="o">=</span> <span class="mf">0.001</span>  <span class="c1"># Decay factor for the target network</span>
 
@@ -1328,7 +1329,7 @@ updater.</p>
 </pre></div>
 </div>
 <p>let’s use the TD(lambda) estimator!</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">loss_module</span><span class="o">.</span><span class="n">make_value_estimator</span><span class="p">(</span><span class="n">ValueEstimators</span><span class="o">.</span><span class="n">TDLambda</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="n">gamma</span><span class="p">,</span> <span class="n">lmbda</span><span class="o">=</span><span class="n">lmbda</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">loss_module</span><span class="o">.</span><span class="n">make_value_estimator</span><span class="p">(</span><span class="n">ValueEstimators</span><span class="o">.</span><span class="n">TDLambda</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="n">gamma</span><span class="p">,</span> <span class="n">lmbda</span><span class="o">=</span><span class="n">lmbda</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="admonition note">
@@ -1349,7 +1350,7 @@ Updating the target network parameters is made easy thanks to the
 classes. They’re built with the loss module as argument, and the update is
 achieved via a call to <cite>updater.step()</cite> at the appropriate location in the
 training loop.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">torchrl.objectives.utils</span> <span class="kn">import</span> <span class="n">SoftUpdate</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">torchrl.objectives.utils</span> <span class="kn">import</span> <span class="n">SoftUpdate</span>
 
 <span class="n">target_net_updater</span> <span class="o">=</span> <span class="n">SoftUpdate</span><span class="p">(</span><span class="n">loss_module</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mi">1</span> <span class="o">-</span> <span class="n">tau</span><span class="p">)</span>
 </pre></div>
@@ -1358,7 +1359,7 @@ training loop.</p>
 <section id="optimizer">
 <h3>Optimizer<a class="headerlink" href="#optimizer" title="Permalink to this heading">¶</a></h3>
 <p>Finally, we will use the Adam optimizer for the policy and value network:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">optim</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">optim</span>
 
 <a href="https://pytorch.org/docs/stable/generated/torch.optim.Adam.html#torch.optim.Adam" title="torch.optim.Adam" class="sphx-glr-backref-module-torch-optim sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">optimizer_actor</span></a> <span class="o">=</span> <a href="https://pytorch.org/docs/stable/generated/torch.optim.Adam.html#torch.optim.Adam" title="torch.optim.Adam" class="sphx-glr-backref-module-torch-optim sphx-glr-backref-type-py-class"><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span></a><span class="p">(</span>
     <span class="n">loss_module</span><span class="o">.</span><span class="n">actor_network_params</span><span class="o">.</span><span class="n">values</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span> <span class="n">weight_decay</span><span class="o">=</span><span class="mf">0.0</span>
@@ -1375,7 +1376,7 @@ training loop.</p>
 <h2>Time to train the policy<a class="headerlink" href="#time-to-train-the-policy" title="Permalink to this heading">¶</a></h2>
 <p>The training loop is pretty straightforward now that we have built all the
 modules we need.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">rewards</span> <span class="o">=</span> <span class="p">[]</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">rewards</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="n">rewards_eval</span> <span class="o">=</span> <span class="p">[]</span>
 
 <span class="c1"># Main loop</span>
@@ -1462,23 +1463,23 @@ modules we need.</p>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  0%|          | 0/10000 [00:00&lt;?, ?it/s]
-  8%|▊         | 800/10000 [00:00&lt;00:03, 2714.27it/s]
- 16%|█▌        | 1600/10000 [00:01&lt;00:08, 970.14it/s]
- 32%|███▏      | 3200/10000 [00:01&lt;00:03, 1955.27it/s]
- 48%|████▊     | 4800/10000 [00:02&lt;00:01, 2834.78it/s]
-reward: -2.49 (r0 = -1.64), reward eval: reward: -0.00, reward normalized=-2.41/5.65, grad norm= 188.80, loss_value= 294.26, loss_actor= 9.84, target value: -15.56:  56%|█████▌    | 5600/10000 [00:04&lt;00:01, 2834.78it/s]
-reward: -2.49 (r0 = -1.64), reward eval: reward: -0.00, reward normalized=-2.41/5.65, grad norm= 188.80, loss_value= 294.26, loss_actor= 9.84, target value: -15.56:  64%|██████▍   | 6400/10000 [00:04&lt;00:02, 1316.34it/s]
-reward: -2.17 (r0 = -1.64), reward eval: reward: -0.00, reward normalized=-2.48/5.78, grad norm= 44.58, loss_value= 186.80, loss_actor= 14.30, target value: -15.76:  64%|██████▍   | 6400/10000 [00:06&lt;00:02, 1316.34it/s]
-reward: -2.17 (r0 = -1.64), reward eval: reward: -0.00, reward normalized=-2.48/5.78, grad norm= 44.58, loss_value= 186.80, loss_actor= 14.30, target value: -15.76:  72%|███████▏  | 7200/10000 [00:06&lt;00:03, 879.71it/s]
-reward: -1.40 (r0 = -1.64), reward eval: reward: -0.00, reward normalized=-2.53/5.58, grad norm= 141.15, loss_value= 261.84, loss_actor= 11.76, target value: -16.39:  72%|███████▏  | 7200/10000 [00:08&lt;00:03, 879.71it/s]
-reward: -1.40 (r0 = -1.64), reward eval: reward: -0.00, reward normalized=-2.53/5.58, grad norm= 141.15, loss_value= 261.84, loss_actor= 11.76, target value: -16.39:  80%|████████  | 8000/10000 [00:08&lt;00:03, 660.88it/s]
-reward: -3.58 (r0 = -1.64), reward eval: reward: -0.00, reward normalized=-1.92/5.59, grad norm= 151.86, loss_value= 225.57, loss_actor= 15.29, target value: -12.98:  80%|████████  | 8000/10000 [00:10&lt;00:03, 660.88it/s]
-reward: -3.58 (r0 = -1.64), reward eval: reward: -0.00, reward normalized=-1.92/5.59, grad norm= 151.86, loss_value= 225.57, loss_actor= 15.29, target value: -12.98:  88%|████████▊ | 8800/10000 [00:10&lt;00:02, 553.32it/s]
-reward: -5.25 (r0 = -1.64), reward eval: reward: -5.94, reward normalized=-2.61/5.22, grad norm= 52.72, loss_value= 209.76, loss_actor= 20.08, target value: -17.60:  88%|████████▊ | 8800/10000 [00:13&lt;00:02, 553.32it/s]
-reward: -5.25 (r0 = -1.64), reward eval: reward: -5.94, reward normalized=-2.61/5.22, grad norm= 52.72, loss_value= 209.76, loss_actor= 20.08, target value: -17.60:  96%|█████████▌| 9600/10000 [00:13&lt;00:00, 411.84it/s]
-reward: -4.39 (r0 = -1.64), reward eval: reward: -5.94, reward normalized=-2.27/4.84, grad norm= 70.29, loss_value= 169.11, loss_actor= 16.16, target value: -16.13:  96%|█████████▌| 9600/10000 [00:15&lt;00:00, 411.84it/s]
-reward: -4.39 (r0 = -1.64), reward eval: reward: -5.94, reward normalized=-2.27/4.84, grad norm= 70.29, loss_value= 169.11, loss_actor= 16.16, target value: -16.13: : 10400it [00:15, 402.86it/s]
-reward: -4.90 (r0 = -1.64), reward eval: reward: -5.94, reward normalized=-2.61/4.77, grad norm= 54.67, loss_value= 141.27, loss_actor= 12.68, target value: -18.85: : 10400it [00:17, 402.86it/s]
+  8%|▊         | 800/10000 [00:00&lt;00:03, 2570.84it/s]
+ 16%|█▌        | 1600/10000 [00:01&lt;00:08, 1035.08it/s]
+ 32%|███▏      | 3200/10000 [00:01&lt;00:03, 2141.83it/s]
+ 48%|████▊     | 4800/10000 [00:01&lt;00:01, 3081.39it/s]
+reward: -1.75 (r0 = -2.17), reward eval: reward: -0.00, reward normalized=-2.10/5.85, grad norm= 38.37, loss_value= 250.52, loss_actor= 13.86, target value: -14.25:  56%|█████▌    | 5600/10000 [00:04&lt;00:01, 3081.39it/s]
+reward: -1.75 (r0 = -2.17), reward eval: reward: -0.00, reward normalized=-2.10/5.85, grad norm= 38.37, loss_value= 250.52, loss_actor= 13.86, target value: -14.25:  64%|██████▍   | 6400/10000 [00:04&lt;00:02, 1365.59it/s]
+reward: -2.64 (r0 = -2.17), reward eval: reward: -0.00, reward normalized=-1.98/5.94, grad norm= 89.55, loss_value= 291.08, loss_actor= 13.31, target value: -12.44:  64%|██████▍   | 6400/10000 [00:06&lt;00:02, 1365.59it/s]
+reward: -2.64 (r0 = -2.17), reward eval: reward: -0.00, reward normalized=-1.98/5.94, grad norm= 89.55, loss_value= 291.08, loss_actor= 13.31, target value: -12.44:  72%|███████▏  | 7200/10000 [00:06&lt;00:03, 887.57it/s]
+reward: -0.67 (r0 = -2.17), reward eval: reward: -0.00, reward normalized=-2.80/5.79, grad norm= 54.30, loss_value= 256.49, loss_actor= 15.22, target value: -17.69:  72%|███████▏  | 7200/10000 [00:08&lt;00:03, 887.57it/s]
+reward: -0.67 (r0 = -2.17), reward eval: reward: -0.00, reward normalized=-2.80/5.79, grad norm= 54.30, loss_value= 256.49, loss_actor= 15.22, target value: -17.69:  80%|████████  | 8000/10000 [00:08&lt;00:02, 674.95it/s]
+reward: -3.49 (r0 = -2.17), reward eval: reward: -0.00, reward normalized=-2.67/5.43, grad norm= 86.58, loss_value= 261.37, loss_actor= 16.55, target value: -17.55:  80%|████████  | 8000/10000 [00:10&lt;00:02, 674.95it/s]
+reward: -3.49 (r0 = -2.17), reward eval: reward: -0.00, reward normalized=-2.67/5.43, grad norm= 86.58, loss_value= 261.37, loss_actor= 16.55, target value: -17.55:  88%|████████▊ | 8800/10000 [00:10&lt;00:02, 572.07it/s]
+reward: -4.88 (r0 = -2.17), reward eval: reward: -5.99, reward normalized=-2.91/5.40, grad norm= 151.81, loss_value= 250.24, loss_actor= 19.46, target value: -20.17:  88%|████████▊ | 8800/10000 [00:13&lt;00:02, 572.07it/s]
+reward: -4.88 (r0 = -2.17), reward eval: reward: -5.99, reward normalized=-2.91/5.40, grad norm= 151.81, loss_value= 250.24, loss_actor= 19.46, target value: -20.17:  96%|█████████▌| 9600/10000 [00:13&lt;00:00, 428.88it/s]
+reward: -4.96 (r0 = -2.17), reward eval: reward: -5.99, reward normalized=-2.36/5.62, grad norm= 80.12, loss_value= 286.28, loss_actor= 16.68, target value: -16.56:  96%|█████████▌| 9600/10000 [00:15&lt;00:00, 428.88it/s]
+reward: -4.96 (r0 = -2.17), reward eval: reward: -5.99, reward normalized=-2.36/5.62, grad norm= 80.12, loss_value= 286.28, loss_actor= 16.68, target value: -16.56: : 10400it [00:15, 417.54it/s]
+reward: -5.01 (r0 = -2.17), reward eval: reward: -5.99, reward normalized=-2.47/5.32, grad norm= 81.99, loss_value= 222.76, loss_actor= 16.28, target value: -19.17: : 10400it [00:17, 417.54it/s]
 </pre></div>
 </div>
 </section>
@@ -1491,7 +1492,7 @@ that our policy learned quite well to solve the task.</p>
 <p>As already mentioned above, to get a more reasonable performance,
 use a greater value for <code class="docutils literal notranslate"><span class="pre">total_frames</span></code> e.g. 1M.</p>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="o">*</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">rewards</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;training&quot;</span><span class="p">)</span>
@@ -1514,14 +1515,14 @@ loss component;</p></li>
 <li><p>How to use (or not) a target network, and how to update its parameters;</p></li>
 <li><p>How to create an optimizer associated with a loss module.</p></li>
 </ul>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (2 minutes 6.498 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 56.483 seconds)</p>
 <p><strong>Estimated memory usage:</strong>  12 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-tutorials-coding-ddpg-py">
-<div class="sphx-glr-download sphx-glr-download-python docutils container">
-<p><a class="reference download internal" download="" href="../_downloads/0dfdb6ef4cc9782fdb39c4a9d0900d37/coding_ddpg.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">coding_ddpg.py</span></code></a></p>
-</div>
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/7ef773e36507adbc389133424f663224/coding_ddpg.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">coding_ddpg.ipynb</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/0dfdb6ef4cc9782fdb39c4a9d0900d37/coding_ddpg.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">coding_ddpg.py</span></code></a></p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
@@ -1628,6 +1629,7 @@ loss component;</p></li>
          <script src="../_static/underscore.js"></script>
          <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
          <script src="../_static/doctools.js"></script>
+         <script src="../_static/design-tabs.js"></script>
          <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
      
 

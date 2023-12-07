@@ -34,6 +34,7 @@
   <link rel="stylesheet" href="../_static/sg_gallery-binder.css" type="text/css" />
   <link rel="stylesheet" href="../_static/sg_gallery-dataframe.css" type="text/css" />
   <link rel="stylesheet" href="../_static/sg_gallery-rendered-html.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" type="text/css" />
   <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
@@ -422,11 +423,14 @@
 <li class="toctree-l3"><a class="reference internal" href="generated/torchrl.data.replay_buffers.RoundRobinWriter.html">RoundRobinWriter</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/torchrl.data.replay_buffers.TensorDictRoundRobinWriter.html">TensorDictRoundRobinWriter</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/torchrl.data.replay_buffers.TensorDictMaxValueWriter.html">TensorDictMaxValueWriter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="data.html#sharing-replay-buffers-across-processes">Sharing replay buffers across processes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="data.html#storing-trajectories">Storing trajectories</a></li>
+<li class="toctree-l3"><a class="reference internal" href="data.html#checkpointing-replay-buffers">Checkpointing Replay Buffers</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="data.html#datasets">Datasets</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="generated/torchrl.data.datasets.D4RLExperienceReplay.html">D4RLExperienceReplay</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/torchrl.data.datasets.MinariExperienceReplay.html">MinariExperienceReplay</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/torchrl.data.datasets.OpenMLExperienceReplay.html">OpenMLExperienceReplay</a></li>
 </ul>
 </li>
@@ -520,6 +524,8 @@
 <li class="toctree-l3"><a class="reference internal" href="generated/torchrl.envs.IsaacGymWrapper.html">IsaacGymWrapper</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/torchrl.envs.JumanjiEnv.html">JumanjiEnv</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/torchrl.envs.JumanjiWrapper.html">JumanjiWrapper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/torchrl.envs.MOGymEnv.html">MOGymEnv</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/torchrl.envs.MOGymWrapper.html">MOGymWrapper</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/torchrl.envs.MultiThreadedEnv.html">MultiThreadedEnv</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/torchrl.envs.MultiThreadedEnvWrapper.html">MultiThreadedEnvWrapper</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/torchrl.envs.OpenMLEnv.html">OpenMLEnv</a></li>
@@ -619,6 +625,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="objectives.html#cql">CQL</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="generated/torchrl.objectives.CQLLoss.html">CQLLoss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/torchrl.objectives.DiscreteCQLLoss.html">DiscreteCQLLoss</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="objectives.html#dt">DT</a><ul>
@@ -814,6 +821,7 @@
          <script src="../_static/underscore.js"></script>
          <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
          <script src="../_static/doctools.js"></script>
+         <script src="../_static/design-tabs.js"></script>
      
 
   

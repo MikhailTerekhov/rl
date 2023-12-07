@@ -33,6 +33,7 @@
   <link rel="stylesheet" href="../../../../_static/sg_gallery-binder.css" type="text/css" />
   <link rel="stylesheet" href="../../../../_static/sg_gallery-dataframe.css" type="text/css" />
   <link rel="stylesheet" href="../../../../_static/sg_gallery-rendered-html.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" type="text/css" />
   <link rel="stylesheet" href="../../../../_static/css/custom.css" type="text/css" />
     <link rel="index" title="Index" href="../../../../genindex.html" />
@@ -553,7 +554,7 @@
 <span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; import torch</span>
 <span class="sd">        &gt;&gt;&gt; from tensordict import TensorDict</span>
-<span class="sd">        &gt;&gt;&gt; from tensordict.nn import TensorDictModule, make_functional</span>
+<span class="sd">        &gt;&gt;&gt; from tensordict.nn import TensorDictModule</span>
 <span class="sd">        &gt;&gt;&gt; from torchrl.data import BoundedTensorSpec</span>
 <span class="sd">        &gt;&gt;&gt; from torchrl.modules import ProbabilisticActor, NormalParamWrapper, TanhNormal</span>
 <span class="sd">        &gt;&gt;&gt; td = TensorDict({&quot;observation&quot;: torch.randn(3, 4)}, [3,])</span>
@@ -567,8 +568,9 @@
 <span class="sd">        ...    in_keys=[&quot;loc&quot;, &quot;scale&quot;],</span>
 <span class="sd">        ...    distribution_class=TanhNormal,</span>
 <span class="sd">        ...    )</span>
-<span class="sd">        &gt;&gt;&gt; params = make_functional(td_module)</span>
-<span class="sd">        &gt;&gt;&gt; td = td_module(td, params=params)</span>
+<span class="sd">        &gt;&gt;&gt; params = TensorDict.from_module(td_module)</span>
+<span class="sd">        &gt;&gt;&gt; with params.to_module(td_module):</span>
+<span class="sd">        ...     td = td_module(td)</span>
 <span class="sd">        &gt;&gt;&gt; td</span>
 <span class="sd">        TensorDict(</span>
 <span class="sd">            fields={</span>
@@ -689,7 +691,6 @@
 <span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; import torch</span>
 <span class="sd">        &gt;&gt;&gt; from tensordict import TensorDict</span>
-<span class="sd">        &gt;&gt;&gt; from tensordict.nn import make_functional</span>
 <span class="sd">        &gt;&gt;&gt; from torch import nn</span>
 <span class="sd">        &gt;&gt;&gt; from torchrl.data import UnboundedContinuousTensorSpec</span>
 <span class="sd">        &gt;&gt;&gt; from torchrl.modules import ValueOperator</span>
@@ -704,8 +705,9 @@
 <span class="sd">        &gt;&gt;&gt; td_module = ValueOperator(</span>
 <span class="sd">        ...    in_keys=[&quot;observation&quot;, &quot;action&quot;], module=module</span>
 <span class="sd">        ... )</span>
-<span class="sd">        &gt;&gt;&gt; params = make_functional(td_module)</span>
-<span class="sd">        &gt;&gt;&gt; td = td_module(td, params=params)</span>
+<span class="sd">        &gt;&gt;&gt; params = TensorDict.from_module(td_module)</span>
+<span class="sd">        &gt;&gt;&gt; with params.to_module(td_module):</span>
+<span class="sd">        ...     td = td_module(td)</span>
 <span class="sd">        &gt;&gt;&gt; print(td)</span>
 <span class="sd">        TensorDict(</span>
 <span class="sd">            fields={</span>
@@ -1162,7 +1164,6 @@
 <span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; import torch</span>
 <span class="sd">        &gt;&gt;&gt; from tensordict import TensorDict</span>
-<span class="sd">        &gt;&gt;&gt; from tensordict.nn.functional_modules import make_functional</span>
 <span class="sd">        &gt;&gt;&gt; from torch import nn</span>
 <span class="sd">        &gt;&gt;&gt; from torchrl.data import OneHotDiscreteTensorSpec</span>
 <span class="sd">        &gt;&gt;&gt; from torchrl.modules.tensordict_module.actors import QValueHook, Actor</span>
@@ -1248,7 +1249,6 @@
 <span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; import torch</span>
 <span class="sd">        &gt;&gt;&gt; from tensordict import TensorDict</span>
-<span class="sd">        &gt;&gt;&gt; from tensordict.nn.functional_modules import make_functional</span>
 <span class="sd">        &gt;&gt;&gt; from torch import nn</span>
 <span class="sd">        &gt;&gt;&gt; from torchrl.data import OneHotDiscreteTensorSpec</span>
 <span class="sd">        &gt;&gt;&gt; from torchrl.modules.tensordict_module.actors import DistributionalQValueHook, Actor</span>
@@ -1263,12 +1263,13 @@
 <span class="sd">        ...         return self.linear(x).view(-1, nbins, 4).log_softmax(-2)</span>
 <span class="sd">        ...</span>
 <span class="sd">        &gt;&gt;&gt; module = CustomDistributionalQval()</span>
-<span class="sd">        &gt;&gt;&gt; params = make_functional(module)</span>
+<span class="sd">        &gt;&gt;&gt; params = TensorDict.from_module(module)</span>
 <span class="sd">        &gt;&gt;&gt; action_spec = OneHotDiscreteTensorSpec(4)</span>
 <span class="sd">        &gt;&gt;&gt; hook = DistributionalQValueHook(&quot;one_hot&quot;, support = torch.arange(nbins))</span>
 <span class="sd">        &gt;&gt;&gt; module.register_forward_hook(hook)</span>
 <span class="sd">        &gt;&gt;&gt; qvalue_actor = Actor(module=module, spec=action_spec, out_keys=[&quot;action&quot;, &quot;action_value&quot;])</span>
-<span class="sd">        &gt;&gt;&gt; qvalue_actor(td, params=params)</span>
+<span class="sd">        &gt;&gt;&gt; with params.to_module(module):</span>
+<span class="sd">        ...     qvalue_actor(td)</span>
 <span class="sd">        &gt;&gt;&gt; print(td)</span>
 <span class="sd">        TensorDict(</span>
 <span class="sd">            fields={</span>
@@ -1362,7 +1363,6 @@
 <span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; import torch</span>
 <span class="sd">        &gt;&gt;&gt; from tensordict import TensorDict</span>
-<span class="sd">        &gt;&gt;&gt; from tensordict.nn.functional_modules import make_functional</span>
 <span class="sd">        &gt;&gt;&gt; from torch import nn</span>
 <span class="sd">        &gt;&gt;&gt; from torchrl.data import OneHotDiscreteTensorSpec</span>
 <span class="sd">        &gt;&gt;&gt; from torchrl.modules.tensordict_module.actors import QValueActor</span>
@@ -2524,6 +2524,7 @@
          <script src="../../../../_static/underscore.js"></script>
          <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
          <script src="../../../../_static/doctools.js"></script>
+         <script src="../../../../_static/design-tabs.js"></script>
      
 
   

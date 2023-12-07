@@ -33,6 +33,7 @@
   <link rel="stylesheet" href="../../../../_static/sg_gallery-binder.css" type="text/css" />
   <link rel="stylesheet" href="../../../../_static/sg_gallery-dataframe.css" type="text/css" />
   <link rel="stylesheet" href="../../../../_static/sg_gallery-rendered-html.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" type="text/css" />
   <link rel="stylesheet" href="../../../../_static/css/custom.css" type="text/css" />
     <link rel="index" title="Index" href="../../../../genindex.html" />
@@ -463,6 +464,10 @@
         <span class="n">action_key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">NestedKey</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;action&quot;</span><span class="p">,</span>
         <span class="n">action_mask_key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">NestedKey</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">eps_init</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;eps_init should be a float.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">eps_end</span> <span class="o">&gt;</span> <span class="n">eps_init</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;eps should decrease over time or be constant&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">action_key</span> <span class="o">=</span> <span class="n">action_key</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">action_mask_key</span> <span class="o">=</span> <span class="n">action_mask_key</span>
         <span class="n">in_keys</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">action_key</span><span class="p">]</span>
@@ -475,10 +480,8 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">&quot;eps_init&quot;</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="n">eps_init</span><span class="p">]))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">&quot;eps_end&quot;</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="n">eps_end</span><span class="p">]))</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">eps_end</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">eps_init</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;eps should decrease over time or be constant&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">annealing_num_steps</span> <span class="o">=</span> <span class="n">annealing_num_steps</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">&quot;eps&quot;</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="n">eps_init</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">&quot;eps&quot;</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="n">eps_init</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span>
 
         <span class="k">if</span> <span class="n">spec</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">spec</span><span class="p">,</span> <span class="n">CompositeSpec</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">out_keys</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
@@ -552,7 +555,7 @@
         <span class="k">return</span> <span class="n">tensordict</span></div></div>
 
 
-<span class="k">class</span> <span class="nc">EGreedyWrapper</span><span class="p">(</span><span class="n">TensorDictModuleWrapper</span><span class="p">):</span>
+<div class="viewcode-block" id="EGreedyWrapper"><a class="viewcode-back" href="../../../../reference/generated/torchrl.modules.tensordict_module.EGreedyWrapper.html#torchrl.modules.tensordict_module.EGreedyWrapper">[docs]</a><span class="k">class</span> <span class="nc">EGreedyWrapper</span><span class="p">(</span><span class="n">TensorDictModuleWrapper</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;[Deprecated] Epsilon-Greedy PO wrapper.</span>
 
 <span class="sd">    Args:</span>
@@ -627,7 +630,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">eps_end</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">eps_init</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;eps should decrease over time or be constant&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">annealing_num_steps</span> <span class="o">=</span> <span class="n">annealing_num_steps</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">&quot;eps&quot;</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="n">eps_init</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">&quot;eps&quot;</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="n">eps_init</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">action_key</span> <span class="o">=</span> <span class="n">action_key</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">action_mask_key</span> <span class="o">=</span> <span class="n">action_mask_key</span>
         <span class="k">if</span> <span class="n">spec</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -649,7 +652,7 @@
     <span class="k">def</span> <span class="nf">spec</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spec</span>
 
-    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frames</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="EGreedyWrapper.step"><a class="viewcode-back" href="../../../../reference/generated/torchrl.modules.tensordict_module.EGreedyWrapper.html#torchrl.modules.tensordict_module.EGreedyWrapper.step">[docs]</a>    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frames</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;A step of epsilon decay.</span>
 
 <span class="sd">        After self.annealing_num_steps, this function is a no-op.</span>
@@ -664,9 +667,9 @@
                 <span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">eps</span> <span class="o">-</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">eps_init</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">eps_end</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">annealing_num_steps</span>
                 <span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span>
-            <span class="p">)</span>
+            <span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tensordict</span><span class="p">:</span> <span class="n">TensorDictBase</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TensorDictBase</span><span class="p">:</span>
+<div class="viewcode-block" id="EGreedyWrapper.forward"><a class="viewcode-back" href="../../../../reference/generated/torchrl.modules.tensordict_module.EGreedyWrapper.html#torchrl.modules.tensordict_module.EGreedyWrapper.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tensordict</span><span class="p">:</span> <span class="n">TensorDictBase</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TensorDictBase</span><span class="p">:</span>
         <span class="n">tensordict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">td_module</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">tensordict</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">exploration_type</span><span class="p">()</span> <span class="o">==</span> <span class="n">ExplorationType</span><span class="o">.</span><span class="n">RANDOM</span> <span class="ow">or</span> <span class="n">exploration_type</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">action_key</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">action_key</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
@@ -712,7 +715,7 @@
                     <span class="s2">&quot;spec must be provided by the policy or directly to the exploration wrapper.&quot;</span>
                 <span class="p">)</span>
             <span class="n">action_tensordict</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">action_key</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">tensordict</span>
+        <span class="k">return</span> <span class="n">tensordict</span></div></div>
 
 
 <div class="viewcode-block" id="AdditiveGaussianWrapper"><a class="viewcode-back" href="../../../../reference/generated/torchrl.modules.tensordict_module.AdditiveGaussianWrapper.html#torchrl.modules.tensordict_module.AdditiveGaussianWrapper">[docs]</a><span class="k">class</span> <span class="nc">AdditiveGaussianWrapper</span><span class="p">(</span><span class="n">TensorDictModuleWrapper</span><span class="p">):</span>
@@ -773,7 +776,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">annealing_num_steps</span> <span class="o">=</span> <span class="n">annealing_num_steps</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">&quot;mean&quot;</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="n">mean</span><span class="p">]))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">&quot;std&quot;</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="n">std</span><span class="p">]))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">&quot;sigma&quot;</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="n">sigma_init</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">&quot;sigma&quot;</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="n">sigma_init</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">action_key</span> <span class="o">=</span> <span class="n">action_key</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">out_keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">td_module</span><span class="o">.</span><span class="n">out_keys</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">action_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_keys</span><span class="p">:</span>
@@ -981,7 +984,7 @@
                 <span class="sa">f</span><span class="s2">&quot;got eps_init=</span><span class="si">{</span><span class="n">eps_init</span><span class="si">}</span><span class="s2"> and eps_end=</span><span class="si">{</span><span class="n">eps_end</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">annealing_num_steps</span> <span class="o">=</span> <span class="n">annealing_num_steps</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">&quot;eps&quot;</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="n">eps_init</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">&quot;eps&quot;</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="n">eps_init</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">out_keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">td_module</span><span class="o">.</span><span class="n">out_keys</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">ou</span><span class="o">.</span><span class="n">out_keys</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_init_key</span> <span class="o">=</span> <span class="n">is_init_key</span>
         <span class="n">noise_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ou</span><span class="o">.</span><span class="n">noise_key</span>
@@ -1234,6 +1237,7 @@
          <script src="../../../../_static/underscore.js"></script>
          <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
          <script src="../../../../_static/doctools.js"></script>
+         <script src="../../../../_static/design-tabs.js"></script>
      
 
   

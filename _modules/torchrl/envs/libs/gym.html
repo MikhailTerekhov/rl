@@ -33,6 +33,7 @@
   <link rel="stylesheet" href="../../../../_static/sg_gallery-binder.css" type="text/css" />
   <link rel="stylesheet" href="../../../../_static/sg_gallery-dataframe.css" type="text/css" />
   <link rel="stylesheet" href="../../../../_static/sg_gallery-rendered-html.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" type="text/css" />
   <link rel="stylesheet" href="../../../../_static/css/custom.css" type="text/css" />
     <link rel="index" title="Index" href="../../../../genindex.html" />
@@ -1432,7 +1433,7 @@
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(env=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">env_name</span><span class="si">}</span><span class="s2">, batch_size=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="si">}</span><span class="s2">, device=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="si">}</span><span class="s2">)&quot;</span></div>
 
 
-<span class="k">class</span> <span class="nc">MOGymWrapper</span><span class="p">(</span><span class="n">GymWrapper</span><span class="p">):</span>
+<div class="viewcode-block" id="MOGymWrapper"><a class="viewcode-back" href="../../../../reference/generated/torchrl.envs.MOGymWrapper.html#torchrl.envs.MOGymWrapper">[docs]</a><span class="k">class</span> <span class="nc">MOGymWrapper</span><span class="p">(</span><span class="n">GymWrapper</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;FARAMA MO-Gymnasium environment wrapper.</span>
 
 <span class="sd">    Examples:</span>
@@ -1447,10 +1448,10 @@
     <span class="n">git_url</span> <span class="o">=</span> <span class="s2">&quot;https://github.com/Farama-Foundation/MO-Gymnasium&quot;</span>
     <span class="n">libname</span> <span class="o">=</span> <span class="s2">&quot;mo-gymnasium&quot;</span>
 
-    <span class="n">_make_specs</span> <span class="o">=</span> <span class="n">set_gym_backend</span><span class="p">(</span><span class="s2">&quot;gymnasium&quot;</span><span class="p">)(</span><span class="n">GymEnv</span><span class="o">.</span><span class="n">_make_specs</span><span class="p">)</span>
+    <span class="n">_make_specs</span> <span class="o">=</span> <span class="n">set_gym_backend</span><span class="p">(</span><span class="s2">&quot;gymnasium&quot;</span><span class="p">)(</span><span class="n">GymEnv</span><span class="o">.</span><span class="n">_make_specs</span><span class="p">)</span></div>
 
 
-<span class="k">class</span> <span class="nc">MOGymEnv</span><span class="p">(</span><span class="n">GymEnv</span><span class="p">):</span>
+<div class="viewcode-block" id="MOGymEnv"><a class="viewcode-back" href="../../../../reference/generated/torchrl.envs.MOGymEnv.html#torchrl.envs.MOGymEnv">[docs]</a><span class="k">class</span> <span class="nc">MOGymEnv</span><span class="p">(</span><span class="n">GymEnv</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;FARAMA MO-Gymnasium environment wrapper.</span>
 
 <span class="sd">    Examples:</span>
@@ -1476,7 +1477,7 @@
             <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s2">&quot;MO-gymnasium not found, check installation&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">err</span>
 
-    <span class="n">_make_specs</span> <span class="o">=</span> <span class="n">set_gym_backend</span><span class="p">(</span><span class="s2">&quot;gymnasium&quot;</span><span class="p">)(</span><span class="n">GymEnv</span><span class="o">.</span><span class="n">_make_specs</span><span class="p">)</span>
+    <span class="n">_make_specs</span> <span class="o">=</span> <span class="n">set_gym_backend</span><span class="p">(</span><span class="s2">&quot;gymnasium&quot;</span><span class="p">)(</span><span class="n">GymEnv</span><span class="o">.</span><span class="n">_make_specs</span><span class="p">)</span></div>
 
 
 <span class="k">class</span> <span class="nc">terminal_obs_reader</span><span class="p">(</span><span class="n">BaseInfoDictReader</span><span class="p">):</span>
@@ -1530,7 +1531,7 @@
             <span class="c1"># Simplest case: there is one observation,</span>
             <span class="c1"># presented as a np.ndarray. The key should be pixels or observation.</span>
             <span class="c1"># We just write that value at its location in the tensor</span>
-            <span class="n">tensor</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span><span class="n">obs</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">tensor</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+            <span class="n">tensor</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">obs</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">tensor</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obs</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">obs</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
@@ -1541,13 +1542,13 @@
                 <span class="c1"># if the obs is a dict, we expect that the key points also to</span>
                 <span class="c1"># a value in the obs. We retrieve this value and write it in the</span>
                 <span class="c1"># tensor</span>
-                <span class="n">tensor</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span><span class="n">subobs</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">tensor</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+                <span class="n">tensor</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">subobs</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">tensor</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
 
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obs</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
             <span class="c1"># tuples are stacked along the first dimension when passing gym spaces</span>
             <span class="c1"># to torchrl specs. As such, we can simply stack the tuple and set it</span>
             <span class="c1"># at the relevant index (assuming stacking can be achieved)</span>
-            <span class="n">tensor</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span><span class="n">obs</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">tensor</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+            <span class="n">tensor</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">obs</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">tensor</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;Observations of type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">obs</span><span class="p">)</span><span class="si">}</span><span class="s2"> are not supported yet.&quot;</span>
@@ -1556,11 +1557,12 @@
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">info_dict</span><span class="p">,</span> <span class="n">tensordict</span><span class="p">):</span>
         <span class="n">terminal_obs</span> <span class="o">=</span> <span class="n">info_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">backend_key</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="p">],</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">info_spec</span><span class="o">.</span><span class="n">items</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">):</span>
-            <span class="n">final_obs</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">zero</span><span class="p">()</span>
+            <span class="n">final_obs_buffer</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">zero</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">terminal_obs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">obs</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">terminal_obs</span><span class="p">):</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_read_obs</span><span class="p">(</span><span class="n">obs</span><span class="p">,</span> <span class="n">key</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">final_obs</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">i</span><span class="p">)</span>
-            <span class="n">tensordict</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">final_obs</span><span class="p">)</span>
+                    <span class="c1"># writes final_obs inplace with terminal_obs content</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_read_obs</span><span class="p">(</span><span class="n">obs</span><span class="p">,</span> <span class="n">key</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">final_obs_buffer</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">i</span><span class="p">)</span>
+            <span class="n">tensordict</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">final_obs_buffer</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">tensordict</span>
 
 
@@ -1627,6 +1629,7 @@
          <script src="../../../../_static/underscore.js"></script>
          <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
          <script src="../../../../_static/doctools.js"></script>
+         <script src="../../../../_static/design-tabs.js"></script>
      
 
   

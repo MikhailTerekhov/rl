@@ -33,6 +33,7 @@
   <link rel="stylesheet" href="../../../_static/sg_gallery-binder.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/sg_gallery-dataframe.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/sg_gallery-rendered-html.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -380,15 +381,10 @@
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
 
-<span class="kn">from</span> <span class="nn">tensordict</span> <span class="kn">import</span> <span class="n">TensorDictBase</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">tensordict</span> <span class="kn">import</span> <span class="n">TensorDict</span><span class="p">,</span> <span class="n">TensorDictBase</span>
 
-<span class="kn">from</span> <span class="nn">tensordict.nn</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">make_functional</span><span class="p">,</span>
-    <span class="n">repopulate_module</span><span class="p">,</span>
-    <span class="n">TensorDictModule</span><span class="p">,</span>
-    <span class="n">TensorDictModuleBase</span><span class="p">,</span>
-    <span class="n">TensorDictParams</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">tensordict.nn</span> <span class="kn">import</span> <span class="n">TensorDictModule</span><span class="p">,</span> <span class="n">TensorDictModuleBase</span><span class="p">,</span> <span class="n">TensorDictParams</span>
 <span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">nn</span>
 <span class="kn">from</span> <span class="nn">torch.nn</span> <span class="kn">import</span> <span class="n">Parameter</span>
 
@@ -457,7 +453,7 @@
         <span class="k">pass</span>
 
     <span class="n">default_value_estimator</span><span class="p">:</span> <span class="n">ValueEstimators</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">SEP</span> <span class="o">=</span> <span class="s2">&quot;_sep_&quot;</span>
+    <span class="n">SEP</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span>
     <span class="n">TARGET_NET_WARNING</span> <span class="o">=</span> <span class="p">(</span>
         <span class="s2">&quot;No target network updater has been associated &quot;</span>
         <span class="s2">&quot;with this loss module, but target parameters have been found. &quot;</span>
@@ -508,7 +504,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_AcceptedKeys</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> it not an accepted tensordict key&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> is not an accepted tensordict key&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tensor_keys</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
@@ -548,21 +544,15 @@
         <span class="n">expand_dim</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">create_target_params</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">compare_against</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">funs_to_decorate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Converts a module to functional to be used in the loss.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            module (TensorDictModule or compatible): a stateful tensordict module.</span>
-<span class="sd">                This module will be made functional, yet still stateful, meaning</span>
-<span class="sd">                that it will be callable with the following alternative signatures:</span>
-
-<span class="sd">                &gt;&gt;&gt; module(tensordict)</span>
-<span class="sd">                &gt;&gt;&gt; module(tensordict, params=params)</span>
-
-<span class="sd">                ``params`` is a :class:`tensordict.TensorDict` instance with parameters</span>
-<span class="sd">                stuctured as the output of :func:`tensordict.nn.make_functional`</span>
-<span class="sd">                is.</span>
+<span class="sd">                Parameters from this module will be isolated in the `&lt;module_name&gt;_params`</span>
+<span class="sd">                attribute and a stateless version of the module will be registed</span>
+<span class="sd">                under the `module_name` attribute.</span>
 <span class="sd">            module_name (str): name where the module will be found.</span>
 <span class="sd">                The parameters of the module will be found under ``loss_module.&lt;module_name&gt;_params``</span>
 <span class="sd">                whereas the module will be found under ``loss_module.&lt;module_name&gt;``.</span>
@@ -593,45 +583,27 @@
 <span class="sd">                the resulting parameters will be a detached version of the</span>
 <span class="sd">                original parameters. If ``None``, the resulting parameters</span>
 <span class="sd">                will carry gradients as expected.</span>
-<span class="sd">            funs_to_decorate (list of str, optional): if provided, the list of</span>
-<span class="sd">                methods of ``module`` to make functional, ie the list of</span>
-<span class="sd">                methods that will accept the ``params`` keyword argument.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">funs_to_decorate</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">funs_to_decorate</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;forward&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;funs_to_decorate&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;funs_to_decorate is without effect with the new objective API.&quot;</span><span class="p">,</span>
+                <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unrecognised keyword arguments </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="c1"># To make it robust to device casting, we must register list of</span>
         <span class="c1"># tensors as lazy calls to `getattr(self, name_of_tensor)`.</span>
         <span class="c1"># Otherwise, casting the module to a device will keep old references</span>
         <span class="c1"># to uncast tensors</span>
         <span class="n">sep</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">SEP</span>
-        <span class="n">params</span> <span class="o">=</span> <span class="n">make_functional</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">funs_to_decorate</span><span class="o">=</span><span class="n">funs_to_decorate</span><span class="p">)</span>
-        <span class="c1"># buffer_names = next(itertools.islice(zip(*module.named_buffers()), 1))</span>
-        <span class="n">buffer_names</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">):</span>
-            <span class="c1"># we just consider all that is not param as a buffer, but if the module has been made</span>
-            <span class="c1"># functional and the params have been replaced this may break</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">):</span>
-                <span class="n">key</span> <span class="o">=</span> <span class="n">sep</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">key</span>
-                <span class="n">buffer_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-        <span class="n">functional_module</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">module</span><span class="p">)</span>
-        <span class="n">repopulate_module</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">TensorDict</span><span class="o">.</span><span class="n">from_module</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">as_module</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-        <span class="n">params_and_buffers</span> <span class="o">=</span> <span class="n">params</span>
-        <span class="c1"># we transform the buffers in params to make sure they follow the device</span>
-        <span class="c1"># as tensor = nn.Parameter(tensor) keeps its identity when moved to another device</span>
-
-        <span class="c1"># separate params and buffers</span>
-        <span class="n">params_and_buffers</span> <span class="o">=</span> <span class="n">TensorDictParams</span><span class="p">(</span><span class="n">params_and_buffers</span><span class="p">,</span> <span class="n">no_convert</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="c1"># sanity check</span>
-        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">params_and_buffers</span><span class="o">.</span><span class="n">keys</span><span class="p">(</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">keys</span><span class="p">(</span><span class="kc">True</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">sep</span> <span class="ow">in</span> <span class="n">key</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s2">&quot;The key </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> contains the &#39;_sep_&#39; pattern which is prohibited. Consider renaming the parameter / buffer.&quot;</span>
                 <span class="p">)</span>
-        <span class="n">params_and_buffers_flat</span> <span class="o">=</span> <span class="n">params_and_buffers</span><span class="o">.</span><span class="n">flatten_keys</span><span class="p">(</span><span class="n">sep</span><span class="p">)</span>
-        <span class="n">buffers</span> <span class="o">=</span> <span class="n">params_and_buffers_flat</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="o">*</span><span class="n">buffer_names</span><span class="p">)</span>
-        <span class="n">params</span> <span class="o">=</span> <span class="n">params_and_buffers_flat</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="o">*</span><span class="n">buffer_names</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">compare_against</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">compare_against</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">compare_against</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -643,6 +615,9 @@
             <span class="c1"># For buffers, a cloned expansion (or equivalently a repeat) is returned.</span>
 
             <span class="k">def</span> <span class="nf">_compare_and_expand</span><span class="p">(</span><span class="n">param</span><span class="p">):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">):</span>
+                    <span class="n">buffer</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">expand_dim</span><span class="p">,</span> <span class="o">*</span><span class="n">param</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+                    <span class="k">return</span> <span class="n">buffer</span>
                 <span class="k">if</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">compare_against</span><span class="p">:</span>
                     <span class="n">expanded_param</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">expand_dim</span><span class="p">,</span> <span class="o">*</span><span class="n">param</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
                     <span class="c1"># the expanded parameter must be sent to device when to()</span>
@@ -657,45 +632,40 @@
                     <span class="p">)</span>
                     <span class="k">return</span> <span class="n">p_out</span>
 
-            <span class="n">params</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
-                <span class="n">_compare_and_expand</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="p">[</span><span class="n">expand_dim</span><span class="p">,</span> <span class="o">*</span><span class="n">params</span><span class="o">.</span><span class="n">shape</span><span class="p">]</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="n">TensorDictParams</span><span class="p">(</span>
+                <span class="n">params</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
+                    <span class="n">_compare_and_expand</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="p">[</span><span class="n">expand_dim</span><span class="p">,</span> <span class="o">*</span><span class="n">params</span><span class="o">.</span><span class="n">shape</span><span class="p">]</span>
+                <span class="p">),</span>
+                <span class="n">no_convert</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="p">)</span>
-
-            <span class="n">buffers</span> <span class="o">=</span> <span class="n">buffers</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
-                <span class="k">lambda</span> <span class="n">buffer</span><span class="p">:</span> <span class="n">buffer</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">expand_dim</span><span class="p">,</span> <span class="o">*</span><span class="n">buffer</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span><span class="o">.</span><span class="n">clone</span><span class="p">(),</span>
-                <span class="n">batch_size</span><span class="o">=</span><span class="p">[</span><span class="n">expand_dim</span><span class="p">,</span> <span class="o">*</span><span class="n">buffers</span><span class="o">.</span><span class="n">shape</span><span class="p">],</span>
-            <span class="p">)</span>
-
-            <span class="n">params_and_buffers</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">params</span><span class="o">.</span><span class="n">unflatten_keys</span><span class="p">(</span><span class="n">sep</span><span class="p">))</span>
-            <span class="n">params_and_buffers</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">buffers</span><span class="o">.</span><span class="n">unflatten_keys</span><span class="p">(</span><span class="n">sep</span><span class="p">))</span>
-            <span class="n">params_and_buffers</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">batch_size</span>
-
-            <span class="c1"># self.params_to_map = params_to_map</span>
 
         <span class="n">param_name</span> <span class="o">=</span> <span class="n">module_name</span> <span class="o">+</span> <span class="s2">&quot;_params&quot;</span>
 
         <span class="n">prev_set_params</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
 
         <span class="c1"># register parameters and buffers</span>
-        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">parameter</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">params_and_buffers</span><span class="o">.</span><span class="n">items</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">)):</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">parameter</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">)):</span>
             <span class="k">if</span> <span class="n">parameter</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">prev_set_params</span><span class="p">:</span>
                 <span class="k">pass</span>
             <span class="k">elif</span> <span class="n">compare_against</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">parameter</span> <span class="ow">in</span> <span class="n">compare_against</span><span class="p">:</span>
-                <span class="n">params_and_buffers</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">parameter</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+                <span class="n">params</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">parameter</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
 
-        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">params_and_buffers</span><span class="p">)</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
 
-        <span class="c1"># set the functional module</span>
-        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">module_name</span><span class="p">,</span> <span class="n">functional_module</span><span class="p">)</span>
+        <span class="c1"># set the functional module: we need to convert the params to non-differentiable params</span>
+        <span class="c1"># otherwise they will appear twice in parameters</span>
+        <span class="k">with</span> <span class="n">params</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_make_meta_params</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;meta&quot;</span><span class="p">)</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">to_module</span><span class="p">(</span><span class="n">module</span><span class="p">):</span>
+            <span class="c1"># avoid buffers and params being exposed</span>
+            <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">module_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">module</span><span class="p">)</span>
 
         <span class="n">name_params_target</span> <span class="o">=</span> <span class="s2">&quot;target_&quot;</span> <span class="o">+</span> <span class="n">module_name</span>
         <span class="k">if</span> <span class="n">create_target_params</span><span class="p">:</span>
             <span class="c1"># if create_target_params:</span>
             <span class="c1"># we create a TensorDictParams to keep the target params as Buffer instances</span>
             <span class="n">target_params</span> <span class="o">=</span> <span class="n">TensorDictParams</span><span class="p">(</span>
-                <span class="n">params_and_buffers</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
-                    <span class="n">_make_target_param</span><span class="p">(</span><span class="n">clone</span><span class="o">=</span><span class="n">create_target_params</span><span class="p">)</span>
-                <span class="p">),</span>
+                <span class="n">params</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">_make_target_param</span><span class="p">(</span><span class="n">clone</span><span class="o">=</span><span class="n">create_target_params</span><span class="p">)),</span>
                 <span class="n">no_convert</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name_params_target</span> <span class="o">+</span> <span class="s2">&quot;_params&quot;</span><span class="p">,</span> <span class="n">target_params</span><span class="p">)</span>
@@ -817,6 +787,10 @@
             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;Value type </span><span class="si">{</span><span class="n">value_type</span><span class="si">}</span><span class="s2"> it not implemented for loss </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
             <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">value_type</span> <span class="o">==</span> <span class="n">ValueEstimators</span><span class="o">.</span><span class="n">VTrace</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Value type </span><span class="si">{</span><span class="n">value_type</span><span class="si">}</span><span class="s2"> it not implemented for loss </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
         <span class="k">elif</span> <span class="n">value_type</span> <span class="o">==</span> <span class="n">ValueEstimators</span><span class="o">.</span><span class="n">TDLambda</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;Value type </span><span class="si">{</span><span class="n">value_type</span><span class="si">}</span><span class="s2"> it not implemented for loss </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
@@ -824,85 +798,17 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown value type </span><span class="si">{</span><span class="n">value_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-        <span class="c1"># def _apply(self, fn, recurse=True):</span>
-        <span class="c1">#     &quot;&quot;&quot;Modifies torch.nn.Module._apply to work with Buffer class.&quot;&quot;&quot;</span>
-        <span class="c1">#     if recurse:</span>
-        <span class="c1">#         for module in self.children():</span>
-        <span class="c1">#             module._apply(fn)</span>
-        <span class="c1">#</span>
-        <span class="c1">#     def compute_should_use_set_data(tensor, tensor_applied):</span>
-        <span class="c1">#         if torch._has_compatible_shallow_copy_type(tensor, tensor_applied):</span>
-        <span class="c1">#             # If the new tensor has compatible tensor type as the existing tensor,</span>
-        <span class="c1">#             # the current behavior is to change the tensor in-place using `.data =`,</span>
-        <span class="c1">#             # and the future behavior is to overwrite the existing tensor. However,</span>
-        <span class="c1">#             # changing the current behavior is a BC-breaking change, and we want it</span>
-        <span class="c1">#             # to happen in future releases. So for now we introduce the</span>
-        <span class="c1">#             # `torch.__future__.get_overwrite_module_params_on_conversion()`</span>
-        <span class="c1">#             # global flag to let the user control whether they want the future</span>
-        <span class="c1">#             # behavior of overwriting the existing tensor or not.</span>
-        <span class="c1">#             return not torch.__future__.get_overwrite_module_params_on_conversion()</span>
-        <span class="c1">#         else:</span>
-        <span class="c1">#             return False</span>
-        <span class="c1">#</span>
-        <span class="c1">#     for key, param in self._parameters.items():</span>
-        <span class="c1">#         if param is None:</span>
-        <span class="c1">#             continue</span>
-        <span class="c1">#         # Tensors stored in modules are graph leaves, and we don&#39;t want to</span>
-        <span class="c1">#         # track autograd history of `param_applied`, so we have to use</span>
-        <span class="c1">#         # `with torch.no_grad():`</span>
-        <span class="c1">#         with torch.no_grad():</span>
-        <span class="c1">#             param_applied = fn(param)</span>
-        <span class="c1">#         should_use_set_data = compute_should_use_set_data(param, param_applied)</span>
-        <span class="c1">#         if should_use_set_data:</span>
-        <span class="c1">#             param.data = param_applied</span>
-        <span class="c1">#             out_param = param</span>
-        <span class="c1">#         else:</span>
-        <span class="c1">#             assert isinstance(param, Parameter)</span>
-        <span class="c1">#             assert param.is_leaf</span>
-        <span class="c1">#             out_param = Parameter(param_applied, param.requires_grad)</span>
-        <span class="c1">#             self._parameters[key] = out_param</span>
-        <span class="c1">#</span>
-        <span class="c1">#         if param.grad is not None:</span>
-        <span class="c1">#             with torch.no_grad():</span>
-        <span class="c1">#                 grad_applied = fn(param.grad)</span>
-        <span class="c1">#             should_use_set_data = compute_should_use_set_data(param.grad, grad_applied)</span>
-        <span class="c1">#             if should_use_set_data:</span>
-        <span class="c1">#                 assert out_param.grad is not None</span>
-        <span class="c1">#                 out_param.grad.data = grad_applied</span>
-        <span class="c1">#             else:</span>
-        <span class="c1">#                 assert param.grad.is_leaf</span>
-        <span class="c1">#                 out_param.grad = grad_applied.requires_grad_(param.grad.requires_grad)</span>
-        <span class="c1">#</span>
-        <span class="c1">#     for key, buffer in self._buffers.items():</span>
-        <span class="c1">#         if buffer is None:</span>
-        <span class="c1">#             continue</span>
-        <span class="c1">#         # Tensors stored in modules are graph leaves, and we don&#39;t want to</span>
-        <span class="c1">#         # track autograd history of `buffer_applied`, so we have to use</span>
-        <span class="c1">#         # `with torch.no_grad():`</span>
-        <span class="c1">#         with torch.no_grad():</span>
-        <span class="c1">#             buffer_applied = fn(buffer)</span>
-        <span class="c1">#         should_use_set_data = compute_should_use_set_data(buffer, buffer_applied)</span>
-        <span class="c1">#         if should_use_set_data:</span>
-        <span class="c1">#             buffer.data = buffer_applied</span>
-        <span class="c1">#             out_buffer = buffer</span>
-        <span class="c1">#         else:</span>
-        <span class="c1">#             assert isinstance(buffer, Buffer)</span>
-        <span class="c1">#             assert buffer.is_leaf</span>
-        <span class="c1">#             out_buffer = Buffer(buffer_applied, buffer.requires_grad)</span>
-        <span class="c1">#             self._buffers[key] = out_buffer</span>
-        <span class="c1">#</span>
-        <span class="c1">#         if buffer.grad is not None:</span>
-        <span class="c1">#             with torch.no_grad():</span>
-        <span class="c1">#                 grad_applied = fn(buffer.grad)</span>
-        <span class="c1">#             should_use_set_data = compute_should_use_set_data(buffer.grad, grad_applied)</span>
-        <span class="c1">#             if should_use_set_data:</span>
-        <span class="c1">#                 assert out_buffer.grad is not None</span>
-        <span class="c1">#                 out_buffer.grad.data = grad_applied</span>
-        <span class="c1">#             else:</span>
-        <span class="c1">#                 assert buffer.grad.is_leaf</span>
-        <span class="c1">#                 out_buffer.grad = grad_applied.requires_grad_(buffer.grad.requires_grad)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
 
-        <span class="k">return</span> <span class="bp">self</span></div></div>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_make_meta_params</span><span class="p">(</span><span class="n">param</span><span class="p">):</span>
+        <span class="n">is_param</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">)</span>
+
+        <span class="n">pd</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;meta&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">is_param</span><span class="p">:</span>
+            <span class="n">pd</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">pd</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">pd</span></div>
 
 
 <span class="k">class</span> <span class="nc">_make_target_param</span><span class="p">:</span>
@@ -968,6 +874,7 @@
          <script src="../../../_static/underscore.js"></script>
          <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
          <script src="../../../_static/doctools.js"></script>
+         <script src="../../../_static/design-tabs.js"></script>
      
 
   

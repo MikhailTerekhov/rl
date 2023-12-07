@@ -33,6 +33,7 @@
   <link rel="stylesheet" href="../../../_static/sg_gallery-binder.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/sg_gallery-dataframe.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/sg_gallery-rendered-html.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -650,11 +651,10 @@
         <span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span> <span class="k">if</span> <span class="n">device</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">policy_device</span>
         <span class="n">get_weights_fn</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">policy_device</span> <span class="o">!=</span> <span class="n">device</span><span class="p">:</span>
-            <span class="n">param_and_buf</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">policy</span><span class="o">.</span><span class="n">named_parameters</span><span class="p">())</span>
-            <span class="n">param_and_buf</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">policy</span><span class="o">.</span><span class="n">named_buffers</span><span class="p">()))</span>
+            <span class="n">param_and_buf</span> <span class="o">=</span> <span class="n">TensorDict</span><span class="o">.</span><span class="n">from_module</span><span class="p">(</span><span class="n">policy</span><span class="p">,</span> <span class="n">as_module</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
             <span class="k">def</span> <span class="nf">get_weights_fn</span><span class="p">(</span><span class="n">param_and_buf</span><span class="o">=</span><span class="n">param_and_buf</span><span class="p">):</span>
-                <span class="k">return</span> <span class="n">TensorDict</span><span class="p">(</span><span class="n">param_and_buf</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">param_and_buf</span><span class="o">.</span><span class="n">data</span>
 
             <span class="n">policy_cast</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">policy</span><span class="p">)</span><span class="o">.</span><span class="n">requires_grad_</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
             <span class="c1"># here things may break bc policy.to(&quot;cuda&quot;) gives us weights on cuda:0 (same</span>
@@ -678,9 +678,9 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">policy_weights</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">policy_weights</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">update_</span><span class="p">(</span><span class="n">policy_weights</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">policy_weights</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">update_</span><span class="p">(</span><span class="n">policy_weights</span><span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_weights_fn</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">policy_weights</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">update_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_weights_fn</span><span class="p">())</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">policy_weights</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">update_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_weights_fn</span><span class="p">())</span></div>
 
     <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">TensorDictBase</span><span class="p">]:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">iterator</span><span class="p">()</span>
@@ -929,10 +929,7 @@
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">policy</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">policy_weights</span> <span class="o">=</span> <span class="n">TensorDict</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">policy</span><span class="o">.</span><span class="n">named_parameters</span><span class="p">()),</span> <span class="p">[])</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">policy_weights</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
-                <span class="n">TensorDict</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">policy</span><span class="o">.</span><span class="n">named_buffers</span><span class="p">()),</span> <span class="p">[])</span>
-            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">policy_weights</span> <span class="o">=</span> <span class="n">TensorDict</span><span class="o">.</span><span class="n">from_module</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">policy</span><span class="p">,</span> <span class="n">as_module</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">policy_weights</span> <span class="o">=</span> <span class="n">TensorDict</span><span class="p">({},</span> <span class="p">[])</span>
 
@@ -1570,9 +1567,9 @@
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_policy_dict</span><span class="p">[</span><span class="n">_device</span><span class="p">]</span> <span class="o">=</span> <span class="n">_policy</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">_policy</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-                <span class="n">param_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">_policy</span><span class="o">.</span><span class="n">named_parameters</span><span class="p">())</span>
-                <span class="n">param_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">_policy</span><span class="o">.</span><span class="n">named_buffers</span><span class="p">())</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_policy_weights_dict</span><span class="p">[</span><span class="n">_device</span><span class="p">]</span> <span class="o">=</span> <span class="n">TensorDict</span><span class="p">(</span><span class="n">param_dict</span><span class="p">,</span> <span class="p">[])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_policy_weights_dict</span><span class="p">[</span><span class="n">_device</span><span class="p">]</span> <span class="o">=</span> <span class="n">TensorDict</span><span class="o">.</span><span class="n">from_module</span><span class="p">(</span>
+                    <span class="n">_policy</span><span class="p">,</span> <span class="n">as_module</span><span class="o">=</span><span class="kc">True</span>
+                <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_policy_weights_dict</span><span class="p">[</span><span class="n">_device</span><span class="p">]</span> <span class="o">=</span> <span class="n">TensorDict</span><span class="p">({},</span> <span class="p">[])</span>
 
@@ -1658,11 +1655,9 @@
     <span class="k">def</span> <span class="nf">update_policy_weights_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">policy_weights</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">_device</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_policy_dict</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">policy_weights</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_policy_weights_dict</span><span class="p">[</span><span class="n">_device</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">update_</span><span class="p">(</span>
-                    <span class="n">policy_weights</span>
-                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_policy_weights_dict</span><span class="p">[</span><span class="n">_device</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">update_</span><span class="p">(</span><span class="n">policy_weights</span><span class="p">)</span>
             <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_weights_fn_dict</span><span class="p">[</span><span class="n">_device</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_policy_weights_dict</span><span class="p">[</span><span class="n">_device</span><span class="p">]</span><span class="o">.</span><span class="n">update_</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_policy_weights_dict</span><span class="p">[</span><span class="n">_device</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">update_</span><span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_get_weights_fn_dict</span><span class="p">[</span><span class="n">_device</span><span class="p">]()</span>
                 <span class="p">)</span>
 
@@ -2683,6 +2678,7 @@
          <script src="../../../_static/underscore.js"></script>
          <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
          <script src="../../../_static/doctools.js"></script>
+         <script src="../../../_static/design-tabs.js"></script>
      
 
   

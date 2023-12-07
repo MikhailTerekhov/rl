@@ -33,6 +33,7 @@
   <link rel="stylesheet" href="../../../_static/sg_gallery-binder.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/sg_gallery-dataframe.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/sg_gallery-rendered-html.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -388,26 +389,16 @@
 <span class="kn">from</span> <span class="nn">torchrl.data</span> <span class="kn">import</span> <span class="n">CompositeSpec</span>
 <span class="kn">from</span> <span class="nn">torchrl.envs.utils</span> <span class="kn">import</span> <span class="n">ExplorationType</span><span class="p">,</span> <span class="n">set_exploration_type</span><span class="p">,</span> <span class="n">step_mdp</span>
 <span class="kn">from</span> <span class="nn">torchrl.objectives.common</span> <span class="kn">import</span> <span class="n">LossModule</span>
+
 <span class="kn">from</span> <span class="nn">torchrl.objectives.utils</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">_cache_values</span><span class="p">,</span>
     <span class="n">_GAMMA_LMBDA_DEPREC_WARNING</span><span class="p">,</span>
+    <span class="n">_vmap_func</span><span class="p">,</span>
     <span class="n">default_value_kwargs</span><span class="p">,</span>
     <span class="n">distance_loss</span><span class="p">,</span>
     <span class="n">ValueEstimators</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">torchrl.objectives.value</span> <span class="kn">import</span> <span class="n">TD0Estimator</span><span class="p">,</span> <span class="n">TD1Estimator</span><span class="p">,</span> <span class="n">TDLambdaEstimator</span>
-
-<span class="k">try</span><span class="p">:</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">vmap</span>
-    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">functorch</span> <span class="kn">import</span> <span class="n">vmap</span>
-
-    <span class="n">FUNCTORCH_ERR</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-    <span class="n">_has_functorch</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-    <span class="n">FUNCTORCH_ERR</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
-    <span class="n">_has_functorch</span> <span class="o">=</span> <span class="kc">False</span>
 
 
 <div class="viewcode-block" id="REDQLoss"><a class="viewcode-back" href="../../../reference/generated/torchrl.objectives.REDQLoss.html#torchrl.objectives.REDQLoss">[docs]</a><span class="k">class</span> <span class="nc">REDQLoss</span><span class="p">(</span><span class="n">LossModule</span><span class="p">):</span>
@@ -635,8 +626,6 @@
         <span class="n">priority_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">separate_losses</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">_has_functorch</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s2">&quot;Failed to import functorch.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">FUNCTORCH_ERR</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_in_keys</span> <span class="o">=</span> <span class="kc">None</span>
@@ -646,7 +635,6 @@
             <span class="n">actor_network</span><span class="p">,</span>
             <span class="s2">&quot;actor_network&quot;</span><span class="p">,</span>
             <span class="n">create_target_params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">delay_actor</span><span class="p">,</span>
-            <span class="n">funs_to_decorate</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;forward&quot;</span><span class="p">,</span> <span class="s2">&quot;get_dist_params&quot;</span><span class="p">],</span>
         <span class="p">)</span>
 
         <span class="c1"># let&#39;s make sure that actor_network has `return_log_prob` set to True</span>
@@ -701,8 +689,8 @@
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">_GAMMA_LMBDA_DEPREC_WARNING</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span> <span class="o">=</span> <span class="n">gamma</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_vmap_qvalue_network00</span> <span class="o">=</span> <span class="n">vmap</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">qvalue_network</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_vmap_getdist</span> <span class="o">=</span> <span class="n">vmap</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">actor_network</span><span class="o">.</span><span class="n">get_dist_params</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vmap_qvalue_network00</span> <span class="o">=</span> <span class="n">_vmap_func</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">qvalue_network</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vmap_getdist</span> <span class="o">=</span> <span class="n">_vmap_func</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">actor_network</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="s2">&quot;get_dist_params&quot;</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">target_entropy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1046,6 +1034,7 @@
          <script src="../../../_static/underscore.js"></script>
          <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
          <script src="../../../_static/doctools.js"></script>
+         <script src="../../../_static/design-tabs.js"></script>
      
 
   

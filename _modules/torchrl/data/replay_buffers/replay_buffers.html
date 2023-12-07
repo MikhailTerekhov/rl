@@ -33,6 +33,7 @@
   <link rel="stylesheet" href="../../../../_static/sg_gallery-binder.css" type="text/css" />
   <link rel="stylesheet" href="../../../../_static/sg_gallery-dataframe.css" type="text/css" />
   <link rel="stylesheet" href="../../../../_static/sg_gallery-rendered-html.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" type="text/css" />
   <link rel="stylesheet" href="../../../../_static/css/custom.css" type="text/css" />
     <link rel="index" title="Index" href="../../../../genindex.html" />
@@ -374,9 +375,11 @@
 <span class="c1"># LICENSE file in the root directory of this source tree.</span>
 
 <span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">concurrent.futures</span> <span class="kn">import</span> <span class="n">ThreadPoolExecutor</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">torch</span>
@@ -600,6 +603,7 @@
             <span class="s2">&quot;_storage&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span>
             <span class="s2">&quot;_sampler&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sampler</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span>
             <span class="s2">&quot;_writer&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_writer</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span>
+            <span class="s2">&quot;_transforms&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transform</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span>
             <span class="s2">&quot;_batch_size&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_batch_size</span><span class="p">,</span>
         <span class="p">}</span>
 
@@ -607,7 +611,79 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">state_dict</span><span class="p">[</span><span class="s2">&quot;_storage&quot;</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sampler</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">state_dict</span><span class="p">[</span><span class="s2">&quot;_sampler&quot;</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_writer</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">state_dict</span><span class="p">[</span><span class="s2">&quot;_writer&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_transform</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">state_dict</span><span class="p">[</span><span class="s2">&quot;_transforms&quot;</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_batch_size</span> <span class="o">=</span> <span class="n">state_dict</span><span class="p">[</span><span class="s2">&quot;_batch_size&quot;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="ReplayBuffer.dumps"><a class="viewcode-back" href="../../../../reference/generated/torchrl.data.ReplayBuffer.html#torchrl.data.ReplayBuffer.dumps">[docs]</a>    <span class="k">def</span> <span class="nf">dumps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Saves the replay buffer on disk at the specified path.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            path (Path or str): path where to save the replay buffer.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; import tempfile</span>
+<span class="sd">            &gt;&gt;&gt; import tqdm</span>
+<span class="sd">            &gt;&gt;&gt; from torchrl.data import LazyMemmapStorage, TensorDictReplayBuffer</span>
+<span class="sd">            &gt;&gt;&gt; from torchrl.data.replay_buffers.samplers import PrioritizedSampler, RandomSampler</span>
+<span class="sd">            &gt;&gt;&gt; import torch</span>
+<span class="sd">            &gt;&gt;&gt; from tensordict import TensorDict</span>
+<span class="sd">            &gt;&gt;&gt; # Build and populate the replay buffer</span>
+<span class="sd">            &gt;&gt;&gt; S = 1_000_000</span>
+<span class="sd">            &gt;&gt;&gt; sampler = PrioritizedSampler(S, 1.1, 1.0)</span>
+<span class="sd">            &gt;&gt;&gt; # sampler = RandomSampler()</span>
+<span class="sd">            &gt;&gt;&gt; storage = LazyMemmapStorage(S)</span>
+<span class="sd">            &gt;&gt;&gt; rb = TensorDictReplayBuffer(storage=storage, sampler=sampler)</span>
+<span class="sd">            &gt;&gt;&gt;</span>
+<span class="sd">            &gt;&gt;&gt; for _ in tqdm.tqdm(range(100)):</span>
+<span class="sd">            ...     td = TensorDict({&quot;obs&quot;: torch.randn(100, 3, 4), &quot;next&quot;: {&quot;obs&quot;: torch.randn(100, 3, 4)}, &quot;td_error&quot;: torch.rand(100)}, [100])</span>
+<span class="sd">            ...     rb.extend(td)</span>
+<span class="sd">            ...     sample = rb.sample(32)</span>
+<span class="sd">            ...     rb.update_tensordict_priority(sample)</span>
+<span class="sd">            &gt;&gt;&gt; # save and load the buffer</span>
+<span class="sd">            &gt;&gt;&gt; with tempfile.TemporaryDirectory() as tmpdir:</span>
+<span class="sd">            ...     rb.dumps(tmpdir)</span>
+<span class="sd">            ...</span>
+<span class="sd">            ...     sampler = PrioritizedSampler(S, 1.1, 1.0)</span>
+<span class="sd">            ...     # sampler = RandomSampler()</span>
+<span class="sd">            ...     storage = LazyMemmapStorage(S)</span>
+<span class="sd">            ...     rb_load = TensorDictReplayBuffer(storage=storage, sampler=sampler)</span>
+<span class="sd">            ...     rb_load.loads(tmpdir)</span>
+<span class="sd">            ...     assert len(rb) == len(rb_load)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span>
+        <span class="n">path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">path</span> <span class="o">/</span> <span class="s2">&quot;storage&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sampler</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">path</span> <span class="o">/</span> <span class="s2">&quot;sampler&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_writer</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">path</span> <span class="o">/</span> <span class="s2">&quot;writer&quot;</span><span class="p">)</span>
+        <span class="c1"># fall back on state_dict for transforms</span>
+        <span class="n">transform_sd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transform</span><span class="o">.</span><span class="n">state_dict</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">transform_sd</span><span class="p">:</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">transform_sd</span><span class="p">,</span> <span class="n">path</span> <span class="o">/</span> <span class="s2">&quot;transform.t&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span> <span class="o">/</span> <span class="s2">&quot;buffer_metadata.json&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">({</span><span class="s2">&quot;batch_size&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_batch_size</span><span class="p">},</span> <span class="n">file</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ReplayBuffer.loads"><a class="viewcode-back" href="../../../../reference/generated/torchrl.data.ReplayBuffer.html#torchrl.data.ReplayBuffer.loads">[docs]</a>    <span class="k">def</span> <span class="nf">loads</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Loads a replay buffer state at the given path.</span>
+
+<span class="sd">        The buffer should have matching components and be saved using :meth:`~.dumps`.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            path (Path or str): path where the replay buffer was saved.</span>
+
+<span class="sd">        See :meth:`~.dumps` for more info.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">path</span> <span class="o">/</span> <span class="s2">&quot;storage&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sampler</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">path</span> <span class="o">/</span> <span class="s2">&quot;sampler&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_writer</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">path</span> <span class="o">/</span> <span class="s2">&quot;writer&quot;</span><span class="p">)</span>
+        <span class="c1"># fall back on state_dict for transforms</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">path</span> <span class="o">/</span> <span class="s2">&quot;transform.t&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_transform</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">path</span> <span class="o">/</span> <span class="s2">&quot;transform.t&quot;</span><span class="p">))</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span> <span class="o">/</span> <span class="s2">&quot;buffer_metadata.json&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">metadata</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_batch_size</span> <span class="o">=</span> <span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;batch_size&quot;</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="ReplayBuffer.add"><a class="viewcode-back" href="../../../../reference/generated/torchrl.data.ReplayBuffer.html#torchrl.data.ReplayBuffer.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a single element to the replay buffer.</span>
@@ -1487,6 +1563,7 @@
          <script src="../../../../_static/underscore.js"></script>
          <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
          <script src="../../../../_static/doctools.js"></script>
+         <script src="../../../../_static/design-tabs.js"></script>
      
 
   

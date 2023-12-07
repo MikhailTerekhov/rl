@@ -34,6 +34,7 @@
   <link rel="stylesheet" href="../_static/sg_gallery-binder.css" type="text/css" />
   <link rel="stylesheet" href="../_static/sg_gallery-dataframe.css" type="text/css" />
   <link rel="stylesheet" href="../_static/sg_gallery-rendered-html.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" type="text/css" />
   <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
@@ -442,7 +443,10 @@ other cases, the action written in the tensordict is simply the network output.<
 <tr class="row-even"><td><p><a class="reference internal" href="generated/torchrl.modules.tensordict_module.EGreedyModule.html#torchrl.modules.tensordict_module.EGreedyModule" title="torchrl.modules.tensordict_module.EGreedyModule"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EGreedyModule</span></code></a>(*args, **kwargs)</p></td>
 <td><p>Epsilon-Greedy exploration module.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/torchrl.modules.tensordict_module.OrnsteinUhlenbeckProcessWrapper.html#torchrl.modules.tensordict_module.OrnsteinUhlenbeckProcessWrapper" title="torchrl.modules.tensordict_module.OrnsteinUhlenbeckProcessWrapper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OrnsteinUhlenbeckProcessWrapper</span></code></a>(*args, **kwargs)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/torchrl.modules.tensordict_module.EGreedyWrapper.html#torchrl.modules.tensordict_module.EGreedyWrapper" title="torchrl.modules.tensordict_module.EGreedyWrapper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EGreedyWrapper</span></code></a>(*args, **kwargs)</p></td>
+<td><p>[Deprecated] Epsilon-Greedy PO wrapper.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/torchrl.modules.tensordict_module.OrnsteinUhlenbeckProcessWrapper.html#torchrl.modules.tensordict_module.OrnsteinUhlenbeckProcessWrapper" title="torchrl.modules.tensordict_module.OrnsteinUhlenbeckProcessWrapper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OrnsteinUhlenbeckProcessWrapper</span></code></a>(*args, **kwargs)</p></td>
 <td><p>Ornstein-Uhlenbeck exploration policy wrapper.</p></td>
 </tr>
 </tbody>
@@ -699,13 +703,16 @@ classes for RL usage.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/torchrl.modules.ConvNet.html#torchrl.modules.ConvNet" title="torchrl.modules.ConvNet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ConvNet</span></code></a>(in_features, depth, num_cells, ...)</p></td>
 <td><p>A convolutional neural network.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/torchrl.modules.LSTMNet.html#torchrl.modules.LSTMNet" title="torchrl.modules.LSTMNet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LSTMNet</span></code></a>(out_features, lstm_kwargs, mlp_kwargs)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/torchrl.modules.Conv3dNet.html#torchrl.modules.Conv3dNet" title="torchrl.modules.Conv3dNet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Conv3dNet</span></code></a>(in_features, depth, num_cells, ...)</p></td>
+<td><p>A 3D-convolutional neural network.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/torchrl.modules.LSTMNet.html#torchrl.modules.LSTMNet" title="torchrl.modules.LSTMNet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LSTMNet</span></code></a>(out_features, lstm_kwargs, mlp_kwargs)</p></td>
 <td><p>An embedder for an LSTM preceded by an MLP.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/torchrl.modules.SqueezeLayer.html#torchrl.modules.SqueezeLayer" title="torchrl.modules.SqueezeLayer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SqueezeLayer</span></code></a>([dims])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/torchrl.modules.SqueezeLayer.html#torchrl.modules.SqueezeLayer" title="torchrl.modules.SqueezeLayer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SqueezeLayer</span></code></a>([dims])</p></td>
 <td><p>Squeezing layer.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/torchrl.modules.Squeeze2dLayer.html#torchrl.modules.Squeeze2dLayer" title="torchrl.modules.Squeeze2dLayer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Squeeze2dLayer</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/torchrl.modules.Squeeze2dLayer.html#torchrl.modules.Squeeze2dLayer" title="torchrl.modules.Squeeze2dLayer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Squeeze2dLayer</span></code></a>()</p></td>
 <td><p>Squeezing layer for convolutional neural networks.</p></td>
 </tr>
 </tbody>
@@ -744,8 +751,20 @@ algorithms, such as DQN, DDPG or Dreamer.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/torchrl.modules.DuelingCnnDQNet.html#torchrl.modules.DuelingCnnDQNet" title="torchrl.modules.DuelingCnnDQNet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DuelingCnnDQNet</span></code></a>(out_features[, ...])</p></td>
 <td><p>Dueling CNN Q-network.</p></td>
 </tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/torchrl.modules.GRUCell.html#torchrl.modules.GRUCell" title="torchrl.modules.GRUCell"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GRUCell</span></code></a>(input_size, hidden_size[, bias, ...])</p></td>
+<td><p>A gated recurrent unit (GRU) cell that performs the same operation as nn.LSTMCell but is fully coded in Python.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/torchrl.modules.GRU.html#torchrl.modules.GRU" title="torchrl.modules.GRU"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GRU</span></code></a>(input_size, hidden_size[, num_layers, ...])</p></td>
+<td><p>A PyTorch module for executing multiple steps of a multi-layer GRU.</p></td>
+</tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/torchrl.modules.GRUModule.html#torchrl.modules.GRUModule" title="torchrl.modules.GRUModule"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GRUModule</span></code></a>(*args, **kwargs)</p></td>
 <td><p>An embedder for an GRU module.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/torchrl.modules.LSTMCell.html#torchrl.modules.LSTMCell" title="torchrl.modules.LSTMCell"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LSTMCell</span></code></a>(input_size, hidden_size[, bias, ...])</p></td>
+<td><p>A long short-term memory (LSTM) cell that performs the same operation as nn.LSTMCell but is fully coded in Python.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/torchrl.modules.LSTM.html#torchrl.modules.LSTM" title="torchrl.modules.LSTM"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LSTM</span></code></a>(input_size, hidden_size[, num_layers, ...])</p></td>
+<td><p>A PyTorch module for executing multiple steps of a multi-layer LSTM.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/torchrl.modules.LSTMModule.html#torchrl.modules.LSTMModule" title="torchrl.modules.LSTMModule"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LSTMModule</span></code></a>(*args, **kwargs)</p></td>
 <td><p>An embedder for an LSTM module.</p></td>
@@ -973,6 +992,7 @@ configuration.</p>
          <script src="../_static/underscore.js"></script>
          <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
          <script src="../_static/doctools.js"></script>
+         <script src="../_static/design-tabs.js"></script>
          <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
      
 

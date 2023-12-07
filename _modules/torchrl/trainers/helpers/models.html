@@ -33,6 +33,7 @@
   <link rel="stylesheet" href="../../../../_static/sg_gallery-binder.css" type="text/css" />
   <link rel="stylesheet" href="../../../../_static/sg_gallery-dataframe.css" type="text/css" />
   <link rel="stylesheet" href="../../../../_static/sg_gallery-rendered-html.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" type="text/css" />
   <link rel="stylesheet" href="../../../../_static/css/custom.css" type="text/css" />
     <link rel="index" title="Index" href="../../../../genindex.html" />
@@ -1027,6 +1028,7 @@
             <span class="n">out_keys</span><span class="o">=</span><span class="p">[</span><span class="n">action_key</span><span class="p">],</span>
             <span class="n">default_interaction_type</span><span class="o">=</span><span class="n">InteractionType</span><span class="o">.</span><span class="n">RANDOM</span><span class="p">,</span>
             <span class="n">distribution_class</span><span class="o">=</span><span class="n">TanhNormal</span><span class="p">,</span>
+            <span class="n">distribution_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;tanh_loc&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
             <span class="n">spec</span><span class="o">=</span><span class="n">CompositeSpec</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="n">action_key</span><span class="p">:</span> <span class="n">proof_environment</span><span class="o">.</span><span class="n">action_spec</span><span class="p">}),</span>
         <span class="p">),</span>
     <span class="p">)</span>
@@ -1073,8 +1075,9 @@
             <span class="n">SafeProbabilisticModule</span><span class="p">(</span>
                 <span class="n">in_keys</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;loc&quot;</span><span class="p">,</span> <span class="s2">&quot;scale&quot;</span><span class="p">],</span>
                 <span class="n">out_keys</span><span class="o">=</span><span class="p">[</span><span class="n">action_key</span><span class="p">],</span>
-                <span class="n">default_interaction_type</span><span class="o">=</span><span class="n">InteractionType</span><span class="o">.</span><span class="n">RANDOM</span><span class="p">,</span>
+                <span class="n">default_interaction_type</span><span class="o">=</span><span class="n">InteractionType</span><span class="o">.</span><span class="n">MODE</span><span class="p">,</span>
                 <span class="n">distribution_class</span><span class="o">=</span><span class="n">TanhNormal</span><span class="p">,</span>
+                <span class="n">distribution_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;tanh_loc&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
                 <span class="n">spec</span><span class="o">=</span><span class="n">CompositeSpec</span><span class="p">(</span>
                     <span class="o">**</span><span class="p">{</span><span class="n">action_key</span><span class="p">:</span> <span class="n">proof_environment</span><span class="o">.</span><span class="n">action_spec</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">)}</span>
                 <span class="p">),</span>
@@ -1335,6 +1338,7 @@
          <script src="../../../../_static/underscore.js"></script>
          <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
          <script src="../../../../_static/doctools.js"></script>
+         <script src="../../../../_static/design-tabs.js"></script>
      
 
   

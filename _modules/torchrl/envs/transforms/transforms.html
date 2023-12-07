@@ -33,6 +33,7 @@
   <link rel="stylesheet" href="../../../../_static/sg_gallery-binder.css" type="text/css" />
   <link rel="stylesheet" href="../../../../_static/sg_gallery-dataframe.css" type="text/css" />
   <link rel="stylesheet" href="../../../../_static/sg_gallery-rendered-html.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" type="text/css" />
   <link rel="stylesheet" href="../../../../_static/css/custom.css" type="text/css" />
     <link rel="index" title="Index" href="../../../../genindex.html" />
@@ -5062,6 +5063,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialises the transform. Filters out non-reward input keys and defines output keys.&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">in_keys</span><span class="o">=</span><span class="n">in_keys</span><span class="p">,</span> <span class="n">out_keys</span><span class="o">=</span><span class="n">out_keys</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_reset_keys</span> <span class="o">=</span> <span class="n">reset_keys</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_keys_checked</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">in_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -5140,9 +5142,7 @@
                         <span class="k">return</span> <span class="kc">False</span>
                 <span class="k">return</span> <span class="kc">True</span>
 
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">reset_keys</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">in_keys</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">_check_match</span><span class="p">(</span>
-                <span class="n">reset_keys</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_keys</span>
-            <span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">_check_match</span><span class="p">(</span><span class="n">reset_keys</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_keys</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s2">&quot;Could not match the env reset_keys </span><span class="si">{</span><span class="n">reset_keys</span><span class="si">}</span><span class="s2"> with the </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s2"> in_keys </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">in_keys</span><span class="si">}</span><span class="s2">. &quot;</span>
                     <span class="sa">f</span><span class="s2">&quot;Please provide the reset_keys manually. Reset entries can be &quot;</span>
@@ -5151,6 +5151,14 @@
                 <span class="p">)</span>
             <span class="n">reset_keys</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">reset_keys</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_reset_keys</span> <span class="o">=</span> <span class="n">reset_keys</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_keys_checked</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">reset_keys</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">in_keys</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Could not match the env reset_keys </span><span class="si">{</span><span class="n">reset_keys</span><span class="si">}</span><span class="s2"> with the in_keys </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">in_keys</span><span class="si">}</span><span class="s2">. &quot;</span>
+                <span class="s2">&quot;Please make sure that these have the same length.&quot;</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_keys_checked</span> <span class="o">=</span> <span class="kc">True</span>
+
         <span class="k">return</span> <span class="n">reset_keys</span>
 
     <span class="nd">@reset_keys</span><span class="o">.</span><span class="n">setter</span>
@@ -6738,7 +6746,7 @@
         <span class="k">return</span> <span class="n">tensordict_reset</span></div>
 
 
-<span class="k">class</span> <span class="nc">VecGymEnvTransform</span><span class="p">(</span><span class="n">Transform</span><span class="p">):</span>
+<div class="viewcode-block" id="VecGymEnvTransform"><a class="viewcode-back" href="../../../../reference/generated/torchrl.envs.transforms.VecGymEnvTransform.html#torchrl.envs.transforms.VecGymEnvTransform">[docs]</a><span class="k">class</span> <span class="nc">VecGymEnvTransform</span><span class="p">(</span><span class="n">Transform</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A transform for GymWrapper subclasses that handles the auto-reset in a consistent way.</span>
 
 <span class="sd">    Gym, gymnasium and SB3 provide vectorized (read, parallel or batched) environments</span>
@@ -6884,13 +6892,13 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_obs_keys</span> <span class="o">=</span> <span class="n">keys</span>
         <span class="k">return</span> <span class="n">keys</span>
 
-    <span class="k">def</span> <span class="nf">transform_observation_spec</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">observation_spec</span><span class="p">:</span> <span class="n">TensorSpec</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TensorSpec</span><span class="p">:</span>
+<div class="viewcode-block" id="VecGymEnvTransform.transform_observation_spec"><a class="viewcode-back" href="../../../../reference/generated/torchrl.envs.transforms.VecGymEnvTransform.html#torchrl.envs.transforms.VecGymEnvTransform.transform_observation_spec">[docs]</a>    <span class="k">def</span> <span class="nf">transform_observation_spec</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">observation_spec</span><span class="p">:</span> <span class="n">TensorSpec</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TensorSpec</span><span class="p">:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">final_name</span> <span class="ow">in</span> <span class="n">observation_spec</span><span class="o">.</span><span class="n">keys</span><span class="p">(</span><span class="kc">True</span><span class="p">):</span>
             <span class="k">del</span> <span class="n">observation_spec</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">final_name</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">observation_spec</span>
+        <span class="k">return</span> <span class="n">observation_spec</span></div>
 
-    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tensordict</span><span class="p">:</span> <span class="n">TensorDictBase</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TensorDictBase</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">FORWARD_NOT_IMPLEMENTED</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)))</span>
+<div class="viewcode-block" id="VecGymEnvTransform.forward"><a class="viewcode-back" href="../../../../reference/generated/torchrl.envs.transforms.VecGymEnvTransform.html#torchrl.envs.transforms.VecGymEnvTransform.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tensordict</span><span class="p">:</span> <span class="n">TensorDictBase</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TensorDictBase</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">FORWARD_NOT_IMPLEMENTED</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)))</span></div></div>
 </pre></div>
 
              </article>
@@ -6944,6 +6952,7 @@
          <script src="../../../../_static/underscore.js"></script>
          <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
          <script src="../../../../_static/doctools.js"></script>
+         <script src="../../../../_static/design-tabs.js"></script>
      
 
   

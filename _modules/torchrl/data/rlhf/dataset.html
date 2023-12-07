@@ -33,6 +33,7 @@
   <link rel="stylesheet" href="../../../../_static/sg_gallery-binder.css" type="text/css" />
   <link rel="stylesheet" href="../../../../_static/sg_gallery-dataframe.css" type="text/css" />
   <link rel="stylesheet" href="../../../../_static/sg_gallery-rendered-html.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" type="text/css" />
   <link rel="stylesheet" href="../../../../_static/css/custom.css" type="text/css" />
     <link rel="index" title="Index" href="../../../../genindex.html" />
@@ -447,8 +448,8 @@
 <span class="sd">        &gt;&gt;&gt; print(dataset)</span>
 <span class="sd">        TensorDict(</span>
 <span class="sd">            fields={</span>
-<span class="sd">                attention_mask: MemmapTensor(shape=torch.Size([185068, 550]), device=cpu, dtype=torch.int64, is_shared=False),</span>
-<span class="sd">                input_ids: MemmapTensor(shape=torch.Size([185068, 550]), device=cpu, dtype=torch.int64, is_shared=False)},</span>
+<span class="sd">                attention_mask: MemoryMappedTensor(shape=torch.Size([185068, 550]), device=cpu, dtype=torch.int64, is_shared=False),</span>
+<span class="sd">                input_ids: MemoryMappedTensor(shape=torch.Size([185068, 550]), device=cpu, dtype=torch.int64, is_shared=False)},</span>
 <span class="sd">            batch_size=torch.Size([185068]),</span>
 <span class="sd">            device=None,</span>
 <span class="sd">            is_shared=False)</span>
@@ -507,6 +508,7 @@
         <span class="n">data_dir</span> <span class="o">=</span> <span class="n">root_dir</span> <span class="o">/</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset_name</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">data_dir_total</span> <span class="o">=</span> <span class="n">data_dir</span> <span class="o">/</span> <span class="n">split</span> <span class="o">/</span> <span class="nb">str</span><span class="p">(</span><span class="n">max_length</span><span class="p">)</span>
         <span class="c1"># search for data</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Looking for data in&quot;</span><span class="p">,</span> <span class="n">data_dir_total</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">data_dir_total</span><span class="p">):</span>
             <span class="n">dataset</span> <span class="o">=</span> <span class="n">TensorDict</span><span class="o">.</span><span class="n">load_memmap</span><span class="p">(</span><span class="n">data_dir_total</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">dataset</span>
@@ -640,8 +642,8 @@
 <span class="sd">                        fields={</span>
 <span class="sd">                            prefix: TensorDict(</span>
 <span class="sd">                                fields={</span>
-<span class="sd">                                    labels: MemmapTensor(shape=torch.Size([10, 11]), device=cpu, dtype=torch.float32, is_shared=False),</span>
-<span class="sd">                                    tokens: MemmapTensor(shape=torch.Size([10, 11]), device=cpu, dtype=torch.int64, is_shared=False)},</span>
+<span class="sd">                                    labels: MemoryMappedTensor(shape=torch.Size([10, 11]), device=cpu, dtype=torch.float32, is_shared=False),</span>
+<span class="sd">                                    tokens: MemoryMappedTensor(shape=torch.Size([10, 11]), device=cpu, dtype=torch.int64, is_shared=False)},</span>
 <span class="sd">                                batch_size=torch.Size([10]),</span>
 <span class="sd">                                device=None,</span>
 <span class="sd">                                is_shared=False)},</span>
@@ -902,6 +904,7 @@
          <script src="../../../../_static/underscore.js"></script>
          <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
          <script src="../../../../_static/doctools.js"></script>
+         <script src="../../../../_static/design-tabs.js"></script>
      
 
   

@@ -30,7 +30,7 @@ You will also be able to execute diverse environments in parallel.
 
 .. GENERATED FROM PYTHON SOURCE LINES 11-17
 
-.. code-block:: default
+.. code-block:: Python
 
 
 
@@ -47,7 +47,7 @@ You will also be able to execute diverse environments in parallel.
 
 .. GENERATED FROM PYTHON SOURCE LINES 23-28
 
-.. code-block:: default
+.. code-block:: Python
 
 
     from torchrl.envs import CatTensors, Compose, DoubleToFloat, ParallelEnv, TransformedEnv
@@ -68,7 +68,7 @@ and another that must learn to walk.
 
 .. GENERATED FROM PYTHON SOURCE LINES 31-59
 
-.. code-block:: default
+.. code-block:: Python
 
 
     env1 = DMControlEnv("humanoid", "stand")
@@ -107,7 +107,7 @@ and another that must learn to walk.
 
 .. GENERATED FROM PYTHON SOURCE LINES 60-69
 
-.. code-block:: default
+.. code-block:: Python
 
 
     tdreset1 = env1.reset()
@@ -127,7 +127,7 @@ and another that must learn to walk.
 
 .. GENERATED FROM PYTHON SOURCE LINES 70-73
 
-.. code-block:: default
+.. code-block:: Python
 
 
     print(tdreset[0])
@@ -166,7 +166,7 @@ and pass them through the dedicated sub-network.
 
 .. GENERATED FROM PYTHON SOURCE LINES 81-84
 
-.. code-block:: default
+.. code-block:: Python
 
 
     action_dim = env1.action_spec.shape[-1]
@@ -180,7 +180,7 @@ and pass them through the dedicated sub-network.
 
 .. GENERATED FROM PYTHON SOURCE LINES 85-103
 
-.. code-block:: default
+.. code-block:: Python
 
 
     policy_common = TensorDictModule(
@@ -213,7 +213,7 @@ Let's check that our sequence outputs actions for a single env (stand).
 
 .. GENERATED FROM PYTHON SOURCE LINES 105-108
 
-.. code-block:: default
+.. code-block:: Python
 
 
     seq(env1.reset())
@@ -248,7 +248,7 @@ Let's check that our sequence outputs actions for a single env (walk).
 
 .. GENERATED FROM PYTHON SOURCE LINES 110-113
 
-.. code-block:: default
+.. code-block:: Python
 
 
     seq(env2.reset())
@@ -286,7 +286,7 @@ backbone was executed in a vectorized way - not in a loop - which is more effici
 
 .. GENERATED FROM PYTHON SOURCE LINES 118-121
 
-.. code-block:: default
+.. code-block:: Python
 
 
     seq(tdreset)
@@ -336,7 +336,7 @@ it will assume that we are in a multi-task setting.
 
 .. GENERATED FROM PYTHON SOURCE LINES 133-171
 
-.. code-block:: default
+.. code-block:: Python
 
 
 
@@ -429,7 +429,7 @@ Let's pass the output through our network.
 
 .. GENERATED FROM PYTHON SOURCE LINES 173-185
 
-.. code-block:: default
+.. code-block:: Python
 
 
     tdreset = seq(tdreset)
@@ -582,7 +582,7 @@ Rollout
 
 .. GENERATED FROM PYTHON SOURCE LINES 188-191
 
-.. code-block:: default
+.. code-block:: Python
 
 
     td_rollout = env.rollout(100, policy=seq, return_contiguous=False)
@@ -596,7 +596,7 @@ Rollout
 
 .. GENERATED FROM PYTHON SOURCE LINES 192-195
 
-.. code-block:: default
+.. code-block:: Python
 
 
     td_rollout[:, 0]  # tensordict of the first step: only the common keys are shown
@@ -648,7 +648,7 @@ Rollout
 
 .. GENERATED FROM PYTHON SOURCE LINES 196-201
 
-.. code-block:: default
+.. code-block:: Python
 
 
     td_rollout[0]  # tensordict of the first env: the stand obs is present
@@ -665,7 +665,7 @@ Rollout
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 53.713 seconds)
+   **Total running time of the script:** (0 minutes 47.813 seconds)
 
 **Estimated memory usage:**  27 MB
 
@@ -676,16 +676,13 @@ Rollout
 
   .. container:: sphx-glr-footer sphx-glr-footer-example
 
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
-
+      :download:`Download Jupyter notebook: multi_task.ipynb <multi_task.ipynb>`
 
     .. container:: sphx-glr-download sphx-glr-download-python
 
       :download:`Download Python source code: multi_task.py <multi_task.py>`
-
-    .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-      :download:`Download Jupyter notebook: multi_task.ipynb <multi_task.ipynb>`
 
 
 .. only:: html

@@ -33,6 +33,7 @@
   <link rel="stylesheet" href="../../../_static/sg_gallery-binder.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/sg_gallery-dataframe.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/sg_gallery-rendered-html.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -607,7 +608,11 @@
 
 
 <span class="k">def</span> <span class="nf">_set_single_key</span><span class="p">(</span>
-    <span class="n">source</span><span class="p">:</span> <span class="n">TensorDictBase</span><span class="p">,</span> <span class="n">dest</span><span class="p">:</span> <span class="n">TensorDictBase</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">clone</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">source</span><span class="p">:</span> <span class="n">TensorDictBase</span><span class="p">,</span>
+    <span class="n">dest</span><span class="p">:</span> <span class="n">TensorDictBase</span><span class="p">,</span>
+    <span class="n">key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">,</span>
+    <span class="n">clone</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="c1"># key should be already unraveled</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
@@ -623,7 +628,9 @@
                 <span class="n">source</span> <span class="o">=</span> <span class="n">val</span>
                 <span class="n">dest</span> <span class="o">=</span> <span class="n">new_val</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">clone</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">device</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">val</span><span class="o">.</span><span class="n">device</span> <span class="o">!=</span> <span class="n">device</span><span class="p">:</span>
+                    <span class="n">val</span> <span class="o">=</span> <span class="n">val</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">non_blocking</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">clone</span><span class="p">:</span>
                     <span class="n">val</span> <span class="o">=</span> <span class="n">val</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
                 <span class="n">dest</span><span class="o">.</span><span class="n">_set_str</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">validated</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="c1"># This is a temporary solution to understand if a key is heterogeneous</span>
@@ -632,7 +639,7 @@
             <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Found more than one unique shape in the tensors&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">)):</span>
                 <span class="c1"># this is a het key</span>
                 <span class="k">for</span> <span class="n">s_td</span><span class="p">,</span> <span class="n">d_td</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">tensordicts</span><span class="p">,</span> <span class="n">dest</span><span class="o">.</span><span class="n">tensordicts</span><span class="p">):</span>
-                    <span class="n">_set_single_key</span><span class="p">(</span><span class="n">s_td</span><span class="p">,</span> <span class="n">d_td</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">clone</span><span class="p">)</span>
+                    <span class="n">_set_single_key</span><span class="p">(</span><span class="n">s_td</span><span class="p">,</span> <span class="n">d_td</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">clone</span><span class="o">=</span><span class="n">clone</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
                 <span class="k">break</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">err</span>
@@ -1516,6 +1523,7 @@
          <script src="../../../_static/underscore.js"></script>
          <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
          <script src="../../../_static/doctools.js"></script>
+         <script src="../../../_static/design-tabs.js"></script>
      
 
   

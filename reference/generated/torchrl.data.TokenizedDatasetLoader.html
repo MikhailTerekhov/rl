@@ -34,6 +34,7 @@
   <link rel="stylesheet" href="../../_static/sg_gallery-binder.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/sg_gallery-dataframe.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/sg_gallery-rendered-html.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -437,8 +438,8 @@ should be gathered. Defaults to <code class="docutils literal notranslate"><span
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
 <span class="go">TensorDict(</span>
 <span class="go">    fields={</span>
-<span class="go">        attention_mask: MemmapTensor(shape=torch.Size([185068, 550]), device=cpu, dtype=torch.int64, is_shared=False),</span>
-<span class="go">        input_ids: MemmapTensor(shape=torch.Size([185068, 550]), device=cpu, dtype=torch.int64, is_shared=False)},</span>
+<span class="go">        attention_mask: MemoryMappedTensor(shape=torch.Size([185068, 550]), device=cpu, dtype=torch.int64, is_shared=False),</span>
+<span class="go">        input_ids: MemoryMappedTensor(shape=torch.Size([185068, 550]), device=cpu, dtype=torch.int64, is_shared=False)},</span>
 <span class="go">    batch_size=torch.Size([185068]),</span>
 <span class="go">    device=None,</span>
 <span class="go">    is_shared=False)</span>
@@ -492,8 +493,8 @@ tentatively gathered and used to filder the data. Defaults to
 <span class="go">            fields={</span>
 <span class="go">                prefix: TensorDict(</span>
 <span class="go">                    fields={</span>
-<span class="go">                        labels: MemmapTensor(shape=torch.Size([10, 11]), device=cpu, dtype=torch.float32, is_shared=False),</span>
-<span class="go">                        tokens: MemmapTensor(shape=torch.Size([10, 11]), device=cpu, dtype=torch.int64, is_shared=False)},</span>
+<span class="go">                        labels: MemoryMappedTensor(shape=torch.Size([10, 11]), device=cpu, dtype=torch.float32, is_shared=False),</span>
+<span class="go">                        tokens: MemoryMappedTensor(shape=torch.Size([10, 11]), device=cpu, dtype=torch.int64, is_shared=False)},</span>
 <span class="go">                    batch_size=torch.Size([10]),</span>
 <span class="go">                    device=None,</span>
 <span class="go">                    is_shared=False)},</span>
@@ -581,6 +582,7 @@ tentatively gathered and used to filder the data. Defaults to
          <script src="../../_static/underscore.js"></script>
          <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
          <script src="../../_static/doctools.js"></script>
+         <script src="../../_static/design-tabs.js"></script>
      
 
   

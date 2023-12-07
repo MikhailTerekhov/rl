@@ -34,12 +34,13 @@
   <link rel="stylesheet" href="../../_static/sg_gallery-binder.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/sg_gallery-dataframe.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/sg_gallery-rendered-html.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="ObsDecoder" href="torchrl.modules.ObsDecoder.html" />
-    <link rel="prev" title="GRUModule" href="torchrl.modules.GRUModule.html" />
+    <link rel="prev" title="LSTM" href="torchrl.modules.LSTM.html" />
   <!-- Google Analytics -->
   
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-117752657-2"></script>
@@ -418,6 +419,7 @@ Default: <code class="docutils literal notranslate"><span class="pre">True</span
 <li><p><strong>dropout</strong> – If non-zero, introduces a <cite>Dropout</cite> layer on the outputs of each
 LSTM layer except the last layer, with dropout probability equal to
 <code class="xref py py-attr docutils literal notranslate"><span class="pre">dropout</span></code>. Default: 0</p></li>
+<li><p><strong>python_based</strong> – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, will use a full Python implementation of the LSTM cell. Default: <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
 </ul>
 </dd>
 <dt class="field-even">Keyword Arguments<span class="colon">:</span></dt>
@@ -557,7 +559,7 @@ in various parts of the code (inference vs training):</p>
         <a href="torchrl.modules.ObsDecoder.html" class="btn btn-neutral float-right" title="ObsDecoder" accesskey="n" rel="next">Next <img src="../../_static/images/chevron-right-orange.svg" class="next-page"></a>
       
       
-        <a href="torchrl.modules.GRUModule.html" class="btn btn-neutral" title="GRUModule" accesskey="p" rel="prev"><img src="../../_static/images/chevron-right-orange.svg" class="previous-page"> Previous</a>
+        <a href="torchrl.modules.LSTM.html" class="btn btn-neutral" title="LSTM" accesskey="p" rel="prev"><img src="../../_static/images/chevron-right-orange.svg" class="previous-page"> Previous</a>
       
     </div>
   
@@ -610,6 +612,7 @@ in various parts of the code (inference vs training):</p>
          <script src="../../_static/underscore.js"></script>
          <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
          <script src="../../_static/doctools.js"></script>
+         <script src="../../_static/design-tabs.js"></script>
      
 
   
