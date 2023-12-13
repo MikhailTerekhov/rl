@@ -421,7 +421,7 @@
 &gt;&gt;&gt; h0 = torch.zeros(V, N_LAYERS, B, N_OUT, device=device)
 &gt;&gt;&gt; with torch.no_grad():
 …     h1 = batched_call(x, h0)</p>
-<p>__init__(self,input_size,hidden_size,num_layers=1,bias=True,batch_first=False,dropout=0.0,bidirectional=False,device=None,dtype=None)</p>
+<p>__init__(input_size,hidden_size,num_layers=1,bias=True,batch_first=False,dropout=0.0,bidirectional=False,device=None,dtype=None)</p>
 <p>Apply a multi-layer gated recurrent unit (GRU) RNN to an input sequence.
 For each element in the input sequence, each layer computes the following
 function:</p>
