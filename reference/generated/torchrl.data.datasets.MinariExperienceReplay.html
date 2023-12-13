@@ -386,8 +386,9 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>dataset_id</strong> (<em>str</em>) – </p></li>
-<li><p><strong>batch_size</strong> (<em>int</em>) – </p></li>
+<li><p><strong>dataset_id</strong> (<em>str</em>) – The dataset to be downloaded. Must be part of MinariExperienceReplay.available_datasets</p></li>
+<li><p><strong>batch_size</strong> (<em>int</em>) – Batch-size used during sampling. Can be overridden by <cite>data.sample(batch_size)</cite> if
+necessary.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Keyword Arguments<span class="colon">:</span></dt>
@@ -422,6 +423,9 @@ equivalent to the end of a trajectory. For some datasets from
 accurate choices regarding this usage of <code class="docutils literal notranslate"><span class="pre">split_trajs</span></code>.
 Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
 </ul>
+</dd>
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>available_datasets</strong> – a list of accepted entries to be downloaded.</p>
 </dd>
 </dl>
 <div class="admonition note">

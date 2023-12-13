@@ -10,7 +10,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>OpenMLExperienceReplay &mdash; torchrl main documentation</title>
+  <title>RobosetExperienceReplay &mdash; torchrl main documentation</title>
   
 
   
@@ -39,8 +39,8 @@
   <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="RobosetExperienceReplay" href="torchrl.data.datasets.RobosetExperienceReplay.html" />
-    <link rel="prev" title="MinariExperienceReplay" href="torchrl.data.datasets.MinariExperienceReplay.html" />
+    <link rel="next" title="TensorSpec" href="torchrl.data.TensorSpec.html" />
+    <link rel="prev" title="OpenMLExperienceReplay" href="torchrl.data.datasets.OpenMLExperienceReplay.html" />
   <!-- Google Analytics -->
   
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-117752657-2"></script>
@@ -324,13 +324,13 @@
         
           <li><a href="../data.html">torchrl.data package</a> &gt;</li>
         
-      <li>OpenMLExperienceReplay</li>
+      <li>RobosetExperienceReplay</li>
     
     
       <li class="pytorch-breadcrumbs-aside">
         
             
-            <a href="../../_sources/reference/generated/torchrl.data.datasets.OpenMLExperienceReplay.rst.txt" rel="nofollow"><img src="../../_static/images/view-page-source-icon.svg"></a>
+            <a href="../../_sources/reference/generated/torchrl.data.datasets.RobosetExperienceReplay.rst.txt" rel="nofollow"><img src="../../_static/images/view-page-source-icon.svg"></a>
           
         
       </li>
@@ -351,7 +351,7 @@
 
         
           <div class="pytorch-call-to-action-links">
-            <div id="tutorial-type">reference/generated/torchrl.data.datasets.OpenMLExperienceReplay</div>
+            <div id="tutorial-type">reference/generated/torchrl.data.datasets.RobosetExperienceReplay</div>
 
             <div id="google-colab-link">
               <img class="call-to-action-img" src="../../_static/images/pytorch-colab.svg"/>
@@ -377,26 +377,32 @@
             <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
              <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
               
-  <section id="openmlexperiencereplay">
-<h1>OpenMLExperienceReplay<a class="headerlink" href="#openmlexperiencereplay" title="Permalink to this heading">¶</a></h1>
+  <section id="robosetexperiencereplay">
+<h1>RobosetExperienceReplay<a class="headerlink" href="#robosetexperiencereplay" title="Permalink to this heading">¶</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="torchrl.data.datasets.OpenMLExperienceReplay">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchrl.data.datasets.</span></span><span class="sig-name descname"><span class="pre">OpenMLExperienceReplay</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampler</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="torchrl.data.replay_buffers.Sampler.html#torchrl.data.replay_buffers.Sampler" title="torchrl.data.replay_buffers.samplers.Sampler"><span class="pre">Sampler</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">writer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="torchrl.data.replay_buffers.Writer.html#torchrl.data.replay_buffers.Writer" title="torchrl.data.replay_buffers.writers.Writer"><span class="pre">Writer</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collate_fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pin_memory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefetch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="torchrl.envs.transforms.Transform.html#torchrl.envs.transforms.Transform" title="torchrl.envs.transforms.Transform"><span class="pre">Transform</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/torchrl/data/datasets/openml.html#OpenMLExperienceReplay"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchrl.data.datasets.OpenMLExperienceReplay" title="Permalink to this definition">¶</a></dt>
-<dd><p>An experience replay for OpenML data.</p>
-<p>This class provides an easy entry point for public datasets.
-See “Dua, D. and Graff, C. (2017) UCI Machine Learning Repository. <a class="reference external" href="http://archive.ics.uci.edu/ml">http://archive.ics.uci.edu/ml</a>”</p>
-<p>The data is accessed via scikit-learn. Make sure sklearn and pandas are
-installed before retrieving the data:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install scikit-learn pandas -U
-</pre></div>
-</div>
+<dt class="sig sig-object py" id="torchrl.data.datasets.RobosetExperienceReplay">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchrl.data.datasets.</span></span><span class="sig-name descname"><span class="pre">RobosetExperienceReplay</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">download</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampler</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="torchrl.data.replay_buffers.Sampler.html#torchrl.data.replay_buffers.Sampler" title="torchrl.data.replay_buffers.Sampler"><span class="pre">Sampler</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">writer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="torchrl.data.replay_buffers.Writer.html#torchrl.data.replay_buffers.Writer" title="torchrl.data.replay_buffers.Writer"><span class="pre">Writer</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collate_fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pin_memory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefetch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'torchrl.envs.Transform'</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split_trajs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">env_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/torchrl/data/datasets/roboset.html#RobosetExperienceReplay"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchrl.data.datasets.RobosetExperienceReplay" title="Permalink to this definition">¶</a></dt>
+<dd><p>Roboset experience replay dataset.</p>
+<p>This class downloads the H5 data from roboset and processes it in a mmap
+format, which makes indexing (and therefore sampling) faster.</p>
+<p>Learn more about roboset here: <a class="reference external" href="https://sites.google.com/view/robohive/roboset">https://sites.google.com/view/robohive/roboset</a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<em>str</em>) – the following datasets are supported:
-<code class="docutils literal notranslate"><span class="pre">&quot;adult_num&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;adult_onehot&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;mushroom_num&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;mushroom_onehot&quot;</span></code>,
-<code class="docutils literal notranslate"><span class="pre">&quot;covertype&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;shuttle&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;magic&quot;</span></code>.</p></li>
-<li><p><strong>batch_size</strong> (<em>int</em>) – the batch size to use during sampling.</p></li>
+<li><p><strong>dataset_id</strong> (<em>str</em>) – the dataset to be downloaded. Must be part of RobosetExperienceReplay.available_datasets.</p></li>
+<li><p><strong>batch_size</strong> (<em>int</em>) – Batch-size used during sampling. Can be overridden by <cite>data.sample(batch_size)</cite> if
+necessary.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Keyword Arguments<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>root</strong> (<em>Path</em><em> or </em><em>str</em><em>, </em><em>optional</em>) – The Roboset dataset root directory.
+The actual dataset memory-mapped files will be saved under
+<cite>&lt;root&gt;/&lt;dataset_id&gt;</cite>. If none is provided, it defaults to
+<a href="#id1"><span class="problematic" id="id2">``</span></a>~/.cache/torchrl/minari`.</p></li>
+<li><p><strong>download</strong> (<em>bool</em><em> or </em><em>str</em><em>, </em><em>optional</em>) – Whether the dataset should be downloaded if
+not found. Defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>. Download can also be passed as “force”,
+in which case the downloaded data will be overwritten.</p></li>
 <li><p><strong>sampler</strong> (<a class="reference internal" href="torchrl.data.replay_buffers.Sampler.html#torchrl.data.replay_buffers.Sampler" title="torchrl.data.replay_buffers.Sampler"><em>Sampler</em></a><em>, </em><em>optional</em>) – the sampler to be used. If none is provided
 a default RandomSampler() will be used.</p></li>
 <li><p><strong>writer</strong> (<a class="reference internal" href="torchrl.data.replay_buffers.Writer.html#torchrl.data.replay_buffers.Writer" title="torchrl.data.replay_buffers.Writer"><em>Writer</em></a><em>, </em><em>optional</em>) – the writer to be used. If none is provided
@@ -410,12 +416,63 @@ samples.</p></li>
 using multithreading.</p></li>
 <li><p><strong>transform</strong> (<a class="reference internal" href="torchrl.envs.transforms.Transform.html#torchrl.envs.transforms.Transform" title="torchrl.envs.transforms.Transform"><em>Transform</em></a><em>, </em><em>optional</em>) – Transform to be executed when sample() is called.
 To chain transforms use the <code class="xref py py-obj docutils literal notranslate"><span class="pre">Compose</span></code> class.</p></li>
+<li><p><strong>split_trajs</strong> (<em>bool</em><em>, </em><em>optional</em>) – if <code class="docutils literal notranslate"><span class="pre">True</span></code>, the trajectories will be split
+along the first dimension and padded to have a matching shape.
+To split the trajectories, the <code class="docutils literal notranslate"><span class="pre">&quot;done&quot;</span></code> signal will be used, which
+is recovered via <code class="docutils literal notranslate"><span class="pre">done</span> <span class="pre">=</span> <span class="pre">truncated</span> <span class="pre">|</span> <span class="pre">terminated</span></code>. In other words,
+it is assumed that any <code class="docutils literal notranslate"><span class="pre">truncated</span></code> or <code class="docutils literal notranslate"><span class="pre">terminated</span></code> signal is
+equivalent to the end of a trajectory. For some datasets from
+<code class="docutils literal notranslate"><span class="pre">D4RL</span></code>, this may not be true. It is up to the user to make
+accurate choices regarding this usage of <code class="docutils literal notranslate"><span class="pre">split_trajs</span></code>.
+Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
 </ul>
 </dd>
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>available_datasets</strong> – a list of accepted entries to be downloaded.</p>
+</dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">torch</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchrl.envs.transforms</span> <span class="kn">import</span> <span class="n">ExcludeTransform</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchrl.data.datasets</span> <span class="kn">import</span> <span class="n">RobosetExperienceReplay</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="n">RobosetExperienceReplay</span><span class="p">(</span><span class="s2">&quot;FK1-v4(expert)/FK1_MicroOpenRandom_v2d-v4&quot;</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">transform</span><span class="o">=</span><span class="n">ExcludeTransform</span><span class="p">(</span><span class="s2">&quot;info&quot;</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;next&quot;</span><span class="p">,</span> <span class="s2">&quot;info&quot;</span><span class="p">)))</span>  <span class="c1"># excluding info dict for conciseness</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">break</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># data is organised by seed and episode, but stored contiguously</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">batch</span><span class="p">[</span><span class="s2">&quot;seed&quot;</span><span class="p">],</span> <span class="n">batch</span><span class="p">[</span><span class="s2">&quot;episode&quot;</span><span class="p">])</span>
+<span class="go">tensor([2, 1, 0, 0, 1, 1, 0, 0, 1, 1, 2, 2, 2, 2, 2, 1, 1, 2, 0, 2, 0, 2, 2, 1,</span>
+<span class="go">        0, 2, 0, 0, 1, 1, 2, 1]) tensor([17, 20, 18,  9,  6,  1, 12,  6,  2,  6,  8, 15,  8, 21, 17,  3,  9, 20,</span>
+<span class="go">        23, 12,  3, 16, 19, 16, 16,  4,  4, 12,  1,  2, 15, 24])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
+<span class="go">TensorDict(</span>
+<span class="go">    fields={</span>
+<span class="go">        action: Tensor(shape=torch.Size([32, 9]), device=cpu, dtype=torch.float64, is_shared=False),</span>
+<span class="go">        done: Tensor(shape=torch.Size([32]), device=cpu, dtype=torch.bool, is_shared=False),</span>
+<span class="go">        episode: Tensor(shape=torch.Size([32]), device=cpu, dtype=torch.int64, is_shared=False),</span>
+<span class="go">        index: Tensor(shape=torch.Size([32]), device=cpu, dtype=torch.int64, is_shared=False),</span>
+<span class="go">        next: TensorDict(</span>
+<span class="go">            fields={</span>
+<span class="go">                done: Tensor(shape=torch.Size([32]), device=cpu, dtype=torch.bool, is_shared=False),</span>
+<span class="go">                observation: Tensor(shape=torch.Size([32, 75]), device=cpu, dtype=torch.float64, is_shared=False),</span>
+<span class="go">                reward: Tensor(shape=torch.Size([32, 1]), device=cpu, dtype=torch.float64, is_shared=False),</span>
+<span class="go">                terminated: Tensor(shape=torch.Size([32]), device=cpu, dtype=torch.bool, is_shared=False),</span>
+<span class="go">                truncated: Tensor(shape=torch.Size([32]), device=cpu, dtype=torch.bool, is_shared=False)},</span>
+<span class="go">            batch_size=torch.Size([32]),</span>
+<span class="go">            device=cpu,</span>
+<span class="go">            is_shared=False),</span>
+<span class="go">        observation: Tensor(shape=torch.Size([32, 75]), device=cpu, dtype=torch.float64, is_shared=False),</span>
+<span class="go">        seed: Tensor(shape=torch.Size([32]), device=cpu, dtype=torch.int64, is_shared=False),</span>
+<span class="go">        time: Tensor(shape=torch.Size([32]), device=cpu, dtype=torch.float64, is_shared=False)},</span>
+<span class="go">    batch_size=torch.Size([32]),</span>
+<span class="go">    device=cpu,</span>
+<span class="go">    is_shared=False)</span>
+</pre></div>
+</div>
 <dl class="py method">
-<dt class="sig sig-object py" id="torchrl.data.datasets.OpenMLExperienceReplay.add">
-<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TensorDictBase</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#torchrl.data.datasets.OpenMLExperienceReplay.add" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="torchrl.data.datasets.RobosetExperienceReplay.add">
+<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TensorDictBase</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#torchrl.data.datasets.RobosetExperienceReplay.add" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a single element to the replay buffer.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -428,8 +485,8 @@ To chain transforms use the <code class="xref py py-obj docutils literal notrans
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="torchrl.data.datasets.OpenMLExperienceReplay.append_transform">
-<span class="sig-name descname"><span class="pre">append_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transform</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="torchrl.envs.transforms.Transform.html#torchrl.envs.transforms.Transform" title="torchrl.envs.transforms.Transform"><span class="pre">Transform</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#torchrl.data.datasets.OpenMLExperienceReplay.append_transform" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="torchrl.data.datasets.RobosetExperienceReplay.append_transform">
+<span class="sig-name descname"><span class="pre">append_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transform</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="torchrl.envs.transforms.Transform.html#torchrl.envs.transforms.Transform" title="torchrl.envs.transforms.Transform"><span class="pre">Transform</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#torchrl.data.datasets.RobosetExperienceReplay.append_transform" title="Permalink to this definition">¶</a></dt>
 <dd><p>Appends transform at the end.</p>
 <p>Transforms are applied in order when <cite>sample</cite> is called.</p>
 <dl class="field-list simple">
@@ -440,8 +497,8 @@ To chain transforms use the <code class="xref py py-obj docutils literal notrans
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="torchrl.data.datasets.OpenMLExperienceReplay.dumps">
-<span class="sig-name descname"><span class="pre">dumps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchrl.data.datasets.OpenMLExperienceReplay.dumps" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="torchrl.data.datasets.RobosetExperienceReplay.dumps">
+<span class="sig-name descname"><span class="pre">dumps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchrl.data.datasets.RobosetExperienceReplay.dumps" title="Permalink to this definition">¶</a></dt>
 <dd><p>Saves the replay buffer on disk at the specified path.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -482,14 +539,14 @@ To chain transforms use the <code class="xref py py-obj docutils literal notrans
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="torchrl.data.datasets.OpenMLExperienceReplay.empty">
-<span class="sig-name descname"><span class="pre">empty</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#torchrl.data.datasets.OpenMLExperienceReplay.empty" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="torchrl.data.datasets.RobosetExperienceReplay.empty">
+<span class="sig-name descname"><span class="pre">empty</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#torchrl.data.datasets.RobosetExperienceReplay.empty" title="Permalink to this definition">¶</a></dt>
 <dd><p>Empties the replay buffer and reset cursor to 0.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="torchrl.data.datasets.OpenMLExperienceReplay.extend">
-<span class="sig-name descname"><span class="pre">extend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tensordicts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TensorDictBase</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.1)"><span class="pre">Tensor</span></a></span></span><a class="headerlink" href="#torchrl.data.datasets.OpenMLExperienceReplay.extend" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="torchrl.data.datasets.RobosetExperienceReplay.extend">
+<span class="sig-name descname"><span class="pre">extend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tensordicts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TensorDictBase</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.1)"><span class="pre">Tensor</span></a></span></span><a class="headerlink" href="#torchrl.data.datasets.RobosetExperienceReplay.extend" title="Permalink to this definition">¶</a></dt>
 <dd><p>Extends the replay buffer with one or more elements contained in an iterable.</p>
 <p>If present, the inverse transforms will be called.`</p>
 <dl class="field-list simple">
@@ -504,8 +561,8 @@ buffer.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="torchrl.data.datasets.OpenMLExperienceReplay.insert_transform">
-<span class="sig-name descname"><span class="pre">insert_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="torchrl.envs.transforms.Transform.html#torchrl.envs.transforms.Transform" title="torchrl.envs.transforms.Transform"><span class="pre">Transform</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#torchrl.data.datasets.OpenMLExperienceReplay.insert_transform" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="torchrl.data.datasets.RobosetExperienceReplay.insert_transform">
+<span class="sig-name descname"><span class="pre">insert_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="torchrl.envs.transforms.Transform.html#torchrl.envs.transforms.Transform" title="torchrl.envs.transforms.Transform"><span class="pre">Transform</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#torchrl.data.datasets.RobosetExperienceReplay.insert_transform" title="Permalink to this definition">¶</a></dt>
 <dd><p>Inserts transform.</p>
 <p>Transforms are executed in order when <cite>sample</cite> is called.</p>
 <dl class="field-list simple">
@@ -519,21 +576,21 @@ buffer.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="torchrl.data.datasets.OpenMLExperienceReplay.loads">
-<span class="sig-name descname"><span class="pre">loads</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchrl.data.datasets.OpenMLExperienceReplay.loads" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="torchrl.data.datasets.RobosetExperienceReplay.loads">
+<span class="sig-name descname"><span class="pre">loads</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchrl.data.datasets.RobosetExperienceReplay.loads" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads a replay buffer state at the given path.</p>
-<p>The buffer should have matching components and be saved using <a class="reference internal" href="#torchrl.data.datasets.OpenMLExperienceReplay.dumps" title="torchrl.data.datasets.OpenMLExperienceReplay.dumps"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dumps()</span></code></a>.</p>
+<p>The buffer should have matching components and be saved using <a class="reference internal" href="#torchrl.data.datasets.RobosetExperienceReplay.dumps" title="torchrl.data.datasets.RobosetExperienceReplay.dumps"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dumps()</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>path</strong> (<em>Path</em><em> or </em><em>str</em>) – path where the replay buffer was saved.</p>
 </dd>
 </dl>
-<p>See <a class="reference internal" href="#torchrl.data.datasets.OpenMLExperienceReplay.dumps" title="torchrl.data.datasets.OpenMLExperienceReplay.dumps"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dumps()</span></code></a> for more info.</p>
+<p>See <a class="reference internal" href="#torchrl.data.datasets.RobosetExperienceReplay.dumps" title="torchrl.data.datasets.RobosetExperienceReplay.dumps"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dumps()</span></code></a> for more info.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="torchrl.data.datasets.OpenMLExperienceReplay.sample">
-<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">TensorDictBase</span></span></span><a class="headerlink" href="#torchrl.data.datasets.OpenMLExperienceReplay.sample" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="torchrl.data.datasets.RobosetExperienceReplay.sample">
+<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">TensorDictBase</span></span></span><a class="headerlink" href="#torchrl.data.datasets.RobosetExperienceReplay.sample" title="Permalink to this definition">¶</a></dt>
 <dd><p>Samples a batch of data from the replay buffer.</p>
 <p>Uses Sampler to sample indices, and retrieves them from Storage.</p>
 <dl class="field-list simple">
@@ -565,10 +622,10 @@ A tuple containing this tensordict and info if return_info flag is set to True.<
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="torchrl.data.datasets.RobosetExperienceReplay.html" class="btn btn-neutral float-right" title="RobosetExperienceReplay" accesskey="n" rel="next">Next <img src="../../_static/images/chevron-right-orange.svg" class="next-page"></a>
+        <a href="torchrl.data.TensorSpec.html" class="btn btn-neutral float-right" title="TensorSpec" accesskey="n" rel="next">Next <img src="../../_static/images/chevron-right-orange.svg" class="next-page"></a>
       
       
-        <a href="torchrl.data.datasets.MinariExperienceReplay.html" class="btn btn-neutral" title="MinariExperienceReplay" accesskey="p" rel="prev"><img src="../../_static/images/chevron-right-orange.svg" class="previous-page"> Previous</a>
+        <a href="torchrl.data.datasets.OpenMLExperienceReplay.html" class="btn btn-neutral" title="OpenMLExperienceReplay" accesskey="p" rel="prev"><img src="../../_static/images/chevron-right-orange.svg" class="previous-page"> Previous</a>
       
     </div>
   
@@ -600,7 +657,7 @@ A tuple containing this tensordict and info if return_info flag is set to True.<
           <div class="pytorch-right-menu" id="pytorch-right-menu">
             <div class="pytorch-side-scroll" id="pytorch-side-scroll-right">
               <ul>
-<li><a class="reference internal" href="#">OpenMLExperienceReplay</a></li>
+<li><a class="reference internal" href="#">RobosetExperienceReplay</a></li>
 </ul>
 
             </div>
