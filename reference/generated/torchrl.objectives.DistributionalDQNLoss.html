@@ -395,12 +395,12 @@ Perspective on Reinforcement Learning”,
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>value_network</strong> (<a class="reference internal" href="torchrl.modules.tensordict_module.DistributionalQValueActor.html#torchrl.modules.tensordict_module.DistributionalQValueActor" title="torchrl.modules.tensordict_module.DistributionalQValueActor"><em>DistributionalQValueActor</em></a><em> or </em><em>nn.Module</em>) – the distributional Q
 value operator.</p></li>
-<li><p><strong>gamma</strong> (<em>scalar</em>) – <p>a discount factor for return computation.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Unlike <a class="reference internal" href="torchrl.objectives.DQNLoss.html#torchrl.objectives.DQNLoss" title="torchrl.objectives.DQNLoss"><code class="xref py py-class docutils literal notranslate"><span class="pre">DQNLoss</span></code></a>, this class does not currently support
+<li><p><strong>gamma</strong> (<em>scalar</em>) – <p>a discount factor for return computation.
+.. note:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Unlike :class:`DQNLoss`, this class does not currently support
 custom value functions. The next value estimation is always
-bootstrapped.</p>
+bootstrapped.
+</pre></div>
 </div>
 </p></li>
 <li><p><strong>priority_key</strong> (<em>str</em><em>, </em><em>optional</em>) – [Deprecated, use .set_keys(priority_key=priority_key) instead]
