@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**25:22.747** total execution time for 11 files **from all galleries**:
+**26:11.464** total execution time for 11 files **from all galleries**:
 
 .. container::
 
@@ -33,35 +33,35 @@ Computation times
      - Time
      - Mem (MB)
    * - :ref:`sphx_glr_tutorials_torchrl_demo.py` (``reference/generated/tutorials/torchrl_demo.py``)
-     - 03:48.176
-     - 15.9
+     - 04:01.687
+     - 16.1
    * - :ref:`sphx_glr_tutorials_torchrl_envs.py` (``reference/generated/tutorials/torchrl_envs.py``)
-     - 03:23.664
-     - 130.8
+     - 03:36.827
+     - 32.4
    * - :ref:`sphx_glr_tutorials_dqn_with_rnn.py` (``reference/generated/tutorials/dqn_with_rnn.py``)
-     - 03:20.928
-     - 2021.1
-   * - :ref:`sphx_glr_tutorials_pendulum.py` (``reference/generated/tutorials/pendulum.py``)
-     - 02:36.892
-     - 8.2
-   * - :ref:`sphx_glr_tutorials_coding_dqn.py` (``reference/generated/tutorials/coding_dqn.py``)
-     - 02:32.451
-     - 1071.5
+     - 03:19.495
+     - 1768.9
    * - :ref:`sphx_glr_tutorials_rb_tutorial.py` (``reference/generated/tutorials/rb_tutorial.py``)
-     - 02:30.262
-     - 453.4
+     - 02:40.607
+     - 393.4
+   * - :ref:`sphx_glr_tutorials_pendulum.py` (``reference/generated/tutorials/pendulum.py``)
+     - 02:39.943
+     - 7.9
+   * - :ref:`sphx_glr_tutorials_coding_dqn.py` (``reference/generated/tutorials/coding_dqn.py``)
+     - 02:28.424
+     - 1035.3
    * - :ref:`sphx_glr_tutorials_multiagent_ppo.py` (``reference/generated/tutorials/multiagent_ppo.py``)
-     - 02:12.882
-     - 13.8
+     - 02:15.905
+     - 12.1
    * - :ref:`sphx_glr_tutorials_coding_ddpg.py` (``reference/generated/tutorials/coding_ddpg.py``)
-     - 01:53.181
-     - 15.5
+     - 01:58.095
+     - 12.0
    * - :ref:`sphx_glr_tutorials_coding_ppo.py` (``reference/generated/tutorials/coding_ppo.py``)
-     - 01:25.528
+     - 01:29.142
      - 9.1
    * - :ref:`sphx_glr_tutorials_pretrained_models.py` (``reference/generated/tutorials/pretrained_models.py``)
-     - 00:52.365
-     - 2097.9
+     - 00:51.750
+     - 3613.7
    * - :ref:`sphx_glr_tutorials_multi_task.py` (``reference/generated/tutorials/multi_task.py``)
-     - 00:46.417
-     - 27.5
+     - 00:49.589
+     - 25.2
