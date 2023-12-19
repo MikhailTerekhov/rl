@@ -202,7 +202,7 @@ change the ``collate_fn`` since the default expects numerical data):
 
  .. code-block:: none
 
-    [0, 0, 'b']
+    [0, 'a', 0]
 
 
 
@@ -321,15 +321,15 @@ Let us sample from the buffer, and print the data:
 
  .. code-block:: none
 
-    samples tensor([[ 4,  5,  6,  7],
-            [ 8,  9, 10, 11],
+    samples tensor([[ 8,  9, 10, 11],
             [ 4,  5,  6,  7],
             [ 0,  1,  2,  3],
-            [ 8,  9, 10, 11]]) tensor([[ 5,  6,  7,  8,  9],
-            [10, 11, 12, 13, 14],
+            [ 0,  1,  2,  3],
+            [ 4,  5,  6,  7]]) tensor([[10, 11, 12, 13, 14],
             [ 5,  6,  7,  8,  9],
             [ 0,  1,  2,  3,  4],
-            [10, 11, 12, 13, 14]])
+            [ 0,  1,  2,  3,  4],
+            [ 5,  6,  7,  8,  9]])
 
 
 
@@ -360,15 +360,15 @@ A :class:`torchrl.data.LazyMemmapStorage` is created in the same manner:
 
     The buffer has 3 elements
     samples: a= tensor([[ 8,  9, 10, 11],
-            [ 0,  1,  2,  3],
             [ 4,  5,  6,  7],
             [ 0,  1,  2,  3],
-            [ 8,  9, 10, 11]]) 
+            [ 0,  1,  2,  3],
+            [ 4,  5,  6,  7]]) 
     ('b', 'c'): tensor([[10, 11, 12, 13, 14],
-            [ 0,  1,  2,  3,  4],
             [ 5,  6,  7,  8,  9],
             [ 0,  1,  2,  3,  4],
-            [10, 11, 12, 13, 14]])
+            [ 0,  1,  2,  3,  4],
+            [ 5,  6,  7,  8,  9]])
 
 
 
@@ -402,8 +402,8 @@ We can also customize the storage location on disk:
  .. code-block:: none
 
     The buffer has 3 elements
-    the 'a' tensor is stored in <TemporaryDirectory '/tmp/tmp282wymsb'>/a.memmap
-    the ('b', 'c') tensor is stored in <TemporaryDirectory '/tmp/tmp282wymsb'>/b/c.memmap
+    the 'a' tensor is stored in <TemporaryDirectory '/tmp/tmp0pnaxoxs'>/a.memmap
+    the ('b', 'c') tensor is stored in <TemporaryDirectory '/tmp/tmp0pnaxoxs'>/b/c.memmap
 
 
 
@@ -490,7 +490,7 @@ Let us have a look at these indices:
 
  .. code-block:: none
 
-    tensor([1, 0, 1, 0, 1, 0, 2, 0, 2, 2, 1, 1])
+    tensor([1, 2, 2, 0, 1, 0, 0, 1, 2, 0, 1, 0])
 
 
 
@@ -1052,8 +1052,8 @@ higher indices should occur more frequently:
  .. code-block:: none
 
 
-    (array([ 24.,  40.,  60.,  73., 101., 124., 118., 160., 149., 175.]), array([  5. ,  17.2,  29.4,  41.6,  53.8,  66. ,  78.2,  90.4, 102.6,
-           114.8, 127. ]), <BarContainer object of 10 artists>)
+    (array([ 13.,  28.,  66.,  95.,  75., 139., 128., 120., 169., 191.]), array([  1. ,  13.6,  26.2,  38.8,  51.4,  64. ,  76.6,  89.2, 101.8,
+           114.4, 127. ]), <BarContainer object of 10 artists>)
 
 
 
@@ -1109,8 +1109,8 @@ Now, higher indices should occur less frequently:
  .. code-block:: none
 
 
-    (array([109., 179., 138., 139., 117., 101.,  85.,  64.,  54.,  38.]), array([  3. ,  14.9,  26.8,  38.7,  50.6,  62.5,  74.4,  86.3,  98.2,
-           110.1, 122. ]), <BarContainer object of 10 artists>)
+    (array([152., 152., 161., 114., 120.,  97.,  93.,  63.,  51.,  21.]), array([  4. ,  16.2,  28.4,  40.6,  52.8,  65. ,  77.2,  89.4, 101.6,
+           113.8, 126. ]), <BarContainer object of 10 artists>)
 
 
 
@@ -1608,9 +1608,9 @@ You should now be able to:
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (2 minutes 40.607 seconds)
+   **Total running time of the script:** (2 minutes 40.525 seconds)
 
-**Estimated memory usage:**  393 MB
+**Estimated memory usage:**  414 MB
 
 
 .. _sphx_glr_download_tutorials_rb_tutorial.py:

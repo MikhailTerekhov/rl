@@ -415,6 +415,12 @@ widely used replay buffers:</p>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/torchrl.data.replay_buffers.SamplerWithoutReplacement.html#torchrl.data.replay_buffers.SamplerWithoutReplacement" title="torchrl.data.replay_buffers.SamplerWithoutReplacement"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SamplerWithoutReplacement</span></code></a>([drop_last])</p></td>
 <td><p>A data-consuming sampler that ensures that the same sample is not present in consecutive batches.</p></td>
 </tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/torchrl.data.replay_buffers.SliceSampler.html#torchrl.data.replay_buffers.SliceSampler" title="torchrl.data.replay_buffers.SliceSampler"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SliceSampler</span></code></a>(*[, num_slices, slice_len, ...])</p></td>
+<td><p>Samples slices of data along the first dimension, given start and stop signals.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/torchrl.data.replay_buffers.SliceSamplerWithoutReplacement.html#torchrl.data.replay_buffers.SliceSamplerWithoutReplacement" title="torchrl.data.replay_buffers.SliceSamplerWithoutReplacement"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SliceSamplerWithoutReplacement</span></code></a>(*[, ...])</p></td>
+<td><p>Samples slices of data along the first dimension, given start and stop signals, without replacement.</p></td>
+</tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/torchrl.data.replay_buffers.Storage.html#torchrl.data.replay_buffers.Storage" title="torchrl.data.replay_buffers.Storage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Storage</span></code></a>(max_size)</p></td>
 <td><p>A Storage is the container of a replay buffer.</p></td>
 </tr>
@@ -510,12 +516,34 @@ to it, as the following example shows:</p>
 One element to pay attention to is that the size of the replay buffer is always
 the size of the leading dimension of the storage: in other words, creating a
 replay buffer with a storage of size 1M when storing multidimensional data
-does not mean storing 1M frames but 1M trajectories.</p>
+does not mean storing 1M frames but 1M trajectories. However, if trajectories
+(or episodes/rollouts) are flattened before being stored, the capacity will still
+be 1M steps.</p>
 <p>When sampling trajectories, it may be desirable to sample sub-trajectories
 to diversify learning or make the sampling more efficient.
-To do this, we provide a custom <code class="xref py py-class docutils literal notranslate"><span class="pre">Transform</span></code> class named
-<code class="xref py py-class docutils literal notranslate"><span class="pre">RandomCropTensorDict</span></code>. Here is an example of how this class
-can be used:</p>
+TorchRL offers two distinctive ways of accomplishing this:
+- The <a class="reference internal" href="generated/torchrl.data.replay_buffers.SliceSampler.html#torchrl.data.replay_buffers.SliceSampler" title="torchrl.data.replay_buffers.samplers.SliceSampler"><code class="xref py py-class docutils literal notranslate"><span class="pre">SliceSampler</span></code></a> allows to</p>
+<blockquote>
+<div><p>sample a given number of slices of trajectories stored one after another
+along the leading dimension of the <code class="xref py py-class docutils literal notranslate"><span class="pre">TensorStorage</span></code>.
+This is the recommended way of sampling sub-trajectories in TorchRL __especially__
+when using offline datasets (which are stored using that convention).
+This strategy requires to flatten the trajectories before extending the replay
+buffer and reshaping them after sampling. The <a class="reference internal" href="generated/torchrl.data.replay_buffers.SliceSampler.html#torchrl.data.replay_buffers.SliceSampler" title="torchrl.data.replay_buffers.samplers.SliceSampler"><code class="xref py py-class docutils literal notranslate"><span class="pre">SliceSampler</span></code></a>
+gives extensive details about this storage and sampling strategy.</p>
+</div></blockquote>
+<ul class="simple">
+<li><p>Trajectories can also be stored independently, with the each element of the
+leading dimension pointing to a different trajectory. This requires
+for the trajectories to have a congruent shape (or to be padded).
+We provide a custom <code class="xref py py-class docutils literal notranslate"><span class="pre">Transform</span></code> class named
+<code class="xref py py-class docutils literal notranslate"><span class="pre">RandomCropTensorDict</span></code> that allows to sample
+sub-trajectories in the buffer. Note that, unlike the <a class="reference internal" href="generated/torchrl.data.replay_buffers.SliceSampler.html#torchrl.data.replay_buffers.SliceSampler" title="torchrl.data.replay_buffers.samplers.SliceSampler"><code class="xref py py-class docutils literal notranslate"><span class="pre">SliceSampler</span></code></a>-based
+strategy, here having an <code class="docutils literal notranslate"><span class="pre">&quot;episode&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;done&quot;</span></code> key pointing at the
+start and stop signals isn’t required.
+Here is an example of how this class can be used:</p>
+</li>
+</ul>
 </section>
 <section id="checkpointing-replay-buffers">
 <h3>Checkpointing Replay Buffers<a class="headerlink" href="#checkpointing-replay-buffers" title="Permalink to this heading">¶</a></h3>

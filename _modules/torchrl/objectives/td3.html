@@ -629,7 +629,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="p">((</span><span class="n">action_spec</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="o">^</span> <span class="p">(</span><span class="n">bounds</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="s2">&quot;One of &#39;bounds&#39; and &#39;action_spec&#39; must be provided, &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;but not both. Got bounds=</span><span class="si">{</span><span class="n">bounds</span><span class="si">}</span><span class="s2"> and action_spec=</span><span class="si">{</span><span class="n">action_spec</span><span class="si">}</span><span class="s2">.&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;but not both or none. Got bounds=</span><span class="si">{</span><span class="n">bounds</span><span class="si">}</span><span class="s2"> and action_spec=</span><span class="si">{</span><span class="n">action_spec</span><span class="si">}</span><span class="s2">.&quot;</span>
             <span class="p">)</span>
         <span class="k">elif</span> <span class="n">action_spec</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">action_spec</span><span class="p">,</span> <span class="n">CompositeSpec</span><span class="p">):</span>
