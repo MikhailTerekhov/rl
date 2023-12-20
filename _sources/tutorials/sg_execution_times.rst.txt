@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**26:31.109** total execution time for 11 files **from tutorials**:
+**26:31.772** total execution time for 11 files **from tutorials**:
 
 .. container::
 
@@ -33,35 +33,35 @@ Computation times
      - Time
      - Mem (MB)
    * - :ref:`sphx_glr_tutorials_torchrl_demo.py` (``torchrl_demo.py``)
-     - 04:01.746
-     - 15.9
+     - 04:01.103
+     - 16.0
    * - :ref:`sphx_glr_tutorials_torchrl_envs.py` (``torchrl_envs.py``)
-     - 03:38.374
-     - 32.3
+     - 03:37.744
+     - 90.6
    * - :ref:`sphx_glr_tutorials_dqn_with_rnn.py` (``dqn_with_rnn.py``)
-     - 03:19.082
-     - 1734.7
-   * - :ref:`sphx_glr_tutorials_rb_tutorial.py` (``rb_tutorial.py``)
-     - 02:41.839
-     - 403.0
+     - 03:27.930
+     - 1966.2
    * - :ref:`sphx_glr_tutorials_pendulum.py` (``pendulum.py``)
-     - 02:41.245
+     - 02:42.306
      - 8.0
+   * - :ref:`sphx_glr_tutorials_rb_tutorial.py` (``rb_tutorial.py``)
+     - 02:41.249
+     - 459.5
    * - :ref:`sphx_glr_tutorials_coding_dqn.py` (``coding_dqn.py``)
-     - 02:38.004
-     - 745.1
+     - 02:30.533
+     - 726.7
    * - :ref:`sphx_glr_tutorials_multiagent_ppo.py` (``multiagent_ppo.py``)
-     - 02:18.089
-     - 12.0
+     - 02:17.795
+     - 56.5
    * - :ref:`sphx_glr_tutorials_coding_ddpg.py` (``coding_ddpg.py``)
-     - 01:57.614
-     - 14.5
+     - 01:58.876
+     - 15.8
    * - :ref:`sphx_glr_tutorials_coding_ppo.py` (``coding_ppo.py``)
-     - 01:30.072
-     - 9.0
+     - 01:30.546
+     - 9.4
    * - :ref:`sphx_glr_tutorials_pretrained_models.py` (``pretrained_models.py``)
-     - 00:54.935
-     - 3542.9
+     - 00:53.912
+     - 3442.2
    * - :ref:`sphx_glr_tutorials_multi_task.py` (``multi_task.py``)
-     - 00:50.109
-     - 25.4
+     - 00:49.779
+     - 29.5
