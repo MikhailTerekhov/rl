@@ -423,6 +423,7 @@
 
 <span class="n">_TIMEOUT</span> <span class="o">=</span> <span class="mf">1.0</span>
 <span class="n">_MIN_TIMEOUT</span> <span class="o">=</span> <span class="mf">1e-3</span>  <span class="c1"># should be several orders of magnitude inferior wrt time spent collecting a trajectory</span>
+<span class="c1"># MAX_IDLE_COUNT is the maximum number of times a Dataloader worker can timeout with his queue.</span>
 <span class="n">_MAX_IDLE_COUNT</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;MAX_IDLE_COUNT&quot;</span><span class="p">,</span> <span class="mi">1000</span><span class="p">))</span>
 
 <span class="n">DEFAULT_EXPLORATION_TYPE</span><span class="p">:</span> <span class="n">ExplorationType</span> <span class="o">=</span> <span class="n">ExplorationType</span><span class="o">.</span><span class="n">RANDOM</span>
@@ -1742,32 +1743,35 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_shutdown_main</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_shutdown_main</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">closed</span><span class="p">:</span>
-            <span class="k">return</span>
-        <span class="n">_check_for_faulty_process</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">procs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">closed</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_workers</span><span class="p">):</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">procs</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
-                <span class="k">continue</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">pipes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">send</span><span class="p">((</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;close&quot;</span><span class="p">))</span>
-
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pipes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">poll</span><span class="p">(</span><span class="mf">10.0</span><span class="p">):</span>
-                    <span class="n">msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pipes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">recv</span><span class="p">()</span>
-                    <span class="k">if</span> <span class="n">msg</span> <span class="o">!=</span> <span class="s2">&quot;closed&quot;</span><span class="p">:</span>
-                        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;got </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s2"> but expected &#39;close&#39;&quot;</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">closed</span><span class="p">:</span>
+                <span class="k">return</span>
+            <span class="n">_check_for_faulty_process</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">procs</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">closed</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_workers</span><span class="p">):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">procs</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
                     <span class="k">continue</span>
-            <span class="k">except</span> <span class="ne">BrokenPipeError</span><span class="p">:</span>
-                <span class="k">continue</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">pipes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">send</span><span class="p">((</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;close&quot;</span><span class="p">))</span>
 
-        <span class="k">for</span> <span class="n">proc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">procs</span><span class="p">:</span>
-            <span class="n">exitcode</span> <span class="o">=</span> <span class="n">proc</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">exitcode</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">proc</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">queue_out</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">pipe</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pipes</span><span class="p">:</span>
-            <span class="n">pipe</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pipes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">poll</span><span class="p">(</span><span class="mf">10.0</span><span class="p">):</span>
+                        <span class="n">msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pipes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">recv</span><span class="p">()</span>
+                        <span class="k">if</span> <span class="n">msg</span> <span class="o">!=</span> <span class="s2">&quot;closed&quot;</span><span class="p">:</span>
+                            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;got </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s2"> but expected &#39;close&#39;&quot;</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">continue</span>
+                <span class="k">except</span> <span class="ne">BrokenPipeError</span><span class="p">:</span>
+                    <span class="k">continue</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">queue_out</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">pipe</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pipes</span><span class="p">:</span>
+                <span class="n">pipe</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">proc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">procs</span><span class="p">:</span>
+                    <span class="n">proc</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">proc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">procs</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">proc</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
+                    <span class="n">proc</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">set_seed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">static_seed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets the seeds of the environments stored in the DataCollector.</span>
@@ -2536,7 +2540,7 @@
                         <span class="sa">f</span><span class="s2">&quot;if this is expected via the environment variable MAX_IDLE_COUNT &quot;</span>
                         <span class="sa">f</span><span class="s2">&quot;(current value is </span><span class="si">{</span><span class="n">_MAX_IDLE_COUNT</span><span class="si">}</span><span class="s2">).&quot;</span>
                         <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">If this occurs at the end of a function or program, it means that your collector has not been &quot;</span>
-                        <span class="sa">f</span><span class="s2">&quot;collected, consider calling `collector.shutdown()` or `del collector` before ending the program.&quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;collected, consider calling `collector.shutdown()` before ending the program.&quot;</span>
                     <span class="p">)</span>
                 <span class="k">continue</span>
         <span class="k">if</span> <span class="n">msg</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;continue&quot;</span><span class="p">,</span> <span class="s2">&quot;continue_random&quot;</span><span class="p">):</span>
