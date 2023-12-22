@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**27:44.835** total execution time for 11 files **from all galleries**:
+**27:43.845** total execution time for 11 files **from all galleries**:
 
 .. container::
 
@@ -33,35 +33,35 @@ Computation times
      - Time
      - Mem (MB)
    * - :ref:`sphx_glr_tutorials_torchrl_demo.py` (``reference/generated/tutorials/torchrl_demo.py``)
-     - 04:00.838
-     - 15.8
+     - 04:01.258
+     - 16.0
    * - :ref:`sphx_glr_tutorials_torchrl_envs.py` (``reference/generated/tutorials/torchrl_envs.py``)
-     - 03:38.388
-     - 32.4
+     - 03:37.851
+     - 32.3
    * - :ref:`sphx_glr_tutorials_dqn_with_rnn.py` (``reference/generated/tutorials/dqn_with_rnn.py``)
-     - 03:21.838
-     - 1747.6
+     - 03:20.960
+     - 1675.6
    * - :ref:`sphx_glr_tutorials_multiagent_ppo.py` (``reference/generated/tutorials/multiagent_ppo.py``)
-     - 03:06.158
-     - 13.1
+     - 03:08.047
+     - 12.8
    * - :ref:`sphx_glr_tutorials_coding_dqn.py` (``reference/generated/tutorials/coding_dqn.py``)
-     - 02:54.977
-     - 690.9
-   * - :ref:`sphx_glr_tutorials_rb_tutorial.py` (``reference/generated/tutorials/rb_tutorial.py``)
-     - 02:41.399
-     - 395.6
+     - 02:53.283
+     - 825.9
    * - :ref:`sphx_glr_tutorials_pendulum.py` (``reference/generated/tutorials/pendulum.py``)
-     - 02:40.152
+     - 02:42.086
      - 7.9
+   * - :ref:`sphx_glr_tutorials_rb_tutorial.py` (``reference/generated/tutorials/rb_tutorial.py``)
+     - 02:41.105
+     - 381.9
    * - :ref:`sphx_glr_tutorials_coding_ddpg.py` (``reference/generated/tutorials/coding_ddpg.py``)
-     - 01:58.265
-     - 15.0
+     - 01:57.880
+     - 11.6
    * - :ref:`sphx_glr_tutorials_coding_ppo.py` (``reference/generated/tutorials/coding_ppo.py``)
-     - 01:37.566
+     - 01:37.814
      - 8.6
    * - :ref:`sphx_glr_tutorials_pretrained_models.py` (``reference/generated/tutorials/pretrained_models.py``)
-     - 00:55.105
-     - 3660.8
+     - 00:53.658
+     - 3544.1
    * - :ref:`sphx_glr_tutorials_multi_task.py` (``reference/generated/tutorials/multi_task.py``)
-     - 00:50.150
-     - 26.0
+     - 00:49.903
+     - 25.5
