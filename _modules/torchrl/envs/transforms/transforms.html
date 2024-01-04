@@ -6931,14 +6931,15 @@
 <span class="sd">    This transform is useful to obtain up-to-date recurrent states when</span>
 <span class="sd">    they are not available. It burns-in a number of steps along the time dimension</span>
 <span class="sd">    from sampled sequential data slices and returs the remaining data sequence with</span>
-<span class="sd">    the burnt in data in its initial time step. It is intended to be used as a</span>
+<span class="sd">    the burnt-in data in its initial time step. This transform is intended to be used as a</span>
 <span class="sd">    replay buffer transform, not as an environment transform.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        modules (sequence of TensorDictModule): A list of modules used to burn-in data sequences.</span>
 <span class="sd">        burn_in (int): The number of time steps to burn in.</span>
 <span class="sd">        out_keys (sequence of NestedKey, optional): destination keys. Defaults to</span>
-<span class="sd">            all the modules `out_keys` that point to the next time step (e.g. `(&quot;next&quot;, &quot;hidden&quot;)`).</span>
+<span class="sd">        all the modules `out_keys` that point to the next time step (e.g. `&quot;hidden&quot;` if `</span>
+<span class="sd">        (&quot;next&quot;, &quot;hidden&quot;)` is part of the `out_keys` of a module).</span>
 
 <span class="sd">    .. note::</span>
 <span class="sd">        This transform expects as inputs TensorDicts with its last dimension being the</span>
@@ -7017,6 +7018,18 @@
                 <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">module</span><span class="o">.</span><span class="n">out_keys</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;next&quot;</span><span class="p">:</span>
                         <span class="n">out_keys</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">key</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">out_keys_</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">out_keys</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">and</span> <span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;next&quot;</span><span class="p">:</span>
+                    <span class="n">key</span> <span class="o">=</span> <span class="n">key</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;The &#39;next&#39; key is not needed in the BurnInTransform `out_key` </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> and &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;will be ignored. This transform already assumes that `out_keys` will be &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;retrieved from the next time step of the burnt-in data.&quot;</span>
+                    <span class="p">)</span>
+                <span class="n">out_keys_</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="n">out_keys</span> <span class="o">=</span> <span class="n">out_keys_</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">in_keys</span><span class="o">=</span><span class="n">in_keys</span><span class="p">,</span> <span class="n">out_keys</span><span class="o">=</span><span class="n">out_keys</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">modules</span> <span class="o">=</span> <span class="n">modules</span>

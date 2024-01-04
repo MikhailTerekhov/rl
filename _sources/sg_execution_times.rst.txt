@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**27:35.208** total execution time for 11 files **from all galleries**:
+**27:25.088** total execution time for 11 files **from all galleries**:
 
 .. container::
 
@@ -33,35 +33,35 @@ Computation times
      - Time
      - Mem (MB)
    * - :ref:`sphx_glr_tutorials_torchrl_demo.py` (``reference/generated/tutorials/torchrl_demo.py``)
-     - 03:59.394
-     - 16.0
+     - 03:59.498
+     - 16.1
    * - :ref:`sphx_glr_tutorials_torchrl_envs.py` (``reference/generated/tutorials/torchrl_envs.py``)
-     - 03:33.563
-     - 98.8
+     - 03:33.310
+     - 90.5
    * - :ref:`sphx_glr_tutorials_dqn_with_rnn.py` (``reference/generated/tutorials/dqn_with_rnn.py``)
-     - 03:24.485
-     - 1916.5
+     - 03:24.726
+     - 1925.1
    * - :ref:`sphx_glr_tutorials_multiagent_ppo.py` (``reference/generated/tutorials/multiagent_ppo.py``)
-     - 03:08.034
-     - 13.1
+     - 03:03.678
+     - 45.9
    * - :ref:`sphx_glr_tutorials_coding_dqn.py` (``reference/generated/tutorials/coding_dqn.py``)
-     - 02:52.900
-     - 1086.5
+     - 02:51.750
+     - 1100.4
    * - :ref:`sphx_glr_tutorials_pendulum.py` (``reference/generated/tutorials/pendulum.py``)
-     - 02:40.730
+     - 02:38.705
      - 8.0
    * - :ref:`sphx_glr_tutorials_rb_tutorial.py` (``reference/generated/tutorials/rb_tutorial.py``)
-     - 02:37.840
-     - 454.2
+     - 02:37.889
+     - 464.4
    * - :ref:`sphx_glr_tutorials_coding_ddpg.py` (``reference/generated/tutorials/coding_ddpg.py``)
-     - 01:58.332
-     - 13.7
+     - 01:57.284
+     - 12.5
    * - :ref:`sphx_glr_tutorials_coding_ppo.py` (``reference/generated/tutorials/coding_ppo.py``)
-     - 01:36.905
+     - 01:36.023
      - 8.4
    * - :ref:`sphx_glr_tutorials_pretrained_models.py` (``reference/generated/tutorials/pretrained_models.py``)
-     - 00:54.123
-     - 3411.4
+     - 00:53.350
+     - 3414.5
    * - :ref:`sphx_glr_tutorials_multi_task.py` (``reference/generated/tutorials/multi_task.py``)
-     - 00:48.902
-     - 25.6
+     - 00:48.874
+     - 26.0
