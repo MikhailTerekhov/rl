@@ -394,6 +394,7 @@
 <span class="kn">from</span> <span class="nn">tensordict.tensordict</span> <span class="kn">import</span> <span class="n">TensorDict</span><span class="p">,</span> <span class="n">TensorDictBase</span>
 <span class="kn">from</span> <span class="nn">tensordict.utils</span> <span class="kn">import</span> <span class="n">expand_as_right</span><span class="p">,</span> <span class="n">NestedKey</span>
 <span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">nn</span><span class="p">,</span> <span class="n">Tensor</span>
+<span class="kn">from</span> <span class="nn">torchrl._utils</span> <span class="kn">import</span> <span class="n">_replace_last</span>
 
 <span class="kn">from</span> <span class="nn">torchrl.data.tensor_specs</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">BinaryDiscreteTensorSpec</span><span class="p">,</span>
@@ -414,7 +415,7 @@
     <span class="n">_set_missing_tolerance</span><span class="p">,</span>
     <span class="n">check_finite</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">torchrl.envs.utils</span> <span class="kn">import</span> <span class="n">_replace_last</span><span class="p">,</span> <span class="n">_sort_keys</span><span class="p">,</span> <span class="n">_update_during_reset</span><span class="p">,</span> <span class="n">step_mdp</span>
+<span class="kn">from</span> <span class="nn">torchrl.envs.utils</span> <span class="kn">import</span> <span class="n">_sort_keys</span><span class="p">,</span> <span class="n">_update_during_reset</span><span class="p">,</span> <span class="n">step_mdp</span>
 <span class="kn">from</span> <span class="nn">torchrl.objectives.value.functional</span> <span class="kn">import</span> <span class="n">reward2go</span>
 
 <span class="k">try</span><span class="p">:</span>

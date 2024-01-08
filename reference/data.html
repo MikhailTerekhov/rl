@@ -412,7 +412,7 @@ widely used replay buffers:</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/torchrl.data.replay_buffers.RandomSampler.html#torchrl.data.replay_buffers.RandomSampler" title="torchrl.data.replay_buffers.RandomSampler"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RandomSampler</span></code></a>()</p></td>
 <td><p>A uniformly random sampler for composable replay buffers.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/torchrl.data.replay_buffers.SamplerWithoutReplacement.html#torchrl.data.replay_buffers.SamplerWithoutReplacement" title="torchrl.data.replay_buffers.SamplerWithoutReplacement"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SamplerWithoutReplacement</span></code></a>([drop_last])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/torchrl.data.replay_buffers.SamplerWithoutReplacement.html#torchrl.data.replay_buffers.SamplerWithoutReplacement" title="torchrl.data.replay_buffers.SamplerWithoutReplacement"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SamplerWithoutReplacement</span></code></a>([drop_last, shuffle])</p></td>
 <td><p>A data-consuming sampler that ensures that the same sample is not present in consecutive batches.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/torchrl.data.replay_buffers.SliceSampler.html#torchrl.data.replay_buffers.SliceSampler" title="torchrl.data.replay_buffers.SliceSampler"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SliceSampler</span></code></a>(*[, num_slices, slice_len, ...])</p></td>
@@ -439,13 +439,16 @@ widely used replay buffers:</p>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/torchrl.data.replay_buffers.Writer.html#torchrl.data.replay_buffers.Writer" title="torchrl.data.replay_buffers.Writer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Writer</span></code></a>()</p></td>
 <td><p>A ReplayBuffer base Writer class.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/torchrl.data.replay_buffers.RoundRobinWriter.html#torchrl.data.replay_buffers.RoundRobinWriter" title="torchrl.data.replay_buffers.RoundRobinWriter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RoundRobinWriter</span></code></a>(**kw)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/torchrl.data.replay_buffers.ImmutableDatasetWriter.html#torchrl.data.replay_buffers.ImmutableDatasetWriter" title="torchrl.data.replay_buffers.ImmutableDatasetWriter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ImmutableDatasetWriter</span></code></a>()</p></td>
+<td><p>A blocking writer for immutable datasets.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/torchrl.data.replay_buffers.RoundRobinWriter.html#torchrl.data.replay_buffers.RoundRobinWriter" title="torchrl.data.replay_buffers.RoundRobinWriter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RoundRobinWriter</span></code></a>(**kw)</p></td>
 <td><p>A RoundRobin Writer class for composable replay buffers.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/torchrl.data.replay_buffers.TensorDictRoundRobinWriter.html#torchrl.data.replay_buffers.TensorDictRoundRobinWriter" title="torchrl.data.replay_buffers.TensorDictRoundRobinWriter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TensorDictRoundRobinWriter</span></code></a>(**kw)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/torchrl.data.replay_buffers.TensorDictRoundRobinWriter.html#torchrl.data.replay_buffers.TensorDictRoundRobinWriter" title="torchrl.data.replay_buffers.TensorDictRoundRobinWriter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TensorDictRoundRobinWriter</span></code></a>(**kw)</p></td>
 <td><p>A RoundRobin Writer class for composable, tensordict-based replay buffers.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/torchrl.data.replay_buffers.TensorDictMaxValueWriter.html#torchrl.data.replay_buffers.TensorDictMaxValueWriter" title="torchrl.data.replay_buffers.TensorDictMaxValueWriter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TensorDictMaxValueWriter</span></code></a>([rank_key])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/torchrl.data.replay_buffers.TensorDictMaxValueWriter.html#torchrl.data.replay_buffers.TensorDictMaxValueWriter" title="torchrl.data.replay_buffers.TensorDictMaxValueWriter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TensorDictMaxValueWriter</span></code></a>([rank_key])</p></td>
 <td><p>A Writer class for composable replay buffers that keeps the top elements based on some ranking key.</p></td>
 </tr>
 </tbody>
@@ -596,10 +599,13 @@ the latest wheels are not published on PyPI. For OpenML, <a class="reference ext
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/torchrl.data.datasets.OpenMLExperienceReplay.html#torchrl.data.datasets.OpenMLExperienceReplay" title="torchrl.data.datasets.OpenMLExperienceReplay"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OpenMLExperienceReplay</span></code></a>(name, batch_size[, ...])</p></td>
 <td><p>An experience replay for OpenML data.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/torchrl.data.datasets.RobosetExperienceReplay.html#torchrl.data.datasets.RobosetExperienceReplay" title="torchrl.data.datasets.RobosetExperienceReplay"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RobosetExperienceReplay</span></code></a>(dataset_id, ...[, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/torchrl.data.datasets.OpenXExperienceReplay.html#torchrl.data.datasets.OpenXExperienceReplay" title="torchrl.data.datasets.OpenXExperienceReplay"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OpenXExperienceReplay</span></code></a>(dataset_id[, ...])</p></td>
+<td><p>Open X-Embodiment datasets experience replay.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/torchrl.data.datasets.RobosetExperienceReplay.html#torchrl.data.datasets.RobosetExperienceReplay" title="torchrl.data.datasets.RobosetExperienceReplay"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RobosetExperienceReplay</span></code></a>(dataset_id, ...[, ...])</p></td>
 <td><p>Roboset experience replay dataset.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/torchrl.data.datasets.VD4RLExperienceReplay.html#torchrl.data.datasets.VD4RLExperienceReplay" title="torchrl.data.datasets.VD4RLExperienceReplay"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VD4RLExperienceReplay</span></code></a>(dataset_id, batch_size, *)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/torchrl.data.datasets.VD4RLExperienceReplay.html#torchrl.data.datasets.VD4RLExperienceReplay" title="torchrl.data.datasets.VD4RLExperienceReplay"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VD4RLExperienceReplay</span></code></a>(dataset_id, batch_size, *)</p></td>
 <td><p>V-D4RL experience replay dataset.</p></td>
 </tr>
 </tbody>

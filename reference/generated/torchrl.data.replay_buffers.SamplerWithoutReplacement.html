@@ -381,14 +381,19 @@
 <h1>SamplerWithoutReplacement<a class="headerlink" href="#samplerwithoutreplacement" title="Permalink to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="torchrl.data.replay_buffers.SamplerWithoutReplacement">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchrl.data.replay_buffers.</span></span><span class="sig-name descname"><span class="pre">SamplerWithoutReplacement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">drop_last</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/torchrl/data/replay_buffers/samplers.html#SamplerWithoutReplacement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchrl.data.replay_buffers.SamplerWithoutReplacement" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchrl.data.replay_buffers.</span></span><span class="sig-name descname"><span class="pre">SamplerWithoutReplacement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">drop_last</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shuffle</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/torchrl/data/replay_buffers/samplers.html#SamplerWithoutReplacement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchrl.data.replay_buffers.SamplerWithoutReplacement" title="Permalink to this definition">¶</a></dt>
 <dd><p>A data-consuming sampler that ensures that the same sample is not present in consecutive batches.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>drop_last</strong> (<em>bool</em><em>, </em><em>optional</em>) – if <code class="docutils literal notranslate"><span class="pre">True</span></code>, the last incomplete sample (if any) will be dropped.
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>drop_last</strong> (<em>bool</em><em>, </em><em>optional</em>) – if <code class="docutils literal notranslate"><span class="pre">True</span></code>, the last incomplete sample (if any) will be dropped.
 If <code class="docutils literal notranslate"><span class="pre">False</span></code>, this last sample will be kept and (unlike with torch dataloaders)
 completed with other samples from a fresh indices permutation.
-Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>shuffle</strong> (<em>bool</em><em>, </em><em>optional</em>) – if <code class="docutils literal notranslate"><span class="pre">False</span></code>, the items are not randomly
+permuted. This enables to iterate over the replay buffer in the
+order the data was collected. Defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+</ul>
 </dd>
 </dl>
 <p><em>Caution</em>: If the size of the storage changes in between two calls, the samples will be re-shuffled

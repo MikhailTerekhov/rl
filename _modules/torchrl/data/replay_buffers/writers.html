@@ -429,6 +429,27 @@
         <span class="k">return</span></div>
 
 
+<div class="viewcode-block" id="ImmutableDatasetWriter"><a class="viewcode-back" href="../../../../reference/generated/torchrl.data.replay_buffers.ImmutableDatasetWriter.html#torchrl.data.replay_buffers.ImmutableDatasetWriter">[docs]</a><span class="k">class</span> <span class="nc">ImmutableDatasetWriter</span><span class="p">(</span><span class="n">Writer</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A blocking writer for immutable datasets.&quot;&quot;&quot;</span>
+
+    <span class="n">WRITING_ERR</span> <span class="o">=</span> <span class="s2">&quot;This dataset doesn&#39;t allow writing.&quot;</span>
+
+<div class="viewcode-block" id="ImmutableDatasetWriter.add"><a class="viewcode-back" href="../../../../reference/generated/torchrl.data.replay_buffers.ImmutableDatasetWriter.html#torchrl.data.replay_buffers.ImmutableDatasetWriter.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">WRITING_ERR</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ImmutableDatasetWriter.extend"><a class="viewcode-back" href="../../../../reference/generated/torchrl.data.replay_buffers.ImmutableDatasetWriter.html#torchrl.data.replay_buffers.ImmutableDatasetWriter.extend">[docs]</a>    <span class="k">def</span> <span class="nf">extend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">WRITING_ERR</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_empty</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">WRITING_ERR</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">dumps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="o">...</span>
+
+    <span class="k">def</span> <span class="nf">loads</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="o">...</span></div>
+
+
 <div class="viewcode-block" id="RoundRobinWriter"><a class="viewcode-back" href="../../../../reference/generated/torchrl.data.replay_buffers.RoundRobinWriter.html#torchrl.data.replay_buffers.RoundRobinWriter">[docs]</a><span class="k">class</span> <span class="nc">RoundRobinWriter</span><span class="p">(</span><span class="n">Writer</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A RoundRobin Writer class for composable replay buffers.&quot;&quot;&quot;</span>
 
