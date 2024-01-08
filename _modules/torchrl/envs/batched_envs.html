@@ -504,11 +504,11 @@
 <span class="sd">            device for the nested environments, one can keep the overhead to a</span>
 <span class="sd">            minimum.</span>
 <span class="sd">        num_threads (int, optional): number of threads for this process.</span>
-<span class="sd">            Defaults to the number of workers.</span>
-<span class="sd">            This parameter has no effect for the :class:`~SerialEnv` class.</span>
-<span class="sd">        num_sub_threads (int, optional): number of threads of the subprocesses.</span>
 <span class="sd">            Should be equal to one plus the number of processes launched within</span>
 <span class="sd">            each subprocess (or one if a single process is launched).</span>
+<span class="sd">            Defaults to the number of workers + 1.</span>
+<span class="sd">            This parameter has no effect for the :class:`~SerialEnv` class.</span>
+<span class="sd">        num_sub_threads (int, optional): number of threads of the subprocesses.</span>
 <span class="sd">            Defaults to 1 for safety: if none is indicated, launching multiple</span>
 <span class="sd">            workers may charge the cpu load too much and harm performance.</span>
 <span class="sd">            This parameter has no effect for the :class:`~SerialEnv` class.</span>
