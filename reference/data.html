@@ -610,6 +610,88 @@ the latest wheels are not published on PyPI. For OpenML, <a class="reference ext
 </tr>
 </tbody>
 </table>
+<section id="composing-datasets">
+<h3>Composing datasets<a class="headerlink" href="#composing-datasets" title="Permalink to this heading">¶</a></h3>
+<p>In offline RL, it is customary to work with more than one dataset at the same time.
+Moreover, TorchRL usually has a fine-grained dataset nomenclature, where
+each task is represented separately when other libraries will represent these
+datasets in a more compact way. To allow users to compose multiple datasets
+together, we propose a <a class="reference internal" href="generated/torchrl.data.replay_buffers.ReplayBufferEnsemble.html#torchrl.data.replay_buffers.ReplayBufferEnsemble" title="torchrl.data.replay_buffers.ReplayBufferEnsemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReplayBufferEnsemble</span></code></a>
+primitive that allows users to sample from multiple datasets at once.</p>
+<p>If the individual dataset formats differ, <code class="xref py py-class docutils literal notranslate"><span class="pre">Transform</span></code> instances
+can be used. In the following example, we create two dummy datasets with semantically
+identical entries that differ in names (<code class="docutils literal notranslate"><span class="pre">(&quot;some&quot;,</span> <span class="pre">&quot;key&quot;)</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;another_key&quot;</span></code>)
+and show how they can be renamed to have a matching name. We also resize images
+such that they can be stacked together during sampling.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchrl.envs</span> <span class="kn">import</span> <span class="n">Comopse</span><span class="p">,</span> <span class="n">ToTensorImage</span><span class="p">,</span> <span class="n">Resize</span><span class="p">,</span> <span class="n">RenameTransform</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchrl.data</span> <span class="kn">import</span> <span class="n">TensorDictReplayBuffer</span><span class="p">,</span> <span class="n">ReplayBufferEnsemble</span><span class="p">,</span> <span class="n">LazyMemmapStorage</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">tensordict</span> <span class="kn">import</span> <span class="n">TensorDict</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rb0</span> <span class="o">=</span> <span class="n">TensorDictReplayBuffer</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">storage</span><span class="o">=</span><span class="n">LazyMemmapStorage</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">transform</span><span class="o">=</span><span class="n">Compose</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">ToTensorImage</span><span class="p">(</span><span class="n">in_keys</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;pixels&quot;</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;next&quot;</span><span class="p">,</span> <span class="s2">&quot;pixels&quot;</span><span class="p">)]),</span>
+<span class="gp">... </span>        <span class="n">Resize</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="n">in_keys</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;pixels&quot;</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;next&quot;</span><span class="p">,</span> <span class="s2">&quot;pixels&quot;</span><span class="p">)]),</span>
+<span class="gp">... </span>        <span class="n">RenameTransform</span><span class="p">([(</span><span class="s2">&quot;some&quot;</span><span class="p">,</span> <span class="s2">&quot;key&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="s2">&quot;renamed&quot;</span><span class="p">]),</span>
+<span class="gp">... </span>    <span class="p">),</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rb1</span> <span class="o">=</span> <span class="n">TensorDictReplayBuffer</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">storage</span><span class="o">=</span><span class="n">LazyMemmapStorage</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">transform</span><span class="o">=</span><span class="n">Compose</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">ToTensorImage</span><span class="p">(</span><span class="n">in_keys</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;pixels&quot;</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;next&quot;</span><span class="p">,</span> <span class="s2">&quot;pixels&quot;</span><span class="p">)]),</span>
+<span class="gp">... </span>        <span class="n">Resize</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="n">in_keys</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;pixels&quot;</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;next&quot;</span><span class="p">,</span> <span class="s2">&quot;pixels&quot;</span><span class="p">)]),</span>
+<span class="gp">... </span>        <span class="n">RenameTransform</span><span class="p">([</span><span class="s2">&quot;another_key&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;renamed&quot;</span><span class="p">]),</span>
+<span class="gp">... </span>    <span class="p">),</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rb</span> <span class="o">=</span> <span class="n">ReplayBufferEnsemble</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">rb0</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">rb1</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">p</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="n">transform</span><span class="o">=</span><span class="n">Resize</span><span class="p">(</span><span class="mi">33</span><span class="p">,</span> <span class="n">in_keys</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;pixels&quot;</span><span class="p">],</span> <span class="n">out_keys</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;pixels33&quot;</span><span class="p">]),</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data0</span> <span class="o">=</span> <span class="n">TensorDict</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="p">{</span>
+<span class="gp">... </span>        <span class="s2">&quot;pixels&quot;</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">244</span><span class="p">,</span> <span class="mi">244</span><span class="p">,</span> <span class="mi">3</span><span class="p">)),</span>
+<span class="gp">... </span>        <span class="p">(</span><span class="s2">&quot;next&quot;</span><span class="p">,</span> <span class="s2">&quot;pixels&quot;</span><span class="p">):</span> <span class="n">torch</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">244</span><span class="p">,</span> <span class="mi">244</span><span class="p">,</span> <span class="mi">3</span><span class="p">)),</span>
+<span class="gp">... </span>        <span class="p">(</span><span class="s2">&quot;some&quot;</span><span class="p">,</span> <span class="s2">&quot;key&quot;</span><span class="p">):</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">},</span>
+<span class="gp">... </span>    <span class="n">batch_size</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">],</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data1</span> <span class="o">=</span> <span class="n">TensorDict</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="p">{</span>
+<span class="gp">... </span>        <span class="s2">&quot;pixels&quot;</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">3</span><span class="p">)),</span>
+<span class="gp">... </span>        <span class="p">(</span><span class="s2">&quot;next&quot;</span><span class="p">,</span> <span class="s2">&quot;pixels&quot;</span><span class="p">):</span> <span class="n">torch</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">3</span><span class="p">)),</span>
+<span class="gp">... </span>        <span class="s2">&quot;another_key&quot;</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">},</span>
+<span class="gp">... </span>    <span class="n">batch_size</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">],</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rb</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">data0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rb</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">data1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">sample</span> <span class="o">=</span> <span class="n">rb</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">assert</span> <span class="n">sample</span><span class="p">[</span><span class="s2">&quot;next&quot;</span><span class="p">,</span> <span class="s2">&quot;pixels&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="k">assert</span> <span class="n">sample</span><span class="p">[</span><span class="s2">&quot;pixels&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="k">assert</span> <span class="n">sample</span><span class="p">[</span><span class="s2">&quot;pixels33&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">33</span><span class="p">,</span> <span class="mi">33</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="k">assert</span> <span class="n">sample</span><span class="p">[</span><span class="s2">&quot;renamed&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+</pre></div>
+</div>
+<table class="autosummary longtable docutils # Necessary for the table generated by autosummary to look decent align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/torchrl.data.replay_buffers.ReplayBufferEnsemble.html#torchrl.data.replay_buffers.ReplayBufferEnsemble" title="torchrl.data.replay_buffers.ReplayBufferEnsemble"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ReplayBufferEnsemble</span></code></a>(*rbs[, storages, ...])</p></td>
+<td><p>An ensemble of replay buffers.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/torchrl.data.replay_buffers.SamplerEnsemble.html#torchrl.data.replay_buffers.SamplerEnsemble" title="torchrl.data.replay_buffers.SamplerEnsemble"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SamplerEnsemble</span></code></a>(*samplers[, p, ...])</p></td>
+<td><p>An ensemble of samplers.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/torchrl.data.replay_buffers.StorageEnsemble.html#torchrl.data.replay_buffers.StorageEnsemble" title="torchrl.data.replay_buffers.StorageEnsemble"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StorageEnsemble</span></code></a>(*storages[, transforms])</p></td>
+<td><p>An ensemble of storages.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/torchrl.data.replay_buffers.WriterEnsemble.html#torchrl.data.replay_buffers.WriterEnsemble" title="torchrl.data.replay_buffers.WriterEnsemble"><code class="xref py py-obj docutils literal notranslate"><span class="pre">WriterEnsemble</span></code></a>(*writers)</p></td>
+<td><p>An ensemble of writers.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
 </section>
 <section id="tensorspec">
 <h2>TensorSpec<a class="headerlink" href="#tensorspec" title="Permalink to this heading">¶</a></h2>
@@ -772,7 +854,10 @@ efficient sampling.</p>
 <li><a class="reference internal" href="#checkpointing-replay-buffers">Checkpointing Replay Buffers</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#datasets">Datasets</a></li>
+<li><a class="reference internal" href="#datasets">Datasets</a><ul>
+<li><a class="reference internal" href="#composing-datasets">Composing datasets</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#tensorspec">TensorSpec</a></li>
 <li><a class="reference internal" href="#reinforcement-learning-from-human-feedback-rlhf">Reinforcement Learning From Human Feedback (RLHF)</a></li>
 <li><a class="reference internal" href="#utils">Utils</a></li>

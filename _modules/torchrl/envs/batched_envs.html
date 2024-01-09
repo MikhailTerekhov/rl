@@ -396,6 +396,12 @@
 <span class="kn">from</span> <span class="nn">torchrl.envs.common</span> <span class="kn">import</span> <span class="n">EnvBase</span>
 <span class="kn">from</span> <span class="nn">torchrl.envs.env_creator</span> <span class="kn">import</span> <span class="n">get_env_metadata</span>
 
+<span class="c1"># legacy</span>
+<span class="kn">from</span> <span class="nn">torchrl.envs.libs.envpool</span> <span class="kn">import</span> <span class="p">(</span>  <span class="c1"># noqa: F401</span>
+    <span class="n">MultiThreadedEnv</span><span class="p">,</span>
+    <span class="n">MultiThreadedEnvWrapper</span><span class="p">,</span>
+<span class="p">)</span>
+
 <span class="kn">from</span> <span class="nn">torchrl.envs.utils</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">_aggregate_end_of_traj</span><span class="p">,</span>
     <span class="n">_set_single_key</span><span class="p">,</span>
@@ -403,9 +409,6 @@
     <span class="n">_update_during_reset</span><span class="p">,</span>
     <span class="n">clear_mpi_env_vars</span><span class="p">,</span>
 <span class="p">)</span>
-
-<span class="c1"># legacy</span>
-<span class="kn">from</span> <span class="nn">.libs.envpool</span> <span class="kn">import</span> <span class="n">MultiThreadedEnv</span><span class="p">,</span> <span class="n">MultiThreadedEnvWrapper</span>  <span class="c1"># noqa: F401</span>
 
 
 <span class="k">def</span> <span class="nf">_check_start</span><span class="p">(</span><span class="n">fun</span><span class="p">):</span>

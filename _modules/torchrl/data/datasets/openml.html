@@ -378,14 +378,11 @@
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">tensordict.tensordict</span> <span class="kn">import</span> <span class="n">TensorDict</span>
+<span class="kn">from</span> <span class="nn">torchrl.data.replay_buffers.replay_buffers</span> <span class="kn">import</span> <span class="n">TensorDictReplayBuffer</span>
+<span class="kn">from</span> <span class="nn">torchrl.data.replay_buffers.samplers</span> <span class="kn">import</span> <span class="n">Sampler</span><span class="p">,</span> <span class="n">SamplerWithoutReplacement</span>
 
-<span class="kn">from</span> <span class="nn">torchrl.data.replay_buffers</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">LazyMemmapStorage</span><span class="p">,</span>
-    <span class="n">Sampler</span><span class="p">,</span>
-    <span class="n">SamplerWithoutReplacement</span><span class="p">,</span>
-    <span class="n">TensorDictReplayBuffer</span><span class="p">,</span>
-    <span class="n">Writer</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">torchrl.data.replay_buffers.storages</span> <span class="kn">import</span> <span class="n">LazyMemmapStorage</span>
+<span class="kn">from</span> <span class="nn">torchrl.data.replay_buffers.writers</span> <span class="kn">import</span> <span class="n">Writer</span>
 
 
 <div class="viewcode-block" id="OpenMLExperienceReplay"><a class="viewcode-back" href="../../../../reference/generated/torchrl.data.datasets.OpenMLExperienceReplay.html#torchrl.data.datasets.OpenMLExperienceReplay">[docs]</a><span class="k">class</span> <span class="nc">OpenMLExperienceReplay</span><span class="p">(</span><span class="n">TensorDictReplayBuffer</span><span class="p">):</span>
