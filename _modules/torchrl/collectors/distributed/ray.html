@@ -435,7 +435,7 @@
         <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">get_node_ip_address</span><span class="p">()</span><span class="si">}</span><span class="s2"> using gpus </span><span class="si">{</span><span class="n">ray</span><span class="o">.</span><span class="n">get_gpu_ids</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
     <span class="p">)</span>
     <span class="c1"># logger.warning(s)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
 
 
 <span class="nd">@classmethod</span>

@@ -727,9 +727,6 @@ specs. If no error is raised, we can be confident that the specs are properly de
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">check_env_specs</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>check_env_specs succeeded!
-</pre></div>
-</div>
 <p>For fun, let’s see what a simple random rollout looks like. You can
 call <cite>env.rollout(n_steps)</cite> and get an overview of what the environment inputs
 and outputs look like. Actions will automatically be drawn from the action spec
@@ -1102,26 +1099,26 @@ The steps include:</p>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  0%|          | 0/10000 [00:00&lt;?, ?it/s]
- 10%|█         | 1000/10000 [00:03&lt;00:27, 330.35it/s]
-eval cumulative reward:  129.0885 (init:  129.0885), eval step-count: 13, average reward= 9.0847 (init= 9.0847), step count (max): 12, lr policy:  0.0003:  10%|█         | 1000/10000 [00:03&lt;00:27, 330.35it/s]
-eval cumulative reward:  129.0885 (init:  129.0885), eval step-count: 13, average reward= 9.0847 (init= 9.0847), step count (max): 12, lr policy:  0.0003:  20%|██        | 2000/10000 [00:06&lt;00:24, 327.20it/s]
-eval cumulative reward:  129.0885 (init:  129.0885), eval step-count: 13, average reward= 9.1230 (init= 9.0847), step count (max): 16, lr policy:  0.0003:  20%|██        | 2000/10000 [00:06&lt;00:24, 327.20it/s]
-eval cumulative reward:  129.0885 (init:  129.0885), eval step-count: 13, average reward= 9.1230 (init= 9.0847), step count (max): 16, lr policy:  0.0003:  30%|███       | 3000/10000 [00:09&lt;00:21, 327.99it/s]
-eval cumulative reward:  129.0885 (init:  129.0885), eval step-count: 13, average reward= 9.1651 (init= 9.0847), step count (max): 15, lr policy:  0.0003:  30%|███       | 3000/10000 [00:09&lt;00:21, 327.99it/s]
-eval cumulative reward:  129.0885 (init:  129.0885), eval step-count: 13, average reward= 9.1651 (init= 9.0847), step count (max): 15, lr policy:  0.0003:  40%|████      | 4000/10000 [00:12&lt;00:18, 328.35it/s]
-eval cumulative reward:  129.0885 (init:  129.0885), eval step-count: 13, average reward= 9.1770 (init= 9.0847), step count (max): 23, lr policy:  0.0002:  40%|████      | 4000/10000 [00:12&lt;00:18, 328.35it/s]
-eval cumulative reward:  129.0885 (init:  129.0885), eval step-count: 13, average reward= 9.1770 (init= 9.0847), step count (max): 23, lr policy:  0.0002:  50%|█████     | 5000/10000 [00:15&lt;00:15, 329.65it/s]
-eval cumulative reward:  129.0885 (init:  129.0885), eval step-count: 13, average reward= 9.2037 (init= 9.0847), step count (max): 25, lr policy:  0.0002:  50%|█████     | 5000/10000 [00:15&lt;00:15, 329.65it/s]
-eval cumulative reward:  129.0885 (init:  129.0885), eval step-count: 13, average reward= 9.2037 (init= 9.0847), step count (max): 25, lr policy:  0.0002:  60%|██████    | 6000/10000 [00:18&lt;00:12, 332.41it/s]
-eval cumulative reward:  129.0885 (init:  129.0885), eval step-count: 13, average reward= 9.2231 (init= 9.0847), step count (max): 30, lr policy:  0.0001:  60%|██████    | 6000/10000 [00:18&lt;00:12, 332.41it/s]
-eval cumulative reward:  129.0885 (init:  129.0885), eval step-count: 13, average reward= 9.2231 (init= 9.0847), step count (max): 30, lr policy:  0.0001:  70%|███████   | 7000/10000 [00:21&lt;00:09, 328.76it/s]
-eval cumulative reward:  129.0885 (init:  129.0885), eval step-count: 13, average reward= 9.2284 (init= 9.0847), step count (max): 48, lr policy:  0.0001:  70%|███████   | 7000/10000 [00:21&lt;00:09, 328.76it/s]
-eval cumulative reward:  129.0885 (init:  129.0885), eval step-count: 13, average reward= 9.2284 (init= 9.0847), step count (max): 48, lr policy:  0.0001:  80%|████████  | 8000/10000 [00:24&lt;00:06, 332.39it/s]
-eval cumulative reward:  129.0885 (init:  129.0885), eval step-count: 13, average reward= 9.2374 (init= 9.0847), step count (max): 36, lr policy:  0.0001:  80%|████████  | 8000/10000 [00:24&lt;00:06, 332.39it/s]
-eval cumulative reward:  129.0885 (init:  129.0885), eval step-count: 13, average reward= 9.2374 (init= 9.0847), step count (max): 36, lr policy:  0.0001:  90%|█████████ | 9000/10000 [00:27&lt;00:02, 334.65it/s]
-eval cumulative reward:  129.0885 (init:  129.0885), eval step-count: 13, average reward= 9.2359 (init= 9.0847), step count (max): 32, lr policy:  0.0000:  90%|█████████ | 9000/10000 [00:27&lt;00:02, 334.65it/s]
-eval cumulative reward:  129.0885 (init:  129.0885), eval step-count: 13, average reward= 9.2359 (init= 9.0847), step count (max): 32, lr policy:  0.0000: 100%|██████████| 10000/10000 [00:30&lt;00:00, 336.22it/s]
-eval cumulative reward:  129.0885 (init:  129.0885), eval step-count: 13, average reward= 9.2464 (init= 9.0847), step count (max): 38, lr policy:  0.0000: 100%|██████████| 10000/10000 [00:30&lt;00:00, 336.22it/s]
+ 10%|█         | 1000/10000 [00:03&lt;00:27, 329.53it/s]
+eval cumulative reward:  110.9744 (init:  110.9744), eval step-count: 11, average reward= 9.0841 (init= 9.0841), step count (max): 10, lr policy:  0.0003:  10%|█         | 1000/10000 [00:03&lt;00:27, 329.53it/s]
+eval cumulative reward:  110.9744 (init:  110.9744), eval step-count: 11, average reward= 9.0841 (init= 9.0841), step count (max): 10, lr policy:  0.0003:  20%|██        | 2000/10000 [00:06&lt;00:24, 329.86it/s]
+eval cumulative reward:  110.9744 (init:  110.9744), eval step-count: 11, average reward= 9.1072 (init= 9.0841), step count (max): 15, lr policy:  0.0003:  20%|██        | 2000/10000 [00:06&lt;00:24, 329.86it/s]
+eval cumulative reward:  110.9744 (init:  110.9744), eval step-count: 11, average reward= 9.1072 (init= 9.0841), step count (max): 15, lr policy:  0.0003:  30%|███       | 3000/10000 [00:09&lt;00:21, 331.18it/s]
+eval cumulative reward:  110.9744 (init:  110.9744), eval step-count: 11, average reward= 9.1487 (init= 9.0841), step count (max): 20, lr policy:  0.0003:  30%|███       | 3000/10000 [00:09&lt;00:21, 331.18it/s]
+eval cumulative reward:  110.9744 (init:  110.9744), eval step-count: 11, average reward= 9.1487 (init= 9.0841), step count (max): 20, lr policy:  0.0003:  40%|████      | 4000/10000 [00:12&lt;00:18, 332.43it/s]
+eval cumulative reward:  110.9744 (init:  110.9744), eval step-count: 11, average reward= 9.1886 (init= 9.0841), step count (max): 29, lr policy:  0.0002:  40%|████      | 4000/10000 [00:12&lt;00:18, 332.43it/s]
+eval cumulative reward:  110.9744 (init:  110.9744), eval step-count: 11, average reward= 9.1886 (init= 9.0841), step count (max): 29, lr policy:  0.0002:  50%|█████     | 5000/10000 [00:15&lt;00:14, 333.46it/s]
+eval cumulative reward:  110.9744 (init:  110.9744), eval step-count: 11, average reward= 9.2134 (init= 9.0841), step count (max): 25, lr policy:  0.0002:  50%|█████     | 5000/10000 [00:15&lt;00:14, 333.46it/s]
+eval cumulative reward:  110.9744 (init:  110.9744), eval step-count: 11, average reward= 9.2134 (init= 9.0841), step count (max): 25, lr policy:  0.0002:  60%|██████    | 6000/10000 [00:18&lt;00:11, 334.22it/s]
+eval cumulative reward:  110.9744 (init:  110.9744), eval step-count: 11, average reward= 9.2350 (init= 9.0841), step count (max): 42, lr policy:  0.0001:  60%|██████    | 6000/10000 [00:18&lt;00:11, 334.22it/s]
+eval cumulative reward:  110.9744 (init:  110.9744), eval step-count: 11, average reward= 9.2350 (init= 9.0841), step count (max): 42, lr policy:  0.0001:  70%|███████   | 7000/10000 [00:21&lt;00:09, 328.72it/s]
+eval cumulative reward:  110.9744 (init:  110.9744), eval step-count: 11, average reward= 9.2400 (init= 9.0841), step count (max): 34, lr policy:  0.0001:  70%|███████   | 7000/10000 [00:21&lt;00:09, 328.72it/s]
+eval cumulative reward:  110.9744 (init:  110.9744), eval step-count: 11, average reward= 9.2400 (init= 9.0841), step count (max): 34, lr policy:  0.0001:  80%|████████  | 8000/10000 [00:24&lt;00:06, 331.42it/s]
+eval cumulative reward:  110.9744 (init:  110.9744), eval step-count: 11, average reward= 9.2470 (init= 9.0841), step count (max): 37, lr policy:  0.0001:  80%|████████  | 8000/10000 [00:24&lt;00:06, 331.42it/s]
+eval cumulative reward:  110.9744 (init:  110.9744), eval step-count: 11, average reward= 9.2470 (init= 9.0841), step count (max): 37, lr policy:  0.0001:  90%|█████████ | 9000/10000 [00:27&lt;00:03, 332.83it/s]
+eval cumulative reward:  110.9744 (init:  110.9744), eval step-count: 11, average reward= 9.2432 (init= 9.0841), step count (max): 40, lr policy:  0.0000:  90%|█████████ | 9000/10000 [00:27&lt;00:03, 332.83it/s]
+eval cumulative reward:  110.9744 (init:  110.9744), eval step-count: 11, average reward= 9.2432 (init= 9.0841), step count (max): 40, lr policy:  0.0000: 100%|██████████| 10000/10000 [00:30&lt;00:00, 334.36it/s]
+eval cumulative reward:  110.9744 (init:  110.9744), eval step-count: 11, average reward= 9.2556 (init= 9.0841), step count (max): 40, lr policy:  0.0000: 100%|██████████| 10000/10000 [00:30&lt;00:00, 334.36it/s]
 </pre></div>
 </div>
 </section>
@@ -1165,8 +1162,8 @@ the environment after asking for rendering to get a visual rendering of the
 inverted pendulum in action. Check <code class="xref py py-mod docutils literal notranslate"><span class="pre">torchrl.record</span></code> to
 know more.</p></li>
 </ul>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 37.695 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  8 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 39.051 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  9 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-tutorials-coding-ppo-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/e2a5193e019585d9cfa26d3eebfd8be3/coding_ppo.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">coding_ppo.ipynb</span></code></a></p>
