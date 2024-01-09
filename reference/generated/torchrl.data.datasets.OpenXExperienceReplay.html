@@ -386,6 +386,9 @@
 <p>The Open X-Embodiment Dataset contains 1M+ real robot trajectories
 spanning 22 robot embodiments, collected through a collaboration between
 21 institutions, demonstrating 527 skills (160266 tasks).</p>
+<p>Website: <a class="reference external" href="https://robotics-transformer-x.github.io/">https://robotics-transformer-x.github.io/</a>
+GitHub: <a class="reference external" href="https://github.com/google-deepmind/open_x_embodiment">https://github.com/google-deepmind/open_x_embodiment</a>
+Paper: <a class="reference external" href="https://arxiv.org/abs/2310.08864">https://arxiv.org/abs/2310.08864</a></p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Non-tensor data will be written in the tensordict data using the
@@ -423,7 +426,7 @@ sampler is set to <code class="docutils literal notranslate"><span class="pre">F
 behaviours (shuffled and not) within the same code base.</p>
 </div>
 </p></li>
-<li><p><strong>num_slice</strong> (<em>int</em><em>, </em><em>optional</em>) – the number of slices in a batch. This
+<li><p><strong>num_slices</strong> (<em>int</em><em>, </em><em>optional</em>) – the number of slices in a batch. This
 corresponds to the number of trajectories present in a batch.
 Once collected, the batch is presented as a concatenation of
 sub-trajectories that can be recovered through <cite>batch.reshape(num_slices, -1)</cite>.
