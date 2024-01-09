@@ -747,9 +747,13 @@
         <span class="k">if</span> <span class="n">gamma</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">_GAMMA_LMBDA_DEPREC_WARNING</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span> <span class="o">=</span> <span class="n">gamma</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_vmap_qnetworkN0</span> <span class="o">=</span> <span class="n">_vmap_func</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">qvalue_network</span><span class="p">,</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vmap_qnetworkN0</span> <span class="o">=</span> <span class="n">_vmap_func</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">qvalue_network</span><span class="p">,</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">randomness</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">vmap_randomness</span>
+        <span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_version</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_vmap_qnetwork00</span> <span class="o">=</span> <span class="n">_vmap_func</span><span class="p">(</span><span class="n">qvalue_network</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_vmap_qnetwork00</span> <span class="o">=</span> <span class="n">_vmap_func</span><span class="p">(</span>
+                <span class="n">qvalue_network</span><span class="p">,</span> <span class="n">randomness</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">vmap_randomness</span>
+            <span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">target_entropy_buffer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -782,7 +786,6 @@
                 <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tensor_keys</span><span class="o">.</span><span class="n">action</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span>
                 <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tensor_keys</span><span class="o">.</span><span class="n">action</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span>
             <span class="p">):</span>
-
                 <span class="n">action_container_shape</span> <span class="o">=</span> <span class="n">action_spec</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">tensor_keys</span><span class="o">.</span><span class="n">action</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">shape</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">action_container_shape</span> <span class="o">=</span> <span class="n">action_spec</span><span class="o">.</span><span class="n">shape</span>
@@ -1124,7 +1127,6 @@
         <span class="k">return</span> <span class="n">loss_value</span><span class="p">,</span> <span class="p">{}</span>
 
     <span class="k">def</span> <span class="nf">_alpha_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log_prob</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
-
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_entropy</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># we can compute this loss even if log_alpha is not a parameter</span>
             <span class="n">alpha_loss</span> <span class="o">=</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">log_alpha</span> <span class="o">*</span> <span class="p">(</span><span class="n">log_prob</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_entropy</span><span class="p">)</span>
@@ -1154,7 +1156,7 @@
 <span class="sd">            :class:`torchrl.data.MultiOneHotDiscreteTensorSpec`,</span>
 <span class="sd">            :class:`torchrl.data.BinaryDiscreteTensorSpec` or :class:`torchrl.data.DiscreteTensorSpec`).</span>
 <span class="sd">        num_actions (int, optional): number of actions in the action space.</span>
-<span class="sd">            To be provided if target_entropy is ste to &quot;auto&quot;.</span>
+<span class="sd">            To be provided if target_entropy is set to &quot;auto&quot;.</span>
 <span class="sd">        num_qvalue_nets (int, optional): Number of Q-value networks to be trained. Default is 10.</span>
 <span class="sd">        loss_function (str, optional): loss function to be used for the Q-value. Can be one of `&quot;smooth_l1&quot;`, &quot;l2&quot;,</span>
 <span class="sd">            &quot;l1&quot;, Default is &quot;smooth_l1&quot;.</span>
@@ -1420,7 +1422,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span>
             <span class="s2">&quot;target_entropy&quot;</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">target_entropy</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_vmap_qnetworkN0</span> <span class="o">=</span> <span class="n">_vmap_func</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">qvalue_network</span><span class="p">,</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vmap_qnetworkN0</span> <span class="o">=</span> <span class="n">_vmap_func</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">qvalue_network</span><span class="p">,</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">randomness</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">vmap_randomness</span>
+        <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_forward_value_estimator_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value_estimator</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>

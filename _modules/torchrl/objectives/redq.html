@@ -626,7 +626,6 @@
         <span class="n">priority_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">separate_losses</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
-
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_in_keys</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_deprecated_ctor_keys</span><span class="p">(</span><span class="n">priority_key</span><span class="o">=</span><span class="n">priority_key</span><span class="p">)</span>
@@ -689,8 +688,12 @@
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">_GAMMA_LMBDA_DEPREC_WARNING</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span> <span class="o">=</span> <span class="n">gamma</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_vmap_qvalue_network00</span> <span class="o">=</span> <span class="n">_vmap_func</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">qvalue_network</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_vmap_getdist</span> <span class="o">=</span> <span class="n">_vmap_func</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">actor_network</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="s2">&quot;get_dist_params&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vmap_qvalue_network00</span> <span class="o">=</span> <span class="n">_vmap_func</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">qvalue_network</span><span class="p">,</span> <span class="n">randomness</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">vmap_randomness</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vmap_getdist</span> <span class="o">=</span> <span class="n">_vmap_func</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">actor_network</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="s2">&quot;get_dist_params&quot;</span><span class="p">,</span> <span class="n">randomness</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">vmap_randomness</span>
+        <span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">target_entropy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

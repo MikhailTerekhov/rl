@@ -387,10 +387,10 @@
 <span class="kn">from</span> <span class="nn">tensordict.nn</span> <span class="kn">import</span> <span class="n">TensorDictModule</span><span class="p">,</span> <span class="n">TensorDictModuleBase</span><span class="p">,</span> <span class="n">TensorDictParams</span>
 <span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">nn</span>
 <span class="kn">from</span> <span class="nn">torch.nn</span> <span class="kn">import</span> <span class="n">Parameter</span>
-
 <span class="kn">from</span> <span class="nn">torchrl._utils</span> <span class="kn">import</span> <span class="n">RL_WARNINGS</span>
 <span class="kn">from</span> <span class="nn">torchrl.envs.utils</span> <span class="kn">import</span> <span class="n">ExplorationType</span><span class="p">,</span> <span class="n">set_exploration_type</span>
-<span class="kn">from</span> <span class="nn">torchrl.objectives.utils</span> <span class="kn">import</span> <span class="n">ValueEstimators</span>
+
+<span class="kn">from</span> <span class="nn">torchrl.objectives.utils</span> <span class="kn">import</span> <span class="n">RANDOM_MODULE_LIST</span><span class="p">,</span> <span class="n">ValueEstimators</span>
 <span class="kn">from</span> <span class="nn">torchrl.objectives.value</span> <span class="kn">import</span> <span class="n">ValueEstimatorBase</span>
 
 
@@ -452,6 +452,7 @@
 
         <span class="k">pass</span>
 
+    <span class="n">_vmap_randomness</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">default_value_estimator</span><span class="p">:</span> <span class="n">ValueEstimators</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">SEP</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span>
     <span class="n">TARGET_NET_WARNING</span> <span class="o">=</span> <span class="p">(</span>
@@ -799,6 +800,28 @@
             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown value type </span><span class="si">{</span><span class="n">value_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">vmap_randomness</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vmap_randomness</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">do_break</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="n">val</span><span class="o">.</span><span class="n">modules</span><span class="p">():</span>
+                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">RANDOM_MODULE_LIST</span><span class="p">):</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_vmap_randomness</span> <span class="o">=</span> <span class="s2">&quot;different&quot;</span>
+                            <span class="n">do_break</span> <span class="o">=</span> <span class="kc">True</span>
+                            <span class="k">break</span>
+                <span class="k">if</span> <span class="n">do_break</span><span class="p">:</span>
+                    <span class="c1"># double break</span>
+                    <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_vmap_randomness</span> <span class="o">=</span> <span class="s2">&quot;error&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vmap_randomness</span>
+
+    <span class="k">def</span> <span class="nf">set_vmap_randomness</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vmap_randomness</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_make_meta_params</span><span class="p">(</span><span class="n">param</span><span class="p">):</span>

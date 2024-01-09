@@ -375,6 +375,7 @@
 <span class="c1"># LICENSE file in the root directory of this source tree.</span>
 
 <span class="kn">import</span> <span class="nn">functools</span>
+<span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
@@ -384,6 +385,7 @@
 <span class="kn">from</span> <span class="nn">tensordict.tensordict</span> <span class="kn">import</span> <span class="n">TensorDict</span><span class="p">,</span> <span class="n">TensorDictBase</span>
 <span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">nn</span><span class="p">,</span> <span class="n">Tensor</span>
 <span class="kn">from</span> <span class="nn">torch.nn</span> <span class="kn">import</span> <span class="n">functional</span> <span class="k">as</span> <span class="n">F</span>
+<span class="kn">from</span> <span class="nn">torch.nn.modules</span> <span class="kn">import</span> <span class="n">dropout</span>
 
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">vmap</span>
@@ -399,6 +401,8 @@
     <span class="s2">&quot;is deprecated and will be removed soon. To customize your value function, &quot;</span>
     <span class="s2">&quot;run `loss_module.make_value_estimator(ValueEstimators.&lt;value_fun&gt;, gamma=val)`.&quot;</span>
 <span class="p">)</span>
+
+<span class="n">RANDOM_MODULE_LIST</span> <span class="o">=</span> <span class="p">(</span><span class="n">dropout</span><span class="o">.</span><span class="n">_DropoutNd</span><span class="p">,)</span>
 
 
 <div class="viewcode-block" id="ValueEstimators"><a class="viewcode-back" href="../../../reference/generated/torchrl.objectives.ValueEstimators.html#torchrl.objectives.ValueEstimators">[docs]</a><span class="k">class</span> <span class="nc">ValueEstimators</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
@@ -849,16 +853,26 @@
 
 
 <span class="k">def</span> <span class="nf">_vmap_func</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">decorated_module</span><span class="p">(</span><span class="o">*</span><span class="n">module_args_params</span><span class="p">):</span>
-        <span class="n">params</span> <span class="o">=</span> <span class="n">module_args_params</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">module_args</span> <span class="o">=</span> <span class="n">module_args_params</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-        <span class="k">with</span> <span class="n">params</span><span class="o">.</span><span class="n">to_module</span><span class="p">(</span><span class="n">module</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">func</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">module</span><span class="p">(</span><span class="o">*</span><span class="n">module_args</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">func</span><span class="p">)(</span><span class="o">*</span><span class="n">module_args</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
 
-    <span class="k">return</span> <span class="n">vmap</span><span class="p">(</span><span class="n">decorated_module</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>  <span class="c1"># noqa: TOR101</span>
+        <span class="k">def</span> <span class="nf">decorated_module</span><span class="p">(</span><span class="o">*</span><span class="n">module_args_params</span><span class="p">):</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="n">module_args_params</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">module_args</span> <span class="o">=</span> <span class="n">module_args_params</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">with</span> <span class="n">params</span><span class="o">.</span><span class="n">to_module</span><span class="p">(</span><span class="n">module</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">func</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">module</span><span class="p">(</span><span class="o">*</span><span class="n">module_args</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">func</span><span class="p">)(</span><span class="o">*</span><span class="n">module_args</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">vmap</span><span class="p">(</span><span class="n">decorated_module</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>  <span class="c1"># noqa: TOR101</span>
+
+    <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span>
+            <span class="sa">r</span><span class="s2">&quot;vmap: called random operation while in randomness error mode&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s2">&quot;Please use &lt;loss_module&gt;.set_vmap_randomness(&#39;different&#39;) to handle random operations during vmap.&quot;</span>
+            <span class="p">)</span> <span class="kn">from</span> <span class="nn">err</span>
 </pre></div>
 
              </article>
