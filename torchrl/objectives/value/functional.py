@@ -370,7 +370,7 @@ def td0_advantage_estimate(
     reward: torch.Tensor,
     done: torch.Tensor,
     terminated: torch.Tensor | None = None,
-) -> Tuple[torch.Tensor, torch.Tensor]:
+) -> torch.Tensor:
     """TD(0) advantage estimate of a trajectory.
 
     Also known as bootstrapped Temporal Difference or one-step return.
@@ -410,7 +410,7 @@ def td0_return_estimate(
     terminated: torch.Tensor | None = None,
     *,
     done: torch.Tensor | None = None,
-) -> Tuple[torch.Tensor, torch.Tensor]:
+) -> torch.Tensor:
     # noqa: D417
     """TD(0) discounted return estimate of a trajectory.
 
